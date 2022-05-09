@@ -18,19 +18,20 @@ import java.io.IOException;
 public class FirebaseConfig {
     @Primary
     @Bean
+    //Init bean firebase application
     public FirebaseApp getFirebaseApp() throws IOException {
-
         if (FirebaseApp.getApps().isEmpty()) {
-            Resource resource = new ClassPathResource("Firebase-adminsdk-9-privatekey.json");
-            FileInputStream refreshToken = new FileInputStream(resource.getFile());
-
-            FirebaseOptions options = FirebaseOptions.builder().setCredentials(GoogleCredentials.fromStream(refreshToken)).build();
+            //Load credentials from file
+            GoogleCredentials googleCredentials = GoogleCredentials.fromStream(new ClassPathResource("Firebase-adminsdk-9-privatekey.json").getInputStream());
+            //Set option include firebase authentication
+            FirebaseOptions options = FirebaseOptions.builder().setCredentials(googleCredentials).build();
             FirebaseApp.initializeApp(options);
         }
         return FirebaseApp.getInstance();
     }
 
     @Bean
+    //Init bean firebase authentication
     public FirebaseAuth getAuth() throws IOException {
         return FirebaseAuth.getInstance(getFirebaseApp());
     }
