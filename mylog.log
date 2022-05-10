@@ -1,0 +1,328 @@
+2022-05-10 22:03:29.094  INFO 6424 --- [main] com.swp.backend.SwpbackendApplication    : Starting SwpbackendApplication using Java 11.0.14 on DESKTOP-QEN4LJI with PID 6424 (G:\FPTSWP_Project\swp-backend\target\classes started by PC in G:\FPTSWP_Project\swp-backend)
+2022-05-10 22:03:29.098  INFO 6424 --- [main] com.swp.backend.SwpbackendApplication    : No active profile set, falling back to 1 default profile: "default"
+2022-05-10 22:03:29.978  INFO 6424 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2022-05-10 22:03:29.987  INFO 6424 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2022-05-10 22:03:29.987  INFO 6424 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.62]
+2022-05-10 22:03:30.097  INFO 6424 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2022-05-10 22:03:30.097  INFO 6424 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 944 ms
+2022-05-10 22:03:30.569  WARN 6424 --- [main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'; nested exception is org.springframework.boot.web.server.PortInUseException: Port 8080 is already in use
+2022-05-10 22:03:30.572  INFO 6424 --- [main] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+2022-05-10 22:03:30.583  INFO 6424 --- [main] ConditionEvaluationReportLoggingListener : 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2022-05-10 22:03:30.597 ERROR 6424 --- [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8080 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8080 or configure this application to listen on another port.
+
+2022-05-10 22:07:03.038  INFO 9864 --- [main] com.swp.backend.SwpbackendApplication    : Starting SwpbackendApplication using Java 11.0.14 on DESKTOP-QEN4LJI with PID 9864 (G:\FPTSWP_Project\swp-backend\target\classes started by PC in G:\FPTSWP_Project\swp-backend)
+2022-05-10 22:07:03.042  INFO 9864 --- [main] com.swp.backend.SwpbackendApplication    : No active profile set, falling back to 1 default profile: "default"
+2022-05-10 22:07:03.842  INFO 9864 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2022-05-10 22:07:03.849  INFO 9864 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2022-05-10 22:07:03.849  INFO 9864 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.62]
+2022-05-10 22:07:03.957  INFO 9864 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2022-05-10 22:07:03.958  INFO 9864 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 853 ms
+2022-05-10 22:07:04.344  WARN 9864 --- [main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'; nested exception is org.springframework.boot.web.server.PortInUseException: Port 8080 is already in use
+2022-05-10 22:07:04.347  INFO 9864 --- [main] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+2022-05-10 22:07:04.357  INFO 9864 --- [main] ConditionEvaluationReportLoggingListener : 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2022-05-10 22:07:04.368 ERROR 9864 --- [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8080 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8080 or configure this application to listen on another port.
+
+2022-05-10 22:12:11.287  INFO 14368 --- [main] com.swp.backend.SwpbackendApplication    : Starting SwpbackendApplication using Java 11.0.14 on DESKTOP-QEN4LJI with PID 14368 (G:\FPTSWP_Project\swp-backend\target\classes started by PC in G:\FPTSWP_Project\swp-backend)
+2022-05-10 22:12:11.291  INFO 14368 --- [main] com.swp.backend.SwpbackendApplication    : No active profile set, falling back to 1 default profile: "default"
+2022-05-10 22:12:12.064  INFO 14368 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2022-05-10 22:12:12.071  INFO 14368 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2022-05-10 22:12:12.072  INFO 14368 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.62]
+2022-05-10 22:12:12.184  INFO 14368 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2022-05-10 22:12:12.184  INFO 14368 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 837 ms
+2022-05-10 22:12:12.593  WARN 14368 --- [main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'; nested exception is org.springframework.boot.web.server.PortInUseException: Port 8080 is already in use
+2022-05-10 22:12:12.596  INFO 14368 --- [main] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+2022-05-10 22:12:12.606  INFO 14368 --- [main] ConditionEvaluationReportLoggingListener : 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2022-05-10 22:12:12.617 ERROR 14368 --- [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8080 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8080 or configure this application to listen on another port.
+
+2022-05-10 22:13:31.873  INFO 4124 --- [main] com.swp.backend.SwpbackendApplication    : Starting SwpbackendApplication using Java 11.0.14 on DESKTOP-QEN4LJI with PID 4124 (G:\FPTSWP_Project\swp-backend\target\classes started by PC in G:\FPTSWP_Project\swp-backend)
+2022-05-10 22:13:31.876  INFO 4124 --- [main] com.swp.backend.SwpbackendApplication    : No active profile set, falling back to 1 default profile: "default"
+2022-05-10 22:13:32.617  INFO 4124 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2022-05-10 22:13:32.624  INFO 4124 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2022-05-10 22:13:32.624  INFO 4124 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.62]
+2022-05-10 22:13:32.735  INFO 4124 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2022-05-10 22:13:32.735  INFO 4124 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 814 ms
+2022-05-10 22:13:33.110  WARN 4124 --- [main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'; nested exception is org.springframework.boot.web.server.PortInUseException: Port 8080 is already in use
+2022-05-10 22:13:33.113  INFO 4124 --- [main] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+2022-05-10 22:13:33.123  INFO 4124 --- [main] ConditionEvaluationReportLoggingListener : 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2022-05-10 22:13:33.135 ERROR 4124 --- [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8080 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8080 or configure this application to listen on another port.
+
+2022-05-10 22:14:12.358  INFO 1416 --- [main] com.swp.backend.SwpbackendApplication    : Starting SwpbackendApplication using Java 11.0.14 on DESKTOP-QEN4LJI with PID 1416 (G:\FPTSWP_Project\swp-backend\target\classes started by PC in G:\FPTSWP_Project\swp-backend)
+2022-05-10 22:14:12.362  INFO 1416 --- [main] com.swp.backend.SwpbackendApplication    : No active profile set, falling back to 1 default profile: "default"
+2022-05-10 22:14:13.089  INFO 1416 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2022-05-10 22:14:13.096  INFO 1416 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2022-05-10 22:14:13.096  INFO 1416 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.62]
+2022-05-10 22:14:13.203  INFO 1416 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2022-05-10 22:14:13.203  INFO 1416 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 801 ms
+2022-05-10 22:14:13.617  WARN 1416 --- [main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'; nested exception is org.springframework.boot.web.server.PortInUseException: Port 8080 is already in use
+2022-05-10 22:14:13.621  INFO 1416 --- [main] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+2022-05-10 22:14:13.631  INFO 1416 --- [main] ConditionEvaluationReportLoggingListener : 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2022-05-10 22:14:13.644 ERROR 1416 --- [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8080 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8080 or configure this application to listen on another port.
+
+2022-05-10 22:21:28.508  INFO 10844 --- [main] com.swp.backend.SwpbackendApplication    : Starting SwpbackendApplication using Java 11.0.14 on DESKTOP-QEN4LJI with PID 10844 (G:\FPTSWP_Project\swp-backend\target\classes started by PC in G:\FPTSWP_Project\swp-backend)
+2022-05-10 22:21:28.511  INFO 10844 --- [main] com.swp.backend.SwpbackendApplication    : No active profile set, falling back to 1 default profile: "default"
+2022-05-10 22:21:29.366  INFO 10844 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2022-05-10 22:21:29.374  INFO 10844 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2022-05-10 22:21:29.375  INFO 10844 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.62]
+2022-05-10 22:21:29.526  INFO 10844 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2022-05-10 22:21:29.526  INFO 10844 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 968 ms
+2022-05-10 22:21:30.012  INFO 10844 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2022-05-10 22:21:30.023  INFO 10844 --- [main] com.swp.backend.SwpbackendApplication    : Started SwpbackendApplication in 2.024 seconds (JVM running for 3.157)
+2022-05-10 22:21:30.027  INFO 10844 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2022-05-10 22:21:30.272  INFO 10844 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2022-05-10 22:21:30.382  INFO 10844 --- [main] ConditionEvaluationReportLoggingListener : 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2022-05-10 22:21:30.410 ERROR 10844 --- [main] o.s.boot.SpringApplication               : Application run failed
+
+java.lang.IllegalStateException: Failed to execute CommandLineRunner
+	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:780) ~[spring-boot-2.6.7.jar:2.6.7]
+	at org.springframework.boot.SpringApplication.callRunners(SpringApplication.java:761) ~[spring-boot-2.6.7.jar:2.6.7]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:310) ~[spring-boot-2.6.7.jar:2.6.7]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1312) ~[spring-boot-2.6.7.jar:2.6.7]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1301) ~[spring-boot-2.6.7.jar:2.6.7]
+	at com.swp.backend.SwpbackendApplication.main(SwpbackendApplication.java:13) ~[classes/:na]
+Caused by: org.springframework.jdbc.BadSqlGrammarException: StatementCallback; bad SQL grammar [INSERT INTO student (name,email) VALUES ('Nam Minh', 'nam@code.net')]; nested exception is org.postgresql.util.PSQLException: ERROR: column "name" of relation "student" does not exist
+  Position: 22
+	at org.springframework.jdbc.support.SQLStateSQLExceptionTranslator.doTranslate(SQLStateSQLExceptionTranslator.java:101) ~[spring-jdbc-5.3.19.jar:5.3.19]
+	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:70) ~[spring-jdbc-5.3.19.jar:5.3.19]
+	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:79) ~[spring-jdbc-5.3.19.jar:5.3.19]
+	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:79) ~[spring-jdbc-5.3.19.jar:5.3.19]
+	at org.springframework.jdbc.core.JdbcTemplate.translateException(JdbcTemplate.java:1541) ~[spring-jdbc-5.3.19.jar:5.3.19]
+	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:393) ~[spring-jdbc-5.3.19.jar:5.3.19]
+	at org.springframework.jdbc.core.JdbcTemplate.update(JdbcTemplate.java:558) ~[spring-jdbc-5.3.19.jar:5.3.19]
+	at com.swp.backend.SwpbackendApplication.run(SwpbackendApplication.java:18) ~[classes/:na]
+	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:777) ~[spring-boot-2.6.7.jar:2.6.7]
+	... 5 common frames omitted
+Caused by: org.postgresql.util.PSQLException: ERROR: column "name" of relation "student" does not exist
+  Position: 22
+	at org.postgresql.core.v3.QueryExecutorImpl.receiveErrorResponse(QueryExecutorImpl.java:2675) ~[postgresql-42.3.4.jar:42.3.4]
+	at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2365) ~[postgresql-42.3.4.jar:42.3.4]
+	at org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:355) ~[postgresql-42.3.4.jar:42.3.4]
+	at org.postgresql.jdbc.PgStatement.executeInternal(PgStatement.java:490) ~[postgresql-42.3.4.jar:42.3.4]
+	at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:408) ~[postgresql-42.3.4.jar:42.3.4]
+	at org.postgresql.jdbc.PgStatement.executeWithFlags(PgStatement.java:329) ~[postgresql-42.3.4.jar:42.3.4]
+	at org.postgresql.jdbc.PgStatement.executeCachedSql(PgStatement.java:315) ~[postgresql-42.3.4.jar:42.3.4]
+	at org.postgresql.jdbc.PgStatement.executeWithFlags(PgStatement.java:291) ~[postgresql-42.3.4.jar:42.3.4]
+	at org.postgresql.jdbc.PgStatement.executeUpdate(PgStatement.java:265) ~[postgresql-42.3.4.jar:42.3.4]
+	at com.zaxxer.hikari.pool.ProxyStatement.executeUpdate(ProxyStatement.java:119) ~[HikariCP-4.0.3.jar:na]
+	at com.zaxxer.hikari.pool.HikariProxyStatement.executeUpdate(HikariProxyStatement.java) ~[HikariCP-4.0.3.jar:na]
+	at org.springframework.jdbc.core.JdbcTemplate$1UpdateStatementCallback.doInStatement(JdbcTemplate.java:546) ~[spring-jdbc-5.3.19.jar:5.3.19]
+	at org.springframework.jdbc.core.JdbcTemplate$1UpdateStatementCallback.doInStatement(JdbcTemplate.java:543) ~[spring-jdbc-5.3.19.jar:5.3.19]
+	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:381) ~[spring-jdbc-5.3.19.jar:5.3.19]
+	... 8 common frames omitted
+
+2022-05-10 22:21:30.630  INFO 10844 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2022-05-10 22:21:30.660  INFO 10844 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2022-05-10 22:22:59.611  INFO 9012 --- [main] com.swp.backend.SwpbackendApplication    : Starting SwpbackendApplication using Java 11.0.14 on DESKTOP-QEN4LJI with PID 9012 (G:\FPTSWP_Project\swp-backend\target\classes started by PC in G:\FPTSWP_Project\swp-backend)
+2022-05-10 22:22:59.614  INFO 9012 --- [main] com.swp.backend.SwpbackendApplication    : No active profile set, falling back to 1 default profile: "default"
+2022-05-10 22:23:00.398  INFO 9012 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2022-05-10 22:23:00.413  INFO 9012 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2022-05-10 22:23:00.414  INFO 9012 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.62]
+2022-05-10 22:23:00.562  INFO 9012 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2022-05-10 22:23:00.562  INFO 9012 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 899 ms
+2022-05-10 22:23:00.988  INFO 9012 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2022-05-10 22:23:00.997  INFO 9012 --- [main] com.swp.backend.SwpbackendApplication    : Started SwpbackendApplication in 1.805 seconds (JVM running for 2.958)
+2022-05-10 22:23:01.001  INFO 9012 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2022-05-10 22:23:01.116  INFO 9012 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2022-05-10 22:23:01.191  INFO 9012 --- [main] ConditionEvaluationReportLoggingListener : 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2022-05-10 22:23:01.208 ERROR 9012 --- [main] o.s.boot.SpringApplication               : Application run failed
+
+java.lang.IllegalStateException: Failed to execute CommandLineRunner
+	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:780) ~[spring-boot-2.6.7.jar:2.6.7]
+	at org.springframework.boot.SpringApplication.callRunners(SpringApplication.java:761) ~[spring-boot-2.6.7.jar:2.6.7]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:310) ~[spring-boot-2.6.7.jar:2.6.7]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1312) ~[spring-boot-2.6.7.jar:2.6.7]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1301) ~[spring-boot-2.6.7.jar:2.6.7]
+	at com.swp.backend.SwpbackendApplication.main(SwpbackendApplication.java:13) ~[classes/:na]
+Caused by: org.springframework.jdbc.BadSqlGrammarException: StatementCallback; bad SQL grammar [INSERT INTO student(name,email) VALUES ('Nam Minh', 'nam@code.net')]; nested exception is org.postgresql.util.PSQLException: ERROR: column "name" of relation "student" does not exist
+  Position: 21
+	at org.springframework.jdbc.support.SQLStateSQLExceptionTranslator.doTranslate(SQLStateSQLExceptionTranslator.java:101) ~[spring-jdbc-5.3.19.jar:5.3.19]
+	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:70) ~[spring-jdbc-5.3.19.jar:5.3.19]
+	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:79) ~[spring-jdbc-5.3.19.jar:5.3.19]
+	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:79) ~[spring-jdbc-5.3.19.jar:5.3.19]
+	at org.springframework.jdbc.core.JdbcTemplate.translateException(JdbcTemplate.java:1541) ~[spring-jdbc-5.3.19.jar:5.3.19]
+	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:393) ~[spring-jdbc-5.3.19.jar:5.3.19]
+	at org.springframework.jdbc.core.JdbcTemplate.update(JdbcTemplate.java:558) ~[spring-jdbc-5.3.19.jar:5.3.19]
+	at com.swp.backend.SwpbackendApplication.run(SwpbackendApplication.java:18) ~[classes/:na]
+	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:777) ~[spring-boot-2.6.7.jar:2.6.7]
+	... 5 common frames omitted
+Caused by: org.postgresql.util.PSQLException: ERROR: column "name" of relation "student" does not exist
+  Position: 21
+	at org.postgresql.core.v3.QueryExecutorImpl.receiveErrorResponse(QueryExecutorImpl.java:2675) ~[postgresql-42.3.4.jar:42.3.4]
+	at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2365) ~[postgresql-42.3.4.jar:42.3.4]
+	at org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:355) ~[postgresql-42.3.4.jar:42.3.4]
+	at org.postgresql.jdbc.PgStatement.executeInternal(PgStatement.java:490) ~[postgresql-42.3.4.jar:42.3.4]
+	at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:408) ~[postgresql-42.3.4.jar:42.3.4]
+	at org.postgresql.jdbc.PgStatement.executeWithFlags(PgStatement.java:329) ~[postgresql-42.3.4.jar:42.3.4]
+	at org.postgresql.jdbc.PgStatement.executeCachedSql(PgStatement.java:315) ~[postgresql-42.3.4.jar:42.3.4]
+	at org.postgresql.jdbc.PgStatement.executeWithFlags(PgStatement.java:291) ~[postgresql-42.3.4.jar:42.3.4]
+	at org.postgresql.jdbc.PgStatement.executeUpdate(PgStatement.java:265) ~[postgresql-42.3.4.jar:42.3.4]
+	at com.zaxxer.hikari.pool.ProxyStatement.executeUpdate(ProxyStatement.java:119) ~[HikariCP-4.0.3.jar:na]
+	at com.zaxxer.hikari.pool.HikariProxyStatement.executeUpdate(HikariProxyStatement.java) ~[HikariCP-4.0.3.jar:na]
+	at org.springframework.jdbc.core.JdbcTemplate$1UpdateStatementCallback.doInStatement(JdbcTemplate.java:546) ~[spring-jdbc-5.3.19.jar:5.3.19]
+	at org.springframework.jdbc.core.JdbcTemplate$1UpdateStatementCallback.doInStatement(JdbcTemplate.java:543) ~[spring-jdbc-5.3.19.jar:5.3.19]
+	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:381) ~[spring-jdbc-5.3.19.jar:5.3.19]
+	... 8 common frames omitted
+
+2022-05-10 22:23:01.383  INFO 9012 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2022-05-10 22:23:01.427  INFO 9012 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2022-05-10 22:23:31.383  INFO 10520 --- [main] com.swp.backend.SwpbackendApplication    : Starting SwpbackendApplication using Java 11.0.14 on DESKTOP-QEN4LJI with PID 10520 (G:\FPTSWP_Project\swp-backend\target\classes started by PC in G:\FPTSWP_Project\swp-backend)
+2022-05-10 22:23:31.385  INFO 10520 --- [main] com.swp.backend.SwpbackendApplication    : No active profile set, falling back to 1 default profile: "default"
+2022-05-10 22:23:32.174  INFO 10520 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2022-05-10 22:23:32.181  INFO 10520 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2022-05-10 22:23:32.181  INFO 10520 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.62]
+2022-05-10 22:23:32.295  INFO 10520 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2022-05-10 22:23:32.295  INFO 10520 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 847 ms
+2022-05-10 22:23:32.725  INFO 10520 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2022-05-10 22:23:32.735  INFO 10520 --- [main] com.swp.backend.SwpbackendApplication    : Started SwpbackendApplication in 1.732 seconds (JVM running for 2.657)
+2022-05-10 22:23:32.739  INFO 10520 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2022-05-10 22:23:32.857  INFO 10520 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2022-05-10 22:23:32.931  INFO 10520 --- [main] ConditionEvaluationReportLoggingListener : 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2022-05-10 22:23:32.952 ERROR 10520 --- [main] o.s.boot.SpringApplication               : Application run failed
+
+java.lang.IllegalStateException: Failed to execute CommandLineRunner
+	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:780) ~[spring-boot-2.6.7.jar:2.6.7]
+	at org.springframework.boot.SpringApplication.callRunners(SpringApplication.java:761) ~[spring-boot-2.6.7.jar:2.6.7]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:310) ~[spring-boot-2.6.7.jar:2.6.7]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1312) ~[spring-boot-2.6.7.jar:2.6.7]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1301) ~[spring-boot-2.6.7.jar:2.6.7]
+	at com.swp.backend.SwpbackendApplication.main(SwpbackendApplication.java:13) ~[classes/:na]
+Caused by: org.springframework.jdbc.BadSqlGrammarException: StatementCallback; bad SQL grammar [INSERT INTO student(Name,Email) VALUES ('Nam Minh', 'nam@code.net')]; nested exception is org.postgresql.util.PSQLException: ERROR: column "name" of relation "student" does not exist
+  Position: 21
+	at org.springframework.jdbc.support.SQLStateSQLExceptionTranslator.doTranslate(SQLStateSQLExceptionTranslator.java:101) ~[spring-jdbc-5.3.19.jar:5.3.19]
+	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:70) ~[spring-jdbc-5.3.19.jar:5.3.19]
+	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:79) ~[spring-jdbc-5.3.19.jar:5.3.19]
+	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:79) ~[spring-jdbc-5.3.19.jar:5.3.19]
+	at org.springframework.jdbc.core.JdbcTemplate.translateException(JdbcTemplate.java:1541) ~[spring-jdbc-5.3.19.jar:5.3.19]
+	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:393) ~[spring-jdbc-5.3.19.jar:5.3.19]
+	at org.springframework.jdbc.core.JdbcTemplate.update(JdbcTemplate.java:558) ~[spring-jdbc-5.3.19.jar:5.3.19]
+	at com.swp.backend.SwpbackendApplication.run(SwpbackendApplication.java:18) ~[classes/:na]
+	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:777) ~[spring-boot-2.6.7.jar:2.6.7]
+	... 5 common frames omitted
+Caused by: org.postgresql.util.PSQLException: ERROR: column "name" of relation "student" does not exist
+  Position: 21
+	at org.postgresql.core.v3.QueryExecutorImpl.receiveErrorResponse(QueryExecutorImpl.java:2675) ~[postgresql-42.3.4.jar:42.3.4]
+	at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2365) ~[postgresql-42.3.4.jar:42.3.4]
+	at org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:355) ~[postgresql-42.3.4.jar:42.3.4]
+	at org.postgresql.jdbc.PgStatement.executeInternal(PgStatement.java:490) ~[postgresql-42.3.4.jar:42.3.4]
+	at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:408) ~[postgresql-42.3.4.jar:42.3.4]
+	at org.postgresql.jdbc.PgStatement.executeWithFlags(PgStatement.java:329) ~[postgresql-42.3.4.jar:42.3.4]
+	at org.postgresql.jdbc.PgStatement.executeCachedSql(PgStatement.java:315) ~[postgresql-42.3.4.jar:42.3.4]
+	at org.postgresql.jdbc.PgStatement.executeWithFlags(PgStatement.java:291) ~[postgresql-42.3.4.jar:42.3.4]
+	at org.postgresql.jdbc.PgStatement.executeUpdate(PgStatement.java:265) ~[postgresql-42.3.4.jar:42.3.4]
+	at com.zaxxer.hikari.pool.ProxyStatement.executeUpdate(ProxyStatement.java:119) ~[HikariCP-4.0.3.jar:na]
+	at com.zaxxer.hikari.pool.HikariProxyStatement.executeUpdate(HikariProxyStatement.java) ~[HikariCP-4.0.3.jar:na]
+	at org.springframework.jdbc.core.JdbcTemplate$1UpdateStatementCallback.doInStatement(JdbcTemplate.java:546) ~[spring-jdbc-5.3.19.jar:5.3.19]
+	at org.springframework.jdbc.core.JdbcTemplate$1UpdateStatementCallback.doInStatement(JdbcTemplate.java:543) ~[spring-jdbc-5.3.19.jar:5.3.19]
+	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:381) ~[spring-jdbc-5.3.19.jar:5.3.19]
+	... 8 common frames omitted
+
+2022-05-10 22:23:33.121  INFO 10520 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2022-05-10 22:23:33.150  INFO 10520 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2022-05-10 22:41:06.895  INFO 6708 --- [main] com.swp.backend.SwpbackendApplication    : Starting SwpbackendApplication using Java 11.0.14 on DESKTOP-QEN4LJI with PID 6708 (G:\FPTSWP_Project\swp-backend\target\classes started by PC in G:\FPTSWP_Project\swp-backend)
+2022-05-10 22:41:06.898  INFO 6708 --- [main] com.swp.backend.SwpbackendApplication    : No active profile set, falling back to 1 default profile: "default"
+2022-05-10 22:41:07.650  INFO 6708 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2022-05-10 22:41:07.657  INFO 6708 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2022-05-10 22:41:07.657  INFO 6708 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.62]
+2022-05-10 22:41:07.771  INFO 6708 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2022-05-10 22:41:07.771  INFO 6708 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 825 ms
+2022-05-10 22:41:08.183  INFO 6708 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2022-05-10 22:41:08.191  INFO 6708 --- [main] com.swp.backend.SwpbackendApplication    : Started SwpbackendApplication in 1.665 seconds (JVM running for 2.54)
+2022-05-10 22:41:08.195  INFO 6708 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2022-05-10 22:41:08.305  INFO 6708 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2022-05-10 22:58:53.901  INFO 6708 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2022-05-10 22:58:53.909  INFO 6708 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2022-05-10 22:59:02.132  INFO 17716 --- [main] com.swp.backend.SwpbackendApplication    : Starting SwpbackendApplication using Java 11.0.14 on DESKTOP-QEN4LJI with PID 17716 (G:\FPTSWP_Project\swp-backend\target\classes started by PC in G:\FPTSWP_Project\swp-backend)
+2022-05-10 22:59:02.134  INFO 17716 --- [main] com.swp.backend.SwpbackendApplication    : No active profile set, falling back to 1 default profile: "default"
+2022-05-10 22:59:02.600  INFO 17716 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2022-05-10 22:59:02.611  INFO 17716 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 4 ms. Found 0 JPA repository interfaces.
+2022-05-10 22:59:02.956  INFO 17716 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2022-05-10 22:59:02.963  INFO 17716 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2022-05-10 22:59:02.964  INFO 17716 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.62]
+2022-05-10 22:59:03.081  INFO 17716 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2022-05-10 22:59:03.082  INFO 17716 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 909 ms
+2022-05-10 22:59:03.219  INFO 17716 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2022-05-10 22:59:03.269  INFO 17716 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 5.6.8.Final
+2022-05-10 22:59:03.411  INFO 17716 --- [main] o.hibernate.annotations.common.Version   : HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2022-05-10 22:59:03.492  INFO 17716 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2022-05-10 22:59:03.706  INFO 17716 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2022-05-10 22:59:03.717  INFO 17716 --- [main] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+2022-05-10 22:59:03.898  INFO 17716 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2022-05-10 22:59:03.906  INFO 17716 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2022-05-10 22:59:04.051  WARN 17716 --- [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2022-05-10 22:59:04.376  INFO 17716 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2022-05-10 22:59:04.386  INFO 17716 --- [main] com.swp.backend.SwpbackendApplication    : Started SwpbackendApplication in 2.623 seconds (JVM running for 3.557)
