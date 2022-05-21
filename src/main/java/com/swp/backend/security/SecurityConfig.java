@@ -1,10 +1,9 @@
 package com.swp.backend.security;
 
-import com.swp.backend.entity.UserEntity;
-import com.swp.backend.repository.UserRepository;
+import com.swp.backend.constance.ApiEndpointProperties;
+import com.swp.backend.entity.User;
 import com.swp.backend.service.UserService;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -12,7 +11,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.core.GrantedAuthorityDefaults;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,13 +32,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(username -> {
-            UserEntity userEntity = userService.findUserByUsername(username);
-            if(userEntity == null){
+            User user = userService.findUserByUsername(username);
+            if(user == null){
                 throw new UsernameNotFoundException("Username " + username + " notfound!");
             }else {
-                return User.withUsername(String.valueOf(userEntity.getUserId()))
-                        .password(userEntity.getPassword())
-                        .authorities(new SimpleGrantedAuthority(userEntity.getRole()))
+                return org.springframework.security.core.userdetails.User.withUsername(String.valueOf(user.getUserId()))
+                        .password(user.getPassword())
+                        .authorities(new SimpleGrantedAuthority(user.getRole()))
                         .build();
             }
         });
@@ -65,7 +63,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.httpBasic().disable();
 
         //Public endpoints
-        http.authorizeHttpRequests().antMatchers("/api/v1/login", "/api/v1/register").permitAll();
+        http.authorizeHttpRequests().antMatchers(ApiEndpointProperties.publicEndpoint).permitAll();
         //Permission endpoints
         http.authorizeHttpRequests().anyRequest().authenticated();
         http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);

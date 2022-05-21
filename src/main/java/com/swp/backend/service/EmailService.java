@@ -1,7 +1,6 @@
 package com.swp.backend.service;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -22,6 +21,7 @@ public class EmailService {
         this.mailSender = mailSender;
     }
 
+    //Send text email
     public void sendSimpleMessage(String to, String subject, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(senderEmail);
@@ -29,12 +29,11 @@ public class EmailService {
         message.setSubject(subject);
         message.setText(text);
         new Thread(() -> {
-            System.out.println("Thread " + Thread.currentThread().getId() + " start send text email at: " + new Date(System.currentTimeMillis()));
             mailSender.send(message);
-            System.out.println("Thread " + Thread.currentThread().getId() + " finished send text email at: " + new Date(System.currentTimeMillis()));
         }).start();
     }
 
+    //Send email with attaches file.
     public void sendMessageWithAttachment(String to, String subject, String text, String pathToAttachment) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);

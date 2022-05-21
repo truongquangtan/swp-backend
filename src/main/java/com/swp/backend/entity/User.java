@@ -1,34 +1,40 @@
 package com.swp.backend.entity;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.sql.Timestamp;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "users")
-public class UserEntity {
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int userId;
+    private String userId;
     @Column(name = "email")
     private String email;
+    @Column(name = "full_name")
+    private String fullName;
     @Column(name = "phone")
     private String phone;
-    @Column(name = "avatar")
-    private String avatar;
     @Column(name = "password")
     private String password;
-    @Column(name = "create_at")
-    private Timestamp createAt = new Timestamp(System.currentTimeMillis());
+    @Column(name = "avatar")
+    private String avatar;
     @Column(name = "otp_code")
     private String optCode;
     @Column(name = "otp_expire")
     private Timestamp otpExpire;
+    @Column(name = "create_at")
+    private Timestamp createAt = new Timestamp(System.currentTimeMillis());
     @Column(name = "is_confirmed")
     private boolean isConfirmed;
     @Column(name = "is_active")

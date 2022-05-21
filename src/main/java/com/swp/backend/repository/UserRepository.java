@@ -1,10 +1,11 @@
 package com.swp.backend.repository;
 
-import com.swp.backend.entity.UserEntity;
+import com.swp.backend.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository extends JpaRepository<UserEntity, Integer> {
-    public UserEntity findUserEntityByEmail(String email);
-    public UserEntity findUserEntityByUserId(int userId);
-    public UserEntity findUserEntityByPhoneOrUserId(String email, int userId);
+public interface UserRepository extends JpaRepository<User, String> {
+    public User findUserEntityByEmail(String email);
+    public User findUserEntityByUserId(String userId);
+
+    public User findUserEntityByPhone(String phone);
 }
