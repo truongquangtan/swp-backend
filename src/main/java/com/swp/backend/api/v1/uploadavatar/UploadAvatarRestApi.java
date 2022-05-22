@@ -43,6 +43,7 @@ public class UploadAvatarRestApi {
             }
     )
     public ResponseEntity<String> uploadAvatar(@RequestParam(value = "file", required = false) MultipartFile file) throws IOException {
+        //Case request missing file
         if(file == null){
             ErrorResponse errorResponse = ErrorResponse.builder()
                     .error("error-000")
@@ -52,10 +53,13 @@ public class UploadAvatarRestApi {
             return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
         }
         try {
+            //Determine current user call api from spring-security context
             Object userDetails = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             if(userDetails instanceof UserDetails){
                 String userId = ((UserDetails) userDetails).getUsername();
+                //Get details of user
                 User user = userService.findUserByUsername(userId);
+                //Case user notfound
                 if (user == null){
                     ErrorResponse errorResponse = ErrorResponse.builder()
                             .error("error-001")
@@ -64,7 +68,9 @@ public class UploadAvatarRestApi {
                             .build();
                     return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
                 }
+                //Call FirebaseStoreService's upload file method and receive url store on firebase store
                 String url = firebaseStoreService.uploadFile(file);
+                //Set avatar and update on database
                 user.setAvatar(url);
                 userService.updateUser(user);
                 return ResponseEntity.ok().body(url);

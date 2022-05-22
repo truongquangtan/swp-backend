@@ -9,11 +9,18 @@ public class RegisterRequest {
     private String email;
     private String fullName;
     private String password;
+    private String phone;
 
+    //Check valid request form
     public boolean isValidRequest(){
-        if(email == null || fullName == null || password == null){
+        String regexEmail = "^[_A-Za-z\\d-+]+(\\.[_A-Za-z\\d-]+)*@[A-Za-z\\d-]+(\\.[A-Za-z\\d]+)*(\\.[A-Za-z]{2,})$";
+        String regexPhone = "\\d{10}";
+        if(email == null || fullName == null || password == null || phone == null){
             return false;
         }
-        return email.trim().length() > 0 && fullName.trim().length() > 0 && password.trim().length() > 0 && email.matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
+        if(email.trim().length() <= 0 && fullName.trim().length() <= 0 && password.trim().length() <= 0 && phone.trim().length() <= 0){
+            return false;
+        }
+        return email.matches(regexEmail) && phone.matches(regexPhone);
     }
 }

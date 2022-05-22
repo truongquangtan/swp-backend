@@ -54,7 +54,7 @@ public class LoginRestApi {
             return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
         }
         //Case body wrong format
-        if(loginRequest.getPassword() == null || loginRequest.getUsername() == null){
+        if(!loginRequest.isValidRequest()){
             ErrorResponse errorResponse = ErrorResponse.builder()
                     .error("auth-007")
                     .message("Bad body.")
@@ -76,7 +76,11 @@ public class LoginRestApi {
         //Checking password
         if(bCryptPasswordEncoder.matches(loginRequest.getPassword(), loginUser.getPassword())){
             try {
+                //Generate token
                 JwtToken token = jwtTokenUtils.doGenerateToken(loginUser);
+                //Save state login of user on app's database login context
+                loginStateService.saveLogin(loginUser.getUserId(), token.getToken());
+                //Generate response
                 LoginResponse loginResponse = LoginResponse.builder()
                         .userId(loginUser.getUserId())
                         .email(loginUser.getEmail())
@@ -84,11 +88,12 @@ public class LoginRestApi {
                         .fullName(loginUser.getFullName())
                         .isConfirmed(loginUser.isConfirmed())
                         .role(loginUser.getRole())
+                        .avatar(loginUser.getAvatar())
                         .token(token)
                         .build();
-                loginStateService.saveLogin(loginUser.getUserId(), token.getToken());
                 return ResponseEntity.ok().body(gson.toJson(loginResponse));
             }catch (DataAccessException dataAccessException){
+                //Save state login failed
                 ErrorResponse errorResponse = ErrorResponse.builder()
                         .error("auth-009")
                         .message("Login failed.")
@@ -97,6 +102,7 @@ public class LoginRestApi {
                 return ResponseEntity.internalServerError().body(gson.toJson(errorResponse));
             }
         }else {
+            //Case password not match
             ErrorResponse errorResponse = ErrorResponse.builder()
                     .error("auth-010")
                     .message("Password is not match.")

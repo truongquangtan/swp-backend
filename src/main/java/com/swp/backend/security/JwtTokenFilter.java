@@ -1,6 +1,7 @@
 package com.swp.backend.security;
 
 import com.google.gson.Gson;
+import com.swp.backend.constance.ApiEndpointProperties;
 import com.swp.backend.entity.LoginState;
 import com.swp.backend.entity.User;
 import com.swp.backend.exception.ErrorResponse;
@@ -22,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.UUID;
 
 @Component
@@ -40,7 +42,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
-
+        boolean isPublicApi = Arrays.stream(ApiEndpointProperties.publicEndpoint).anyMatch(url -> url.startsWith(request.getRequestURI()));
+        if(isPublicApi){
+            chain.doFilter(request, response);
+            return;
+        }
         // Get authorization header and validate
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (header == null || !header.startsWith("Bearer ")) {

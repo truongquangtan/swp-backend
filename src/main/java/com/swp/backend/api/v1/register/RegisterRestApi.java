@@ -62,10 +62,15 @@ public class RegisterRestApi {
         }
 
         try {
-            User user = userService.createUser(registerRequest.getEmail(), registerRequest.getFullName(), registerRequest.getPassword());
+            //Call user-service's create new user method
+            User user = userService.createUser(registerRequest.getEmail(), registerRequest.getFullName(), registerRequest.getPassword(), registerRequest.getPhone(), "USER");
+            //Call user-service's  send mail asynchronous method
             userService.sendOtpVerifyAccount(user);
+            //Generate login token
             JwtToken token = jwtTokenUtils.doGenerateToken(user);
+            //Save login state on app's login context-database
             loginStateService.saveLogin(user.getUserId(), token.getToken());
+            //Generate response
             RegisterResponse registerResponse = RegisterResponse.builder()
                     .userId(user.getUserId())
                     .email(user.getEmail())

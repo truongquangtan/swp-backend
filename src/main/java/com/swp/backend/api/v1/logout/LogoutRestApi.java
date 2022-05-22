@@ -29,6 +29,7 @@ public class LogoutRestApi {
     @ApiResponse(responseCode = "500", description = "Logout failed, delete token context login failed.")
     @GetMapping(value = "logout")
     public ResponseEntity<String> logout(){
+        //Get current user from spring security context container
         Object user = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if(user instanceof UserDetails){
             String userId = ((UserDetails) user).getUsername();

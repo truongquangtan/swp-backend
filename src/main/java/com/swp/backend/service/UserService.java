@@ -29,7 +29,7 @@ public class UserService {
             return null;
         }
         //Find user by username, phone, or password
-        if(username.matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$")){
+        if(username.matches("^[_A-Za-z\\d-+]+(\\.[_A-Za-z\\d-]+)*@[A-Za-z\\d-]+(\\.[A-Za-z\\d]+)*(\\.[A-Za-z]{2,})$")){
             return userRepository.findUserEntityByEmail(username);
         } else if (username.matches("\\d+")){
             return  userRepository.findUserEntityByPhone(username);
@@ -38,17 +38,21 @@ public class UserService {
         }
     }
 
-    public User createUser(String email, String fullName, String password) throws DataAccessException{
+    public User createUser(String email, String fullName, String password, String phone, String role) throws DataAccessException{
         String otp = new DecimalFormat("000000").format(new Random().nextInt(999999));
         int distanceExpireOtp = 5 * 60 * 1000;
         String uuid = UUID.randomUUID().toString();
-        User user = new User();
-        user.setUserId(uuid);
-        user.setEmail(email);
-        user.setFullName(fullName);
-        user.setOptCode(otp);
-        user.setPassword(passwordEncoder.encode(password));
-        user.setOtpExpire(new Timestamp(System.currentTimeMillis() + distanceExpireOtp));
+        User user = User.builder()
+            .userId(uuid)
+            .email(email)
+            .fullName(fullName)
+            .optCode(otp)
+            .phone(phone)
+            .password(passwordEncoder.encode(password))
+            .otpExpire(new Timestamp(System.currentTimeMillis() + distanceExpireOtp))
+            .role(role)
+            .createAt(new Timestamp(System.currentTimeMillis()))
+        .build();
         userRepository.save(user);
         return user;
     }
