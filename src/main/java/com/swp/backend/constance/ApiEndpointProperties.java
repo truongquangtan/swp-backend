@@ -9,6 +9,7 @@ public class ApiEndpointProperties {
             "/swagger-ui.html",
             "/api/v1/verify-account",
             "/api/v1/logout",
-            "/api/v1/upload-avatar"
+            "/api/v1/upload-avatar",
+            "/api/v1/branch/add"
     };
 }
