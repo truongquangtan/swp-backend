@@ -49,10 +49,16 @@ public class BranchService {
     }
     public List<BranchEntity> getAllBranch(){
         List<BranchEntity> result = new ArrayList<BranchEntity>();
+
         Iterator iterator = branchRepository.findAll().iterator();
         while(iterator.hasNext()){
             result.add((BranchEntity) iterator.next());
         }
+
         return result;
+    }
+    public BranchEntity getBranchById(Integer id){
+        BranchEntity branchEntity = branchRepository.findById(id).get();
+        return branchEntity;
     }
 }

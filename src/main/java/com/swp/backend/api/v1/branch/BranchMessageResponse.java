@@ -1,14 +1,12 @@
 package com.swp.backend.api.v1.branch;
 
 public final class BranchMessageResponse {
-    public static final String ADD_SUCCESSFUL = "";
-    public static final String REMOVE_SUCCESSFUL = "";
-    public static final String MODIFY_SUCCESSFUL = "";
+    public static final String DELETE_SUCCESSFULLY = "Delete successfully";
 
-    public static final String BRANCH_NAME_EXISTED = "";
-    public static final String BRANCH_NAME_NOT_EXISTED = "";
+    public static final String DATA_NOT_MATCH = "Data input contain null or blank, can not parse into request object";
+    public static final String EMPTY_BODY = "Body is empty";
 
-    public static final String INTERNAL_ERROR = "";
-    public static final String DATA_NOT_MATCH = "Can not parse request data to branch entity";
-    public static final String ID_IS_NULL = "Id for request is null";
+    public static final String ID_IS_NOT_EXISTED = "0 row affected, ID is not existed";
+
+    public static final String NO_SUCH_ELEMENT = "The element which specified ID can not found";
 }
