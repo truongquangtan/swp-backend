@@ -34,11 +34,12 @@ public class User {
     @Column(name = "otp_expire")
     private Timestamp otpExpire;
     @Column(name = "create_at")
-    private Timestamp createAt = new Timestamp(System.currentTimeMillis());
+    private Timestamp createAt;
     @Column(name = "is_confirmed")
     private boolean isConfirmed;
     @Column(name = "is_active")
-    private boolean isActive;
+    @Builder.Default
+    private boolean isActive = true;
     @Column(name = "role")
-    private String role = "USER";
+    private String role;
 }
