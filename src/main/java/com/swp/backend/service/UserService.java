@@ -57,9 +57,18 @@ public class UserService {
         return user;
     }
     public void sendOtpVerifyAccount(User user){
-        String emailSubject = "VERIFY ACCOUNT";
-        String emailBody = "Your code verify account: " + user.getOptCode();
-        emailService.sendSimpleMessage(user.getEmail(), emailSubject, emailBody);
+        String emailSubject = "VERIFY PLAYGROUND BASKETBALL CODE";
+        String htmlBody =
+                "<img style=\"display: block; width: 60px; padding: 2px; height: 60px; margin: auto;\" src=\"https://firebasestorage.googleapis.com/v0/b/fu-swp391.appspot.com/o/mail-icon.png?alt=media\">" +
+                "<h1 style=\"font-family:open Sans Helvetica, Arial, sans-serif; margin: 0; font-size:18px; padding: 2px; text-align: center;\">Playground Basketball</h1>" +
+                "<p style=\"font-family:open Sans Helvetica, Arial, sans-serif;font-size:16px; margin: 0; padding: 2px; text-align: center;\">Please use the verification code below on the Playground Basketball website:</p>" +
+                "<p style=\"font-family:open Sans Helvetica, Arial, sans-serif;font-size:18px; margin: 0; font-weight:bold;line-height:1;text-align:center;\">"+
+                "<span style=\"color:#222222; background-color:#aad8ff;\">"+ user.getOptCode() + "</span></p>" +
+                "<p style=\"font-family:open Sans Helvetica, Arial, sans-serif;font-size:16px; padding: 2px; margin: 0; text-align: center;\">It expires in 5 minutes.</p>" +
+                "<p style=\"font-family:open Sans Helvetica, Arial, sans-serif;font-size:16px; padding: 2px; margin: 0; text-align: center;\">If you didn't request this, you can ignore this email or let us know.</p>" +
+                "<p style=\"font-family:open Sans Helvetica, Arial, sans-serif;font-size:16px; padding: 2px; margin: 0; text-align: center;\">Thank!</p>" +
+                "<p style=\"font-family:open Sans Helvetica, Arial, sans-serif;font-size:16px; padding: 2px; margin: 0; text-align: center;\">Playground Basketball</p>";
+        emailService.sendHtmlTemplateMessage(user.getEmail(), emailSubject, htmlBody);
     }
 
     public void updateUser(User user) throws DataAccessException{

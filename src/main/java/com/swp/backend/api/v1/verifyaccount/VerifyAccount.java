@@ -3,15 +3,13 @@ package com.swp.backend.api.v1.verifyaccount;
 import com.google.gson.Gson;
 import com.swp.backend.entity.User;
 import com.swp.backend.exception.ErrorResponse;
+import com.swp.backend.service.SecurityContextService;
 import com.swp.backend.service.UserService;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -20,10 +18,12 @@ import java.util.Date;
 @RequestMapping(value = "api/v1")
 public class VerifyAccount {
     UserService userService;
+    SecurityContextService securityContextService;
     Gson gson;
 
-    public VerifyAccount(UserService userService, Gson gson) {
+    public VerifyAccount(UserService userService, SecurityContextService securityContextService, Gson gson) {
         this.userService = userService;
+        this.securityContextService = securityContextService;
         this.gson = gson;
     }
 
@@ -37,17 +37,9 @@ public class VerifyAccount {
                     .build();
             return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
         }
-        Object userDetail = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if(!(userDetail instanceof UserDetails)){
-            ErrorResponse errorResponse = ErrorResponse.builder()
-                    .error("auth-017")
-                    .message("Server error.")
-                    .details("Server temp handle this request.")
-                    .build();
-            return ResponseEntity.internalServerError().body(gson.toJson(errorResponse));
-        }
         try {
-            String userId = ((UserDetails) userDetail).getUsername();
+            SecurityContext context = SecurityContextHolder.getContext();
+            String userId = securityContextService.extractUsernameFromContext(context);
             User user = userService.findUserByUsername(userId);
             if (user == null){
                 ErrorResponse errorResponse = ErrorResponse.builder()
@@ -84,6 +76,36 @@ public class VerifyAccount {
                     .error("auth-018")
                     .message("Server access database error.")
                     .details("Server temp handle this request.")
+                    .build();
+            return ResponseEntity.internalServerError().body(gson.toJson(errorResponse));
+        }
+    }
+
+    @GetMapping(value = "verify-account")
+    public ResponseEntity<String> resendEmailVerifyAccount(){
+        try {
+            SecurityContext context = SecurityContextHolder.getContext();
+            String userId = securityContextService.extractUsernameFromContext(context);
+            User user = userService.findUserByUsername(userId);
+            if(user == null){
+                ErrorResponse errorResponse = ErrorResponse.builder()
+                        .error("auth-017")
+                        .message("User notfound")
+                        .details("User may be deleted.")
+                        .build();
+                return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
+            }
+            long extraTimeExpire = 5 * 60 * 1000;
+            Date timeExpire = new Date(System.currentTimeMillis() + extraTimeExpire);
+            user.setOtpExpire(Timestamp.from(timeExpire.toInstant()));
+            userService.updateUser(user);
+            userService.sendOtpVerifyAccount(user);
+            return ResponseEntity.ok().body("Resend verify success!");
+        }catch (ClassCastException | DataAccessException e){
+            ErrorResponse errorResponse = ErrorResponse.builder()
+                    .error("auth-018")
+                    .message("Server access database error.")
+                    .details("Server temp can't handle this request." + e.getMessage())
                     .build();
             return ResponseEntity.internalServerError().body(gson.toJson(errorResponse));
         }
