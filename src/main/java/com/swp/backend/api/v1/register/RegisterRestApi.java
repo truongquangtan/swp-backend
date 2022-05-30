@@ -2,10 +2,12 @@ package com.swp.backend.api.v1.register;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
+import com.swp.backend.entity.OtpState;
 import com.swp.backend.entity.User;
 import com.swp.backend.exception.ErrorResponse;
 import com.swp.backend.model.JwtToken;
 import com.swp.backend.service.LoginStateService;
+import com.swp.backend.service.OtpStateService;
 import com.swp.backend.service.UserService;
 import com.swp.backend.utils.JwtTokenUtils;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,12 +27,14 @@ public class RegisterRestApi {
     UserService userService;
     JwtTokenUtils jwtTokenUtils;
     LoginStateService loginStateService;
+    OtpStateService otpStateService;
 
-    public RegisterRestApi(Gson gson, UserService userService, JwtTokenUtils jwtTokenUtils, LoginStateService loginStateService) {
+    public RegisterRestApi(Gson gson, UserService userService, JwtTokenUtils jwtTokenUtils, LoginStateService loginStateService, OtpStateService otpStateService) {
         this.gson = gson;
         this.userService = userService;
         this.jwtTokenUtils = jwtTokenUtils;
         this.loginStateService = loginStateService;
+        this.otpStateService = otpStateService;
     }
 
     @PostMapping("register")
@@ -64,8 +68,10 @@ public class RegisterRestApi {
         try {
             //Call user-service's create new user method
             User user = userService.createUser(registerRequest.getEmail(), registerRequest.getFullName(), registerRequest.getPassword(), registerRequest.getPhone(), "USER");
-            //Call user-service's  send mail asynchronous method
-            userService.sendOtpVerifyAccount(user);
+            //Call otp-service's otp generate method
+            OtpState otpState = otpStateService.generateOtp(user.getUserId());
+            //Call user-service's send mail asynchronous method
+            userService.sendOtpVerifyAccount(user, otpState);
             //Generate login token
             JwtToken token = jwtTokenUtils.doGenerateToken(user);
             //Save login state on app's login context-database
@@ -74,7 +80,7 @@ public class RegisterRestApi {
             RegisterResponse registerResponse = RegisterResponse.builder()
                     .userId(user.getUserId())
                     .email(user.getEmail())
-                    .createAt(user.getCreateAt())
+                    .createAt(user.getCreatedAt())
                     .role(user.getRole())
                     .isConfirmed(user.isConfirmed())
                     .token(token).build();

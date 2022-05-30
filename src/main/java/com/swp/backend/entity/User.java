@@ -19,27 +19,36 @@ public class User {
     @Id
     @Column(name = "id")
     private String userId;
+
     @Column(name = "email")
     private String email;
+
     @Column(name = "full_name")
     private String fullName;
+
     @Column(name = "phone")
     private String phone;
+
     @Column(name = "password")
     private String password;
+
     @Column(name = "avatar")
     private String avatar;
-    @Column(name = "otp_code")
-    private String optCode;
-    @Column(name = "otp_expire")
-    private Timestamp otpExpire;
-    @Column(name = "create_at")
-    private Timestamp createAt;
+
+    @Column(name = "created_at")
+    private Timestamp createdAt;
+
+    @Column(name = "created_by")
+    private String createdBy;
+
     @Column(name = "is_confirmed")
     private boolean isConfirmed;
+
     @Column(name = "is_active")
     @Builder.Default
     private boolean isActive = true;
+
     @Column(name = "role")
-    private String role;
+    @Builder.Default
+    private String role = "USER";
 }

@@ -4,11 +4,10 @@ import com.google.gson.Gson;
 import com.swp.backend.entity.BranchEntity;
 import com.swp.backend.service.BranchService;
 import org.springframework.http.ResponseEntity;
-import java.util.ArrayList;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.NoSuchElementException;
-
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/v1/branch")
