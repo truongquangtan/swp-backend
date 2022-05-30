@@ -1,6 +1,6 @@
 package com.swp.backend.service;
 
-import com.swp.backend.entity.OtpState;
+import com.swp.backend.entity.OtpStateEntity;
 import com.swp.backend.repository.OtpSateRepository;
 import com.swp.backend.utils.DateHelper;
 import org.springframework.stereotype.Service;
@@ -21,23 +21,23 @@ public class OtpStateService {
         return new DecimalFormat("000000").format(new Random().nextInt(999999));
     }
 
-    public OtpState generateOtp(String userId){
+    public OtpStateEntity generateOtp(String userId){
         String otp = generateOtp();
         Timestamp createAt = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
         Timestamp expireAt = DateHelper.plusMinutes(createAt, 20);
-        OtpState otpState = otpSateRepository.findOtpStateByUserId(userId);
-        if(otpState != null){
-            otpState.setOtpCode(otp);
-            otpState.setCreateAt(createAt);
-            otpState.setExpireAt(expireAt);
+        OtpStateEntity otpStateEntity = otpSateRepository.findOtpStateByUserId(userId);
+        if(otpStateEntity != null){
+            otpStateEntity.setOtpCode(otp);
+            otpStateEntity.setCreateAt(createAt);
+            otpStateEntity.setExpireAt(expireAt);
         }else {
-            otpState = OtpState.builder().userId(userId).createAt(createAt).expireAt(expireAt).otpCode(otp).build();
+            otpStateEntity = OtpStateEntity.builder().userId(userId).createAt(createAt).expireAt(expireAt).otpCode(otp).build();
         }
-        otpSateRepository.save(otpState);
-        return otpState;
+        otpSateRepository.save(otpStateEntity);
+        return otpStateEntity;
     }
 
-    public OtpState findOtpStateByUserId(String userId){
+    public OtpStateEntity findOtpStateByUserId(String userId){
         return otpSateRepository.findOtpStateByUserId(userId);
     }
 }

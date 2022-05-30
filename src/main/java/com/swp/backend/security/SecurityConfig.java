@@ -1,7 +1,7 @@
 package com.swp.backend.security;
 
 import com.swp.backend.constance.ApiEndpointProperties;
-import com.swp.backend.entity.User;
+import com.swp.backend.entity.UserEntity;
 import com.swp.backend.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -32,13 +32,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(username -> {
-            User user = userService.findUserByUsername(username);
-            if(user == null){
+            UserEntity userEntity = userService.findUserByUsername(username);
+            if(userEntity == null){
                 throw new UsernameNotFoundException("Username " + username + " notfound!");
             }else {
-                return org.springframework.security.core.userdetails.User.withUsername(String.valueOf(user.getUserId()))
-                        .password(user.getPassword())
-                        .authorities(new SimpleGrantedAuthority(user.getRole()))
+                return org.springframework.security.core.userdetails.User.withUsername(String.valueOf(userEntity.getUserId()))
+                        .password(userEntity.getPassword())
+                        .authorities(new SimpleGrantedAuthority(userEntity.getRole()))
                         .build();
             }
         });

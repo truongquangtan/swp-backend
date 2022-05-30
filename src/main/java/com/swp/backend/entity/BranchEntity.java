@@ -1,7 +1,6 @@
 package com.swp.backend.entity;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -9,6 +8,9 @@ import javax.persistence.*;
 @Setter
 @Entity
 @Table(name="branches")
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class BranchEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,8 +18,13 @@ public class BranchEntity {
     private int id;
     @Column(name = "address")
     private String address;
-    @Column(name = "location")
-    private String location;
+    @Column(name = "province")
+    private String province;
+    @Column(name = "district")
+    private String district;
     @Column(name = "branch_name")
     private String branchName;
+    @Column(name = "is_active")
+    @Builder.Default
+    private Boolean isActive = true;
 }

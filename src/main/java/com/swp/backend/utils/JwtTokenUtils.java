@@ -1,6 +1,6 @@
 package com.swp.backend.utils;
 
-import com.swp.backend.entity.User;
+import com.swp.backend.entity.UserEntity;
 import com.swp.backend.model.JwtToken;
 import io.jsonwebtoken.*;
 import org.springframework.context.annotation.Bean;
@@ -22,13 +22,13 @@ public class JwtTokenUtils {
     }
 
     //Generate token via UserId to identity user and role of user.
-    public JwtToken doGenerateToken(User user) {
+    public JwtToken doGenerateToken(UserEntity userEntity) {
         Date createAt = new Date();
         Date expirationAt = new Date(createAt.getTime() + distanceExpiration);
         String token =
                 Jwts.builder()
-                .setSubject(String.valueOf(user.getUserId()))
-                .claim("role", user.getRole())
+                .setSubject(String.valueOf(userEntity.getUserId()))
+                .claim("role", userEntity.getRole())
                 .setIssuedAt(createAt)
                 .setExpiration(expirationAt)
                 .signWith(SignatureAlgorithm.HS512, secretKey)

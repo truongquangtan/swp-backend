@@ -1,6 +1,6 @@
 package com.swp.backend.service;
 
-import com.swp.backend.entity.LoginState;
+import com.swp.backend.entity.LoginStateEntity;
 import com.swp.backend.repository.LoginStateRepository;
 import org.springframework.stereotype.Service;
 
@@ -13,15 +13,15 @@ public class LoginStateService {
     }
 
     //Find state-login of user on app's login-context database.
-    public LoginState findLogin(String userId){
+    public LoginStateEntity findLogin(String userId){
         return loginStateRepository.findLoginStateByUserId(userId);
     }
 
     //Save state-login of user on app's login-context database.
     public void saveLogin(String userId, String token){
-        LoginState login = findLogin(userId);
+        LoginStateEntity login = findLogin(userId);
         if(login == null){
-            login = LoginState.builder().userId(userId).build();
+            login = LoginStateEntity.builder().userId(userId).build();
         }
         login.setLogout(false);
         login.setAccessToken(token);
@@ -34,7 +34,7 @@ public class LoginStateService {
 
     //Destroy state-login of user on app's login-context database.
     public void expireLogin(String userId){
-           LoginState login = loginStateRepository.findLoginStateByUserId(userId);
+           LoginStateEntity login = loginStateRepository.findLoginStateByUserId(userId);
            login.setLogout(true);
            loginStateRepository.save(login);
     }

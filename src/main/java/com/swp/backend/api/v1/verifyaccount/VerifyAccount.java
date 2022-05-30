@@ -1,8 +1,8 @@
 package com.swp.backend.api.v1.verifyaccount;
 
 import com.google.gson.Gson;
-import com.swp.backend.entity.OtpState;
-import com.swp.backend.entity.User;
+import com.swp.backend.entity.OtpStateEntity;
+import com.swp.backend.entity.UserEntity;
 import com.swp.backend.exception.ErrorResponse;
 import com.swp.backend.service.OtpStateService;
 import com.swp.backend.service.SecurityContextService;
@@ -15,7 +15,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
-import java.util.Date;
 
 @RestController
 @RequestMapping(value = "api/v1")
@@ -46,8 +45,8 @@ public class VerifyAccount {
             SecurityContext context = SecurityContextHolder.getContext();
             String userId = securityContextService.extractUsernameFromContext(context);
 
-            OtpState otpState = otpStateService.findOtpStateByUserId(userId);
-            if (otpState == null){
+            OtpStateEntity otpStateEntity = otpStateService.findOtpStateByUserId(userId);
+            if (otpStateEntity == null){
                 ErrorResponse errorResponse = ErrorResponse.builder()
                         .error("auth-017")
                         .message("Otp not available.")
@@ -57,16 +56,16 @@ public class VerifyAccount {
             }
 
             Timestamp now = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
-            if(now.after(otpState.getExpireAt())){
+            if(now.after(otpStateEntity.getExpireAt())){
                 ErrorResponse errorResponse = ErrorResponse.builder()
                         .error("auth-018")
                         .message("Otp expire")
-                        .details("Time otp expire: " + otpState.getExpireAt())
+                        .details("Time otp expire: " + otpStateEntity.getExpireAt())
                         .build();
                 return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
             }
 
-            if(!otpState.getOtpCode().matches(verify.getOtpCode())){
+            if(!otpStateEntity.getOtpCode().matches(verify.getOtpCode())){
                 ErrorResponse errorResponse = ErrorResponse.builder()
                         .error("auth-020")
                         .message("Otp not match")
@@ -75,8 +74,8 @@ public class VerifyAccount {
                 return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
             }
 
-            User user = userService.findUserByUsername(userId);
-            if(user == null){
+            UserEntity userEntity = userService.findUserByUsername(userId);
+            if(userEntity == null){
                 ErrorResponse errorResponse = ErrorResponse.builder()
                         .error("auth-019")
                         .message("User is not found")
@@ -85,9 +84,9 @@ public class VerifyAccount {
                 return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
             }
 
-            if(!user.isConfirmed()){
-                user.setConfirmed(true);
-                userService.updateUser(user);
+            if(!userEntity.isConfirmed()){
+                userEntity.setConfirmed(true);
+                userService.updateUser(userEntity);
             }
             return ResponseEntity.ok().body("Verify account success!");
         }catch (DataAccessException dataAccessException){
@@ -105,8 +104,8 @@ public class VerifyAccount {
         try {
             SecurityContext context = SecurityContextHolder.getContext();
             String userId = securityContextService.extractUsernameFromContext(context);
-            User user = userService.findUserByUsername(userId);
-            if(user == null){
+            UserEntity userEntity = userService.findUserByUsername(userId);
+            if(userEntity == null){
                 ErrorResponse errorResponse = ErrorResponse.builder()
                         .error("auth-017")
                         .message("User notfound")
@@ -114,8 +113,8 @@ public class VerifyAccount {
                         .build();
                 return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
             }
-            OtpState otpState = otpStateService.generateOtp(userId);
-            userService.sendOtpVerifyAccount(user, otpState);
+            OtpStateEntity otpStateEntity = otpStateService.generateOtp(userId);
+            userService.sendOtpVerifyAccount(userEntity, otpStateEntity);
             return ResponseEntity.ok().body("Resend verify success!");
         }catch (ClassCastException | DataAccessException e){
             ErrorResponse errorResponse = ErrorResponse.builder()

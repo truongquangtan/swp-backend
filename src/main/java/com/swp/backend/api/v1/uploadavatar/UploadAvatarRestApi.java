@@ -1,7 +1,7 @@
 package com.swp.backend.api.v1.uploadavatar;
 
 import com.google.gson.Gson;
-import com.swp.backend.entity.User;
+import com.swp.backend.entity.UserEntity;
 import com.swp.backend.exception.ErrorResponse;
 import com.swp.backend.service.FirebaseStoreService;
 import com.swp.backend.service.UserService;
@@ -58,9 +58,9 @@ public class UploadAvatarRestApi {
             if(userDetails instanceof UserDetails){
                 String userId = ((UserDetails) userDetails).getUsername();
                 //Get details of user
-                User user = userService.findUserByUsername(userId);
+                UserEntity userEntity = userService.findUserByUsername(userId);
                 //Case user notfound
-                if (user == null){
+                if (userEntity == null){
                     ErrorResponse errorResponse = ErrorResponse.builder()
                             .error("error-001")
                             .message("User not found.")
@@ -71,8 +71,8 @@ public class UploadAvatarRestApi {
                 //Call FirebaseStoreService's upload file method and receive url store on firebase store
                 String url = firebaseStoreService.uploadFile(file);
                 //Set avatar and update on database
-                user.setAvatar(url);
-                userService.updateUser(user);
+                userEntity.setAvatar(url);
+                userService.updateUser(userEntity);
                 return ResponseEntity.ok().body(url);
             }
         }catch (DataAccessException dataAccessException){
