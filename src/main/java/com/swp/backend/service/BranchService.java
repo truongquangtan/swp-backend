@@ -4,7 +4,6 @@ import com.swp.backend.api.v1.branch.BranchNameExistedException;
 import com.swp.backend.api.v1.branch.BranchRequest;
 import com.swp.backend.customizeRepository.MyBranchRepository;
 import com.swp.backend.entity.BranchEntity;
-import com.swp.backend.model.Filter;
 import com.swp.backend.model.FilterGroup;
 import com.swp.backend.repository.BranchRepository;
 import org.springframework.stereotype.Service;

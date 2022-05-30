@@ -2,7 +2,8 @@ package com.swp.backend.model;
 
 import lombok.*;
 
-import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -10,5 +11,5 @@ import java.util.ArrayList;
 @Builder
 public class FilterGroup {
     private String filterName;
-    private ArrayList<Filter> filterData;
+    private List<Filter> filterData;
 }
