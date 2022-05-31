@@ -2,8 +2,8 @@ package com.swp.backend.security;
 
 import com.google.gson.Gson;
 import com.swp.backend.constance.ApiEndpointProperties;
-import com.swp.backend.entity.LoginState;
-import com.swp.backend.entity.User;
+import com.swp.backend.entity.LoginStateEntity;
+import com.swp.backend.entity.UserEntity;
 import com.swp.backend.exception.ErrorResponse;
 import com.swp.backend.service.LoginStateService;
 import com.swp.backend.service.UserService;
@@ -58,7 +58,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         final String token = header.split(" ")[1].trim();
         try {
             Claims claims = jwtTokenUtils.deCodeToken(token);
-            LoginState login = loginStateService.findLogin(claims.getSubject());
+            LoginStateEntity login = loginStateService.findLogin(claims.getSubject());
             if(login == null){
                 sendErrorResponse(response, 400, "auth-001", "Token not available.", "Can't find info user login in Database.");
                 return;
@@ -74,11 +74,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 return;
             }
 
-            User user = userService.findUserByUsername(claims.getSubject());
-            if(user != null){
-                UserDetails userDetails = org.springframework.security.core.userdetails.User.withUsername(String.valueOf(user.getUserId()))
+            UserEntity userEntity = userService.findUserByUsername(claims.getSubject());
+            if(userEntity != null){
+                UserDetails userDetails = org.springframework.security.core.userdetails.User.withUsername(String.valueOf(userEntity.getUserId()))
                         .password(UUID.randomUUID().toString())
-                        .roles(user.getRole())
+                        .roles(userEntity.getRole())
                         .build();
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

@@ -1,7 +1,7 @@
 package com.swp.backend.api.v1.login;
 
 import com.google.gson.Gson;
-import com.swp.backend.entity.User;
+import com.swp.backend.entity.UserEntity;
 import com.swp.backend.exception.ErrorResponse;
 import com.swp.backend.model.JwtToken;
 import com.swp.backend.service.LoginStateService;
@@ -63,9 +63,9 @@ public class LoginRestApi {
             return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
         }
         //Get user from database
-        User loginUser = userService.findUserByUsername(loginRequest.getUsername());
+        UserEntity loginUserEntity = userService.findUserByUsername(loginRequest.getUsername());
         //Case can't find user with email or username provide.
-        if(loginUser == null){
+        if(loginUserEntity == null){
             ErrorResponse errorResponse = ErrorResponse.builder()
                     .error("auth-008")
                     .message("Username or email notfound.")
@@ -74,21 +74,21 @@ public class LoginRestApi {
             return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
         }
         //Checking password
-        if(bCryptPasswordEncoder.matches(loginRequest.getPassword(), loginUser.getPassword())){
+        if(bCryptPasswordEncoder.matches(loginRequest.getPassword(), loginUserEntity.getPassword())){
             try {
                 //Generate token
-                JwtToken token = jwtTokenUtils.doGenerateToken(loginUser);
+                JwtToken token = jwtTokenUtils.doGenerateToken(loginUserEntity);
                 //Save state login of user on app's database login context
-                loginStateService.saveLogin(loginUser.getUserId(), token.getToken());
+                loginStateService.saveLogin(loginUserEntity.getUserId(), token.getToken());
                 //Generate response
                 LoginResponse loginResponse = LoginResponse.builder()
-                        .userId(loginUser.getUserId())
-                        .email(loginUser.getEmail())
-                        .phone(loginUser.getPhone())
-                        .fullName(loginUser.getFullName())
-                        .isConfirmed(loginUser.isConfirmed())
-                        .role(loginUser.getRole())
-                        .avatar(loginUser.getAvatar())
+                        .userId(loginUserEntity.getUserId())
+                        .email(loginUserEntity.getEmail())
+                        .phone(loginUserEntity.getPhone())
+                        .fullName(loginUserEntity.getFullName())
+                        .isConfirmed(loginUserEntity.isConfirmed())
+                        .role(loginUserEntity.getRole())
+                        .avatar(loginUserEntity.getAvatar())
                         .token(token)
                         .build();
                 return ResponseEntity.ok().body(gson.toJson(loginResponse));
