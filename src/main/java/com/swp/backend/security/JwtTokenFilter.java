@@ -2,18 +2,17 @@ package com.swp.backend.security;
 
 import com.google.gson.Gson;
 import com.swp.backend.constance.ApiEndpointProperties;
-import com.swp.backend.entity.LoginStateEntity;
-import com.swp.backend.entity.UserEntity;
+import com.swp.backend.entity.AccountEntity;
+import com.swp.backend.entity.AccountLoginEntity;
 import com.swp.backend.exception.ErrorResponse;
-import com.swp.backend.service.LoginStateService;
-import com.swp.backend.service.UserService;
+import com.swp.backend.service.AccountLoginService;
+import com.swp.backend.service.AccountService;
 import com.swp.backend.utils.JwtTokenUtils;
 import io.jsonwebtoken.*;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -27,18 +26,12 @@ import java.util.Arrays;
 import java.util.UUID;
 
 @Component
+@AllArgsConstructor
 public class JwtTokenFilter extends OncePerRequestFilter {
     JwtTokenUtils jwtTokenUtils;
-    UserService userService;
-    LoginStateService loginStateService;
+    AccountService accountService;
+    AccountLoginService accountLoginService;
     Gson gson;
-
-    public JwtTokenFilter(JwtTokenUtils jwtTokenUtils, UserService userService, LoginStateService loginStateService, Gson gson) {
-        this.jwtTokenUtils = jwtTokenUtils;
-        this.userService = userService;
-        this.loginStateService = loginStateService;
-        this.gson = gson;
-    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
@@ -58,7 +51,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         final String token = header.split(" ")[1].trim();
         try {
             Claims claims = jwtTokenUtils.deCodeToken(token);
-            LoginStateEntity login = loginStateService.findLogin(claims.getSubject());
+            AccountLoginEntity login = accountLoginService.findLogin(claims.getSubject());
             if(login == null){
                 sendErrorResponse(response, 400, "auth-001", "Token not available.", "Can't find info user login in Database.");
                 return;
@@ -74,14 +67,16 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 return;
             }
 
-            UserEntity userEntity = userService.findUserByUsername(claims.getSubject());
-            if(userEntity != null){
-                UserDetails userDetails = org.springframework.security.core.userdetails.User.withUsername(String.valueOf(userEntity.getUserId()))
+            AccountEntity accountEntity = accountService.findUserByUsername(claims.getSubject());
+            if(accountEntity != null){
+                SecurityUserDetails securityUserDetails = SecurityUserDetails.builder()
+                        .userName(claims.getSubject())
+                        .role((String) claims.get("role"))
                         .password(UUID.randomUUID().toString())
-                        .roles(userEntity.getRole())
                         .build();
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(securityUserDetails, null, securityUserDetails.getAuthorities());
+                authenticationToken.setDetails(token);
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }else {
                 sendErrorResponse(response, 400, "auth-004", "User is not exist.", "User may be delete by admin.");

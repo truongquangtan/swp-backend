@@ -11,13 +11,14 @@ import java.sql.Timestamp;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "otp_state")
-public class OtpStateEntity {
+@Entity
+@Table(name = "account_otp")
+public class AccountOtpEntity {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name = "user_id")
+    @Column(name = "account_id")
     private String userId;
     @Column(name = "otp_code")
     private String otpCode;

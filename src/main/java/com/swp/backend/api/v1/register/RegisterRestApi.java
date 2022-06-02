@@ -2,17 +2,17 @@ package com.swp.backend.api.v1.register;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
-import com.swp.backend.entity.OtpStateEntity;
-import com.swp.backend.entity.UserEntity;
-import com.swp.backend.exception.ErrorResponse;
-import com.swp.backend.model.JwtToken;
-import com.swp.backend.service.LoginStateService;
+import com.swp.backend.constance.RoleProperties;
+import com.swp.backend.entity.AccountEntity;
+import com.swp.backend.entity.AccountOtpEntity;
+import com.swp.backend.service.AccountLoginService;
 import com.swp.backend.service.OtpStateService;
-import com.swp.backend.service.UserService;
+import com.swp.backend.service.AccountService;
 import com.swp.backend.utils.JwtTokenUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import lombok.AllArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,20 +22,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(value = "api/v1")
+@AllArgsConstructor
 public class RegisterRestApi {
     Gson gson;
-    UserService userService;
+    AccountService accountService;
     JwtTokenUtils jwtTokenUtils;
-    LoginStateService loginStateService;
+    AccountLoginService accountLoginService;
     OtpStateService otpStateService;
-
-    public RegisterRestApi(Gson gson, UserService userService, JwtTokenUtils jwtTokenUtils, LoginStateService loginStateService, OtpStateService otpStateService) {
-        this.gson = gson;
-        this.userService = userService;
-        this.jwtTokenUtils = jwtTokenUtils;
-        this.loginStateService = loginStateService;
-        this.otpStateService = otpStateService;
-    }
 
     @PostMapping("register")
     @Operation(summary = "Register user by email and password.")
@@ -48,57 +41,37 @@ public class RegisterRestApi {
     public ResponseEntity<String> register(@RequestBody(required = false) RegisterRequest registerRequest){
         //Case request empty body
         if(registerRequest == null){
-            ErrorResponse errorResponse = ErrorResponse.builder()
-                    .error("auth-011")
-                    .message("Missing body.")
-                    .details("Request is empty body.")
-                    .build();
-            return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
+            return ResponseEntity.badRequest().body("Missing body.");
         }
         //Case request body missing required username, password, email.
         if(!registerRequest.isValidRequest()){
-            ErrorResponse errorResponse = ErrorResponse.builder()
-                    .error("auth-012")
-                    .message("Missing body.")
-                    .details("Request is not match required.")
-                    .build();
-            return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
+            return ResponseEntity.badRequest().body("Request body incorrect formant");
         }
 
         try {
             //Call user-service's create new user method
-            UserEntity userEntity = userService.createUser(registerRequest.getEmail(), registerRequest.getFullName(), registerRequest.getPassword(), registerRequest.getPhone(), "USER");
+            AccountEntity accountEntity = accountService.createUser(registerRequest.getEmail(), registerRequest.getFullName(), registerRequest.getPassword(), registerRequest.getPhone(), RoleProperties.ROLE_USER);
             //Call otp-service's otp generate method
-            OtpStateEntity otpStateEntity = otpStateService.generateOtp(userEntity.getUserId());
+            AccountOtpEntity accountOtpEntity = otpStateService.generateOtp(accountEntity.getUserId());
             //Call user-service's send mail asynchronous method
-            userService.sendOtpVerifyAccount(userEntity, otpStateEntity);
+            accountService.sendOtpVerifyAccount(accountEntity, accountOtpEntity);
             //Generate login token
-            JwtToken token = jwtTokenUtils.doGenerateToken(userEntity);
+            String token = jwtTokenUtils.doGenerateToken(accountEntity.getUserId(), RoleProperties.ROLE_USER);
             //Save login state on app's login context-database
-            loginStateService.saveLogin(userEntity.getUserId(), token.getToken());
+            accountLoginService.saveLogin(accountEntity.getUserId(), token);
             //Generate response
             RegisterResponse registerResponse = RegisterResponse.builder()
-                    .userId(userEntity.getUserId())
-                    .email(userEntity.getEmail())
-                    .createAt(userEntity.getCreatedAt())
-                    .role(userEntity.getRole())
-                    .isConfirmed(userEntity.isConfirmed())
-                    .token(token).build();
+                    .userId(accountEntity.getUserId())
+                    .email(accountEntity.getEmail())
+                    .role(RoleProperties.ROLE_USER)
+                    .isConfirmed(accountEntity.isConfirmed())
+                    .token(token)
+                    .build();
             return ResponseEntity.ok(gson.toJson(registerResponse));
         }catch (JsonParseException jsonException){
-            ErrorResponse errorResponse = ErrorResponse.builder()
-                    .error("auth-013")
-                    .message("Jwt token generate failed.")
-                    .details("Can't generate jwt token or resolve response failed.")
-                    .build();
-            return ResponseEntity.internalServerError().body(gson.toJson(errorResponse));
+            return ResponseEntity.internalServerError().body("Jwt token generate failed.");
         }catch (DataAccessException dataAccessException){
-            ErrorResponse errorResponse = ErrorResponse.builder()
-                    .error("auth-014")
-                    .message("Create user failed.")
-                    .details(dataAccessException.getMessage())
-                    .build();
-            return ResponseEntity.internalServerError().body(gson.toJson(errorResponse));
+            return ResponseEntity.internalServerError().body(dataAccessException.getMessage());
         }
     }
 
