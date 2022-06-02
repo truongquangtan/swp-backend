@@ -1,8 +1,9 @@
 package com.swp.backend.security;
 
 import com.swp.backend.constance.ApiEndpointProperties;
-import com.swp.backend.entity.UserEntity;
-import com.swp.backend.service.UserService;
+import com.swp.backend.entity.AccountEntity;
+import com.swp.backend.service.AccountService;
+import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -10,37 +11,22 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.core.GrantedAuthorityDefaults;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 @EnableWebSecurity
+@AllArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     RestAccessDenyEntryPoint restAccessDenyEntryPoint;
     RestUnauthorizedEntryPoint restUnauthorizedEntryPoint;
-    UserService userService;
+    AccountService accountService;
     JwtTokenFilter jwtTokenFilter;
-
-    public SecurityConfig(RestAccessDenyEntryPoint restAccessDenyEntryPoint, RestUnauthorizedEntryPoint restUnauthorizedEntryPoint, UserService userService, JwtTokenFilter jwtTokenFilter) {
-        this.restAccessDenyEntryPoint = restAccessDenyEntryPoint;
-        this.restUnauthorizedEntryPoint = restUnauthorizedEntryPoint;
-        this.userService = userService;
-        this.jwtTokenFilter = jwtTokenFilter;
-    }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(username -> {
-            UserEntity userEntity = userService.findUserByUsername(username);
-            if(userEntity == null){
-                throw new UsernameNotFoundException("Username " + username + " notfound!");
-            }else {
-                return org.springframework.security.core.userdetails.User.withUsername(String.valueOf(userEntity.getUserId()))
-                        .password(userEntity.getPassword())
-                        .authorities(new SimpleGrantedAuthority(userEntity.getRole()))
-                        .build();
-            }
+                return SecurityUserDetails.builder().userName(username).password("PASSWORD").role("USER").build();
         });
     }
 

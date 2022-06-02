@@ -1,6 +1,5 @@
 package com.swp.backend.api.v1.login;
 
-import com.swp.backend.model.JwtToken;
 import lombok.*;
 
 @Getter
@@ -16,5 +15,5 @@ public class LoginResponse {
     private String role;
     private boolean isConfirmed;
     private String avatar;
-    private JwtToken token;
+    private String accessToken;
 }

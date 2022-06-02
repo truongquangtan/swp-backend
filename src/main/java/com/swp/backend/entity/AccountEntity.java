@@ -6,16 +6,15 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.sql.Timestamp;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "users")
+@Table(name = "accounts")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserEntity {
+public class AccountEntity {
     @Id
     @Column(name = "id")
     private String userId;
@@ -32,14 +31,8 @@ public class UserEntity {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "avatar")
+    @Column(name = "avatar_url")
     private String avatar;
-
-    @Column(name = "created_at")
-    private Timestamp createdAt;
-
-    @Column(name = "created_by")
-    private String createdBy;
 
     @Column(name = "is_confirmed")
     private boolean isConfirmed;
@@ -48,7 +41,6 @@ public class UserEntity {
     @Builder.Default
     private boolean isActive = true;
 
-    @Column(name = "role")
-    @Builder.Default
-    private String role = "USER";
+    @Column(name = "role_id")
+    private int roleId;
 }

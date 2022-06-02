@@ -5,18 +5,18 @@ import lombok.*;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "login_state")
+@Table(name = "account_login")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class LoginStateEntity {
+public class AccountLoginEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
-    @Column(name = "user_id")
+    @Column(name = "account_id")
     private String userId;
     @Column(name = "access_token")
     private String accessToken;
