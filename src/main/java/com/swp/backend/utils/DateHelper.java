@@ -14,7 +14,7 @@ public class DateHelper {
 
     public static Timestamp plusMinutes(Timestamp timestamp, long plusTime){
         LocalDateTime localDateTime = timestamp.toLocalDateTime();
-        localDateTime.plusMinutes(plusTime);
+        localDateTime =  localDateTime.plusMinutes(plusTime);
         return Timestamp.valueOf(localDateTime);
     }
 
