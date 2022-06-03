@@ -7,6 +7,8 @@ public class ApiEndpointProperties {
             "/v3/api-docs/**",
             "/swagger-ui/**",
             "/swagger-ui.html",
-            "/api/v1/filter"
+            "/api/v1/filter",
+            "/api/v1/district",
+            "/api/v1/province"
     };
 }
