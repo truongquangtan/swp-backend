@@ -1,5 +1,6 @@
 package com.swp.backend.api.v1.account.register;
 
+import com.swp.backend.utils.RegexHelper;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,13 +14,12 @@ public class RegisterRequest {
 
     //Check valid request form
     public boolean isValidRequest(){
-        String regexEmail = "^[_A-Za-z\\d-+]+(\\.[_A-Za-z\\d-]+)*@[A-Za-z\\d-]+(\\.[A-Za-z\\d]+)*(\\.[A-Za-z]{2,})$";
         if(email == null || fullName == null || password == null){
             return false;
         }
         if(email.trim().length() <= 0 && fullName.trim().length() <= 0 && password.trim().length() <= 0){
             return false;
         }
-        return email.matches(regexEmail);
+        return email.matches(RegexHelper.EMAIL_REGEX);
     }
 }

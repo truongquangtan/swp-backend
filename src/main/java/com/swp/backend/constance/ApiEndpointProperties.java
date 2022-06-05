@@ -11,7 +11,7 @@ public class ApiEndpointProperties {
             "/api/v1/district/**",
             "/api/v1/province",
             "/api/v1/province/**",
-            "/api/v1/forgot/sendmail",
+            "/api/v1/forgot/send-mail",
             "/api/v1/forgot/confirm-otp"
     };
 }

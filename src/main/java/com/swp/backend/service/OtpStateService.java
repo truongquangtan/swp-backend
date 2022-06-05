@@ -4,6 +4,7 @@ import com.swp.backend.entity.AccountOtpEntity;
 import com.swp.backend.repository.AccountOtpRepository;
 import com.swp.backend.utils.DateHelper;
 import lombok.AllArgsConstructor;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -40,7 +41,7 @@ public class OtpStateService {
         return accountOtpRepository.findOtpStateByUserId(userId);
     }
 
-    public void sendEmailOtpRestPassword(String userId, String email){
+    public void sendEmailOtpRestPassword(String userId, String email) throws DataAccessException {
         AccountOtpEntity accountOtp = accountOtpRepository.findOtpStateByUserId(userId);
         if(accountOtp == null){
             accountOtp = AccountOtpEntity.builder().userId(userId).build();
@@ -54,6 +55,7 @@ public class OtpStateService {
         accountOtp.setOtpCode(otp);
         accountOtp.setCreateAt(createAt);
         accountOtp.setExpireAt(expireAt);
+        accountOtpRepository.save(accountOtp);
         emailService.sendSimpleMessage(email, emailSubject, body);
     }
 
@@ -62,9 +64,6 @@ public class OtpStateService {
         if(accountOtp == null){
             return false;
         }
-        if(accountOtp.getOtpCode().matches(otp)){
-            return true;
-        }
-        return false;
+        return accountOtp.getOtpCode().matches(otp);
     }
 }

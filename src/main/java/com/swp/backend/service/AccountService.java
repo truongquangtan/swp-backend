@@ -4,6 +4,7 @@ import com.swp.backend.entity.AccountEntity;
 import com.swp.backend.entity.AccountOtpEntity;
 import com.swp.backend.entity.RoleEntity;
 import com.swp.backend.repository.AccountRepository;
+import com.swp.backend.utils.RegexHelper;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -20,13 +21,23 @@ public class AccountService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final EmailService emailService;
 
+    public AccountEntity updatePassword(String username, String password) throws DataAccessException{
+        AccountEntity account = findAccountByUsername(username);
+        if(account == null){
+            return null;
+        }
+        account.setPassword(passwordEncoder.encode(password));
+        accountRepository.save(account);
+        return account;
+    }
+
     public AccountEntity findAccountByUsername(String username){
         //Case username is null
         if(username == null){
             return null;
         }
         //Find user by username, phone, or password
-        if(username.matches("^[_A-Za-z\\d-+]+(\\.[_A-Za-z\\d-]+)*@[A-Za-z\\d-]+(\\.[A-Za-z\\d]+)*(\\.[A-Za-z]{2,})$")){
+        if(username.matches(RegexHelper.EMAIL_REGEX)){
             return accountRepository.findUserEntityByEmail(username);
         } else if (username.matches("\\d+")){
             return  accountRepository.findUserEntityByPhone(username);

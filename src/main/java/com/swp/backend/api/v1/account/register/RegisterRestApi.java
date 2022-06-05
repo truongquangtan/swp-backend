@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.swp.backend.constance.RoleProperties;
 import com.swp.backend.entity.AccountEntity;
 import com.swp.backend.entity.AccountOtpEntity;
+import com.swp.backend.exception.ErrorResponse;
 import com.swp.backend.service.AccountService;
 import com.swp.backend.service.OtpStateService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,7 +12,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,16 +35,18 @@ public class RegisterRestApi {
             }
     )
     public ResponseEntity<String> register(@RequestBody(required = false) RegisterRequest registerRequest){
-        //Case request empty body
-        if(registerRequest == null){
-            return ResponseEntity.badRequest().body("Missing body.");
-        }
-        //Case request body missing required username, password, email.
-        if(!registerRequest.isValidRequest()){
-            return ResponseEntity.badRequest().body("Request body incorrect formant");
-        }
-
         try {
+            //Case request empty body
+            if(registerRequest == null){
+                ErrorResponse errorResponse = ErrorResponse.builder().message("Missing body.").build();
+                return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
+            }
+            //Case request body missing required username, password, email.
+            if(!registerRequest.isValidRequest()){
+                ErrorResponse errorResponse = ErrorResponse.builder().message("Request body incorrect format").build();
+                return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
+            }
+
             //Call user-service's create new user method
             AccountEntity accountEntity = accountService.createAccount(registerRequest.getEmail(), registerRequest.getFullName(), registerRequest.getPassword(), registerRequest.getPhone(), RoleProperties.ROLE_USER);
             //Call otp-service's otp generate method
