@@ -14,6 +14,8 @@ import java.util.Random;
 @AllArgsConstructor
 public class OtpStateService {
     AccountOtpRepository accountOtpRepository;
+    AccountService accountService;
+    EmailService emailService;
 
     private String generateOtp() {
         return new DecimalFormat("000000").format(new Random().nextInt(999999));
@@ -37,5 +39,22 @@ public class OtpStateService {
 
     public AccountOtpEntity findOtpStateByUserId(String userId){
         return accountOtpRepository.findOtpStateByUserId(userId);
+    }
+
+    public void sendEmailOtpRestPassword(String userId, String email){
+        AccountOtpEntity accountOtp = accountOtpRepository.findOtpStateByUserId(userId);
+        if(accountOtp == null){
+            accountOtp = AccountOtpEntity.builder().userId(userId).build();
+        }
+        String otp = generateOtp();
+        String emailSubject = "RESET PASSWORD PLAYGROUND BASKETBALL CODE";
+        String body = "Reset OTP: " + otp;
+        Timestamp createAt = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
+        Timestamp expireAt = DateHelper.plusMinutes(createAt, 20);
+
+        accountOtp.setOtpCode(otp);
+        accountOtp.setCreateAt(createAt);
+        accountOtp.setExpireAt(expireAt);
+        emailService.sendSimpleMessage(email, emailSubject, body);
     }
 }

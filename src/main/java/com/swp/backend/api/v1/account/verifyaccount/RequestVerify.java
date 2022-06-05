@@ -1,4 +1,4 @@
-package com.swp.backend.api.v1.verifyaccount;
+package com.swp.backend.api.v1.account.verifyaccount;
 
 import lombok.Getter;
 import lombok.Setter;

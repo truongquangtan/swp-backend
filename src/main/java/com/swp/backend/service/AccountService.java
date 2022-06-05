@@ -19,7 +19,7 @@ public class AccountService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final EmailService emailService;
 
-    public AccountEntity findUserByUsername(String username){
+    public AccountEntity findAccountByUsername(String username){
         //Case username is null
         if(username == null){
             return null;

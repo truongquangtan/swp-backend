@@ -1,4 +1,4 @@
-package com.swp.backend.api.v1.login;
+package com.swp.backend.api.v1.account.login;
 
 import lombok.*;
 

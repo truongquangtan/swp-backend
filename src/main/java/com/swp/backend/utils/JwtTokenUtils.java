@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
-import java.util.Date;
 @Component
 public class JwtTokenUtils {
     private final String secretKey = "SWP391";

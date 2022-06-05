@@ -1,12 +1,11 @@
-package com.swp.backend.api.v1.verifyaccount;
+package com.swp.backend.api.v1.account.verifyaccount;
 
 import com.google.gson.Gson;
 import com.swp.backend.entity.AccountEntity;
 import com.swp.backend.entity.AccountOtpEntity;
-import com.swp.backend.exception.ErrorResponse;
+import com.swp.backend.service.AccountService;
 import com.swp.backend.service.OtpStateService;
 import com.swp.backend.service.SecurityContextService;
-import com.swp.backend.service.AccountService;
 import com.swp.backend.utils.DateHelper;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataAccessException;
@@ -49,7 +48,7 @@ public class VerifyAccount {
                 return ResponseEntity.badRequest().body("Otp incorrect or not lasted otp.");
             }
 
-            AccountEntity accountEntity = accountService.findUserByUsername(userId);
+            AccountEntity accountEntity = accountService.findAccountByUsername(userId);
             if(accountEntity == null){
                 return ResponseEntity.badRequest().body("Confirm failed!");
             }
@@ -69,7 +68,7 @@ public class VerifyAccount {
         try {
             SecurityContext context = SecurityContextHolder.getContext();
             String userId = securityContextService.extractUsernameFromContext(context);
-            AccountEntity accountEntity = accountService.findUserByUsername(userId);
+            AccountEntity accountEntity = accountService.findAccountByUsername(userId);
             if(accountEntity == null){
                 return ResponseEntity.badRequest().body("User not exist!");
             }

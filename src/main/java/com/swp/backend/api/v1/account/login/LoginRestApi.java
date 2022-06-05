@@ -1,9 +1,8 @@
-package com.swp.backend.api.v1.login;
+package com.swp.backend.api.v1.account.login;
 
 import com.google.gson.Gson;
 import com.swp.backend.entity.AccountEntity;
 import com.swp.backend.entity.RoleEntity;
-import com.swp.backend.exception.ErrorResponse;
 import com.swp.backend.service.AccountLoginService;
 import com.swp.backend.service.AccountService;
 import com.swp.backend.service.RoleService;
@@ -47,13 +46,15 @@ public class LoginRestApi {
         }
         //Case body wrong format
         if(!loginRequest.isValidRequest()){
-            return ResponseEntity.badRequest().body("Can't determined username and password from request.");
+            LoginResponseException loginResponseException = LoginResponseException.builder().message("Can't determined username and password from request.").build();
+            return ResponseEntity.badRequest().body(gson.toJson(loginResponseException));
         }
         //Get user from database
-        AccountEntity account = accountService.findUserByUsername(loginRequest.getUsername());
+        AccountEntity account = accountService.findAccountByUsername(loginRequest.getUsername());
         //Case can't find user with email or username provide.
         if(account == null){
-            return ResponseEntity.badRequest().body("Account not exist or may be deleted by admin.");
+            LoginResponseException loginResponseException = LoginResponseException.builder().message("Incorrect email or password.").build();
+            return ResponseEntity.badRequest().body(gson.toJson(loginResponseException));
         }
 
         //Checking password
@@ -77,11 +78,13 @@ public class LoginRestApi {
                         .build();
                 return ResponseEntity.ok().body(gson.toJson(loginResponse));
             }catch (DataAccessException dataAccessException){
-                return ResponseEntity.internalServerError().body("Can't save login info on app's login database context.");
+                LoginResponseException loginResponseException = LoginResponseException.builder().message("Server temp can't handle this login request.").build();
+                return ResponseEntity.internalServerError().body(gson.toJson(loginResponseException));
             }
         }else {
             //Case password not match
-            return ResponseEntity.badRequest().body("Password is not match.");
+            LoginResponseException loginResponseException = LoginResponseException.builder().message("Can't determined username and password from request.").build();
+            return ResponseEntity.badRequest().body(gson.toJson(loginResponseException));
         }
     }
 }

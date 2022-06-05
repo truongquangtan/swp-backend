@@ -1,4 +1,4 @@
-package com.swp.backend.api.v1.register;
+package com.swp.backend.api.v1.account.register;
 
 import lombok.Getter;
 import lombok.Setter;

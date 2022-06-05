@@ -1,4 +1,4 @@
-package com.swp.backend.api.v1.register;
+package com.swp.backend.api.v1.account.register;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
@@ -6,8 +6,8 @@ import com.swp.backend.constance.RoleProperties;
 import com.swp.backend.entity.AccountEntity;
 import com.swp.backend.entity.AccountOtpEntity;
 import com.swp.backend.service.AccountLoginService;
-import com.swp.backend.service.OtpStateService;
 import com.swp.backend.service.AccountService;
+import com.swp.backend.service.OtpStateService;
 import com.swp.backend.utils.JwtTokenUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -71,6 +71,7 @@ public class RegisterRestApi {
         }catch (JsonParseException jsonException){
             return ResponseEntity.internalServerError().body("Jwt token generate failed.");
         }catch (DataAccessException dataAccessException){
+            dataAccessException.printStackTrace();
             return ResponseEntity.internalServerError().body(dataAccessException.getMessage());
         }
     }

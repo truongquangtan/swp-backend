@@ -35,7 +35,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
-        boolean isPublicApi = Arrays.stream(ApiEndpointProperties.publicEndpoint).anyMatch(url -> url.startsWith(request.getRequestURI()));
+        boolean isPublicApi = Arrays.stream(ApiEndpointProperties.publicEndpoint).anyMatch(url -> request.getRequestURI().startsWith(url));
         if(isPublicApi){
             chain.doFilter(request, response);
             return;
@@ -67,7 +67,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 return;
             }
 
-            AccountEntity accountEntity = accountService.findUserByUsername(claims.getSubject());
+            AccountEntity accountEntity = accountService.findAccountByUsername(claims.getSubject());
             if(accountEntity != null){
                 SecurityUserDetails securityUserDetails = SecurityUserDetails.builder()
                         .userName(claims.getSubject())

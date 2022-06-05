@@ -1,7 +1,6 @@
-package com.swp.backend.api.v1.logout;
+package com.swp.backend.api.v1.account.logout;
 
 import com.google.gson.Gson;
-import com.swp.backend.exception.ErrorResponse;
 import com.swp.backend.service.AccountLoginService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
