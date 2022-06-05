@@ -51,7 +51,6 @@ public class LoginRestApi {
         }
         //Get user from database
         AccountEntity account = accountService.findAccountByUsername(loginRequest.getUsername());
-        RoleEntity roleEntity = roleService.getRoleById(account.getRoleId());
         //Case can't find user with email or username provide.
         if(account == null){
             LoginResponseException loginResponseException = LoginResponseException.builder().message("Incorrect email or password.").build();
@@ -68,7 +67,7 @@ public class LoginRestApi {
                         account.getFullName(),
                         account.getEmail(),
                         account.getPhone(),
-                        roleEntity.getRoleName(),
+                        role.getRoleName(),
                         account.isConfirmed(),
                         account.getAvatar()
                 );
