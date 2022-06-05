@@ -51,6 +51,7 @@ public class LoginRestApi {
         }
         //Get user from database
         AccountEntity account = accountService.findAccountByUsername(loginRequest.getUsername());
+        RoleEntity roleEntity = roleService.getRoleById(account.getRoleId());
         //Case can't find user with email or username provide.
         if(account == null){
             LoginResponseException loginResponseException = LoginResponseException.builder().message("Incorrect email or password.").build();
@@ -62,20 +63,19 @@ public class LoginRestApi {
             try {
                 RoleEntity role = roleService.getRoleById(account.getRoleId());
                 //Generate token
-                String token = jwtTokenUtils.doGenerateToken(account.getUserId(), role.getRoleName());
+                String token = jwtTokenUtils.doGenerateToken(
+                        account.getUserId(),
+                        account.getFullName(),
+                        account.getEmail(),
+                        account.getPhone(),
+                        roleEntity.getRoleName(),
+                        account.isConfirmed(),
+                        account.getAvatar()
+                );
                 accountLoginService.saveLogin(account.getUserId(), token);
                 //Save state login of user on app's database login context
                 //Generate response
-                LoginResponse loginResponse = LoginResponse.builder()
-                        .userId(account.getUserId())
-                        .email(account.getEmail())
-                        .phone(account.getPhone())
-                        .fullName(account.getFullName())
-                        .isConfirmed(account.isConfirmed())
-                        .role(role.getRoleName())
-                        .avatar(account.getAvatar())
-                        .accessToken(token)
-                        .build();
+                LoginResponse loginResponse = LoginResponse.builder().token(token).build();
                 return ResponseEntity.ok().body(gson.toJson(loginResponse));
             }catch (DataAccessException dataAccessException){
                 LoginResponseException loginResponseException = LoginResponseException.builder().message("Server temp can't handle this login request.").build();

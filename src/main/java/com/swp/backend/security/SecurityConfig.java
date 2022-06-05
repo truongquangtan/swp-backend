@@ -24,7 +24,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(username -> {
-                return SecurityUserDetails.builder().userName(username).password("PASSWORD").role("USER").build();
+                return SecurityUserDetails.builder().username(username).password("PASSWORD").role("USER").build();
         });
     }
 

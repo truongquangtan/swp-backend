@@ -6,6 +6,7 @@ import com.swp.backend.entity.RoleEntity;
 import com.swp.backend.repository.AccountRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +35,11 @@ public class AccountService {
         }
     }
 
-    public AccountEntity createUser(String email, String fullName, String password, String phone, String roleName) throws DataAccessException{
+    public AccountEntity createAccount(String email, String fullName, String password, String phone, String roleName) throws DataAccessException{
+        AccountEntity account = findAccountByUsername(email);
+        if(account != null){
+            throw new DataIntegrityViolationException("Email already use by another account.");
+        }
         String uuid = UUID.randomUUID().toString();
         RoleEntity roleEntity = roleService.getRoleByRoleName(roleName);
         AccountEntity accountEntity = AccountEntity.builder()

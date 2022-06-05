@@ -14,7 +14,6 @@ import java.util.Random;
 @AllArgsConstructor
 public class OtpStateService {
     AccountOtpRepository accountOtpRepository;
-    AccountService accountService;
     EmailService emailService;
 
     private String generateOtp() {
@@ -56,5 +55,16 @@ public class OtpStateService {
         accountOtp.setCreateAt(createAt);
         accountOtp.setExpireAt(expireAt);
         emailService.sendSimpleMessage(email, emailSubject, body);
+    }
+
+    public boolean verifyOtp(String userId, String otp){
+        AccountOtpEntity accountOtp = accountOtpRepository.findOtpStateByUserId(userId);
+        if(accountOtp == null){
+            return false;
+        }
+        if(accountOtp.getOtpCode().matches(otp)){
+            return true;
+        }
+        return false;
     }
 }

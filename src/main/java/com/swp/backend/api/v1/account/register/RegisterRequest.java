@@ -14,13 +14,12 @@ public class RegisterRequest {
     //Check valid request form
     public boolean isValidRequest(){
         String regexEmail = "^[_A-Za-z\\d-+]+(\\.[_A-Za-z\\d-]+)*@[A-Za-z\\d-]+(\\.[A-Za-z\\d]+)*(\\.[A-Za-z]{2,})$";
-        String regexPhone = "\\d{10}";
-        if(email == null || fullName == null || password == null || phone == null){
+        if(email == null || fullName == null || password == null){
             return false;
         }
-        if(email.trim().length() <= 0 && fullName.trim().length() <= 0 && password.trim().length() <= 0 && phone.trim().length() <= 0){
+        if(email.trim().length() <= 0 && fullName.trim().length() <= 0 && password.trim().length() <= 0){
             return false;
         }
-        return email.matches(regexEmail) && phone.matches(regexPhone);
+        return email.matches(regexEmail);
     }
 }

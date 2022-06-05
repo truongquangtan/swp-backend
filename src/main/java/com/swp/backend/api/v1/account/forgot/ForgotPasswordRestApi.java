@@ -17,7 +17,7 @@ public class ForgotPasswordRestApi {
     private OtpStateService otpStateService;
     private AccountService accountService;
 
-    @PostMapping(value = "sendmail")
+    @PostMapping(value = "send-mail")
     public ResponseEntity<String> sendOtpRestPassword(@RequestBody(required = false) SendMailRequest sendMailRequest){
         if(sendMailRequest == null){
             return ResponseEntity.badRequest().body("Missing body");
@@ -35,6 +35,13 @@ public class ForgotPasswordRestApi {
     public ResponseEntity<String> verifyOtp(@RequestBody(required = false) VerifyOtpRequest verifyOtpRequest){
         if(verifyOtpRequest == null){
             return ResponseEntity.badRequest().body("Missing body.");
+        }
+        AccountEntity account = accountService.findAccountByUsername(verifyOtpRequest.getEmail());
+        if(account == null){
+            return ResponseEntity.badRequest().build();
+        }
+        if(otpStateService.verifyOtp(account.getUserId(), verifyOtpRequest.getOtpCode())){
+
         }
         return ResponseEntity.ok().build();
     }

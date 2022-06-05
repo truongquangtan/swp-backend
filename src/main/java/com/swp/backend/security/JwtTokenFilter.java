@@ -70,7 +70,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             AccountEntity accountEntity = accountService.findAccountByUsername(claims.getSubject());
             if(accountEntity != null){
                 SecurityUserDetails securityUserDetails = SecurityUserDetails.builder()
-                        .userName(claims.getSubject())
+                        .username(claims.getSubject())
                         .role((String) claims.get("role"))
                         .password(UUID.randomUUID().toString())
                         .build();
