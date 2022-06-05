@@ -5,10 +5,7 @@ import com.swp.backend.api.v1.account.login.LoginResponse;
 import com.swp.backend.entity.AccountEntity;
 import com.swp.backend.entity.RoleEntity;
 import com.swp.backend.exception.ErrorResponse;
-import com.swp.backend.service.AccountService;
-import com.swp.backend.service.OtpStateService;
-import com.swp.backend.service.RoleService;
-import com.swp.backend.service.SecurityContextService;
+import com.swp.backend.service.*;
 import com.swp.backend.utils.JwtTokenUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/forgot")
 public class ForgotPasswordRestApi {
     private OtpStateService otpStateService;
+    private AccountLoginService accountLoginService;
     private AccountService accountService;
     private SecurityContextService securityContextService;
     private Gson gson;
@@ -76,6 +74,7 @@ public class ForgotPasswordRestApi {
                         account.getAvatar()
                 );
                 LoginResponse loginResponse = LoginResponse.builder().token(token).build();
+                accountLoginService.saveLogin(account.getUserId(), token);
                 return ResponseEntity.ok().body(gson.toJson(loginResponse));
             }
         } catch (Exception exception) {
