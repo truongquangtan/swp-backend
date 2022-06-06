@@ -26,7 +26,6 @@ public class LoginRestApi {
     Gson gson;
     AccountService accountService;
     RoleService roleService;
-
     BCryptPasswordEncoder bCryptPasswordEncoder;
     JwtTokenUtils jwtTokenUtils;
     AccountLoginService accountLoginService;

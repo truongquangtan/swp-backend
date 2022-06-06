@@ -2,12 +2,9 @@ package com.swp.backend.service;
 
 import com.swp.backend.api.v1.yard.add.SubYardRequest;
 import com.swp.backend.api.v1.yard.add.YardRequest;
-import com.swp.backend.entity.SlotEntity;
-import com.swp.backend.entity.SubYardEntity;
-import com.swp.backend.entity.YardEntity;
-import com.swp.backend.repository.SlotRepository;
-import com.swp.backend.repository.SubYardRepository;
-import com.swp.backend.repository.YardRepository;
+import com.swp.backend.api.v1.yard.search.YardResponseMember;
+import com.swp.backend.entity.*;
+import com.swp.backend.repository.*;
 import com.swp.backend.utils.DateHelper;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataAccessException;
@@ -25,6 +22,8 @@ public class YardService {
     private YardRepository yardRepository;
     private SlotRepository slotRepository;
     private SubYardRepository subYardRepository;
+    private DistrictRepository districtRepository;
+    private YardPictureRepository yardPictureRepository;
 
     @Transactional(rollbackFor = DataAccessException.class)
     public boolean createNewYard(String userId, YardRequest yardRequest) throws DataAccessException {
@@ -71,5 +70,38 @@ public class YardService {
             slotRepository.saveAll(slotEntityList);
         }
         return true;
+    }
+    public List<YardEntity> getYardFilterByDistrict(int districtId)
+    {
+        return yardRepository.findYardEntitiesByDistrictIdAndActiveAndDeleted(districtId, true, false);
+    }
+
+    public List<YardEntity> getYardFilterByProvince(int provinceId)
+    {
+        List<DistrictEntity> districts = districtRepository.findAllByProvinceId(provinceId);
+        List<YardEntity> result = new ArrayList<YardEntity>();
+
+        districts.stream().forEach(district -> {
+            List<YardEntity> yardsPerDistrict = getYardFilterByDistrict(district.getId());
+            result.addAll(yardsPerDistrict);
+        });
+
+        return result;
+    }
+
+    public YardResponseMember loadAllImages(YardResponseMember yardResponseMember)
+    {
+        List<YardPictureEntity> allImages = yardPictureRepository.getAllByRefId(yardResponseMember.getId());
+        if(allImages == null)
+        {
+            return yardResponseMember;
+        }
+        List<String> allImagesUrl = new ArrayList<>();
+        allImages.stream().forEach(image -> {
+            allImagesUrl.add(image.getImage());
+        });
+
+        yardResponseMember.setImages(allImagesUrl);
+        return yardResponseMember;
     }
 }
