@@ -1,12 +1,9 @@
 package com.swp.backend.api.v1.yard.search;
 
-import com.swp.backend.entity.YardEntity;
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import java.time.LocalTime;
+import java.util.List;
 
 @Data
 public class YardResponseMember {

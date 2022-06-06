@@ -3,12 +3,10 @@ package com.swp.backend.api.v1.yard.search;
 import com.swp.backend.entity.YardEntity;
 import com.swp.backend.service.YardService;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 @AllArgsConstructor
 @Component

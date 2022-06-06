@@ -3,9 +3,7 @@ package com.swp.backend.api.v1.yard.search;
 
 import com.google.gson.Gson;
 import com.swp.backend.entity.YardEntity;
-import com.swp.backend.repository.YardRepository;
 import com.swp.backend.service.YardService;
-import io.grpc.lb.v1.ClientStats;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,7 +31,7 @@ public class SearchYardRestApi {
             return ResponseEntity.badRequest().body("Null Request Body");
         }
 
-        if(searchYardRequest.getItemPerPage() == null)
+        if(searchYardRequest.getItemsPerPage() == null)
         {
             return ResponseEntity.badRequest().body("Null Item Per Page");
         }
@@ -73,8 +71,8 @@ public class SearchYardRestApi {
     {
         int totalNumberOfYard = allYards.size();
 
-        int itemPerPage = searchYardRequest.getItemPerPage();
-        int currentPage = searchYardRequest.getCurrentPage();
+        int itemPerPage = searchYardRequest.getItemsPerPage();
+        int currentPage = searchYardRequest.getPage();
 
         YardResponse yardResponse = new YardResponse();
 
