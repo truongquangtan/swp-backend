@@ -6,8 +6,6 @@ import java.util.List;
 @Data
 public class SubYardRequest {
     private String name;
-    private String address;
     private String type;
-    private List<String> images;
     private List<SlotRequest> slots;
 }

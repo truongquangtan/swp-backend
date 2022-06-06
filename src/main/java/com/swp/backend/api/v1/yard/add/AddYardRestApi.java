@@ -1,6 +1,6 @@
 package com.swp.backend.api.v1.yard.add;
 
-import com.swp.backend.entity.YardEntity;
+import com.google.gson.Gson;
 import com.swp.backend.service.SecurityContextService;
 import com.swp.backend.service.YardService;
 import lombok.AllArgsConstructor;
@@ -16,10 +16,11 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping(value = "api/v1")
+@RequestMapping(value = "api/v1/yard")
 public class AddYardRestApi {
     YardService yardService;
     SecurityContextService securityContextService;
+    Gson gson;
 
     @PostMapping(value = "add-yard")
     public ResponseEntity<String> createYard(@RequestBody(required = false) YardRequest yardRequest){
@@ -29,19 +30,20 @@ public class AddYardRestApi {
         try {
             SecurityContext context = SecurityContextHolder.getContext();
             String userId = securityContextService.extractUsernameFromContext(context);
-            YardEntity yard = yardService.createNewYard(userId,
-                    yardRequest.getName(),
-                    yardRequest.getAddress(),
-                    yardRequest.getDistrictId(),
-                    yardRequest.getOpenAt(),
-                    yardRequest.getCloseAt(),
-                    yardRequest.getSlotDuration()
-            );
+//            YardEntity yard = yardService.createNewYard(userId,
+//                    yardRequest.getName(),
+//                    yardRequest.getAddress(),
+//                    yardRequest.getDistrictId(),
+//                    yardRequest.getOpenAt(),
+//                    yardRequest.getCloseAt(),
+//                    yardRequest.getSlotDuration()
+//            );
+            System.out.println(gson.toJson(yardRequest));
 
             List<SubYardRequest> listSubYard = yardRequest.getListSubYard();
             if(listSubYard != null && listSubYard.size() > 0){
                 listSubYard.forEach(subYard -> {
-
+                    System.out.println(gson.toJson(subYard));
                 });
             }
             return ResponseEntity.ok("Create yard success!");
