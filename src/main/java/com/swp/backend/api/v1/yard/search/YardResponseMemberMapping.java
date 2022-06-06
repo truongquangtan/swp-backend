@@ -5,6 +5,7 @@ import com.swp.backend.service.YardService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,12 +18,14 @@ public class YardResponseMemberMapping
     {
         YardResponseMember yardResponseMember = new YardResponseMember();
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+
         yardResponseMember.setAddress(yardEntity.getAddress());
         yardResponseMember.setId(yardEntity.getId());
         yardResponseMember.setDistrictId(yardEntity.getDistrictId());
         yardResponseMember.setName(yardEntity.getName());
-        yardResponseMember.setOpenAt(yardEntity.getOpenAt());
-        yardResponseMember.setCloseAt(yardEntity.getCloseAt());
+        yardResponseMember.setOpenAt(yardEntity.getOpenAt().format(formatter));
+        yardResponseMember.setCloseAt(yardEntity.getCloseAt().format(formatter));
         yardService.loadAllImages(yardResponseMember);
         yardResponseMember = yardService.loadAllImages(yardResponseMember);
 
