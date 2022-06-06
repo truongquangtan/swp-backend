@@ -74,11 +74,18 @@ public class VerifyAccount {
                     account.getEmail(),
                     account.getPhone(),
                     role.getRoleName(),
-                    account.isConfirmed(),
-                    account.getAvatar()
+                    account.isConfirmed()
             );
             accountLoginService.saveLogin(account.getUserId(), token);
-            LoginResponse loginResponse = LoginResponse.builder().token(token).build();
+            LoginResponse loginResponse = LoginResponse.builder()
+                    .token(token)
+                    .userId(account.getUserId())
+                    .avatar(account.getAvatar())
+                    .email(account.getEmail())
+                    .phone(account.getPhone())
+                    .role(role.getRoleName())
+                    .fullName(account.getFullName())
+                    .build();
             return ResponseEntity.ok().body(gson.toJson(loginResponse));
         }catch (Exception exception){
             exception.printStackTrace();

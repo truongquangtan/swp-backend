@@ -6,6 +6,7 @@ import com.swp.backend.utils.DateHelper;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
 import java.util.UUID;
@@ -15,6 +16,7 @@ import java.util.UUID;
 public class YardService {
     private YardRepository yardRepository;
 
+    @Transactional
     public YardEntity createNewYard(String ownerId, String yardName, String address, int districtId, LocalTime openAt, LocalTime closeAt, int slotDuration) throws DataAccessException {
         YardEntity yard = YardEntity.builder()
                 .id(UUID.randomUUID().toString())

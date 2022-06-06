@@ -23,7 +23,7 @@ public class JwtTokenUtils {
 //        return doGenerateToken(account.getUsername(), account.getRole());
 //    }
 
-    public String doGenerateToken(String userId, String fullName, String email, String phone , String role, boolean isConfirm, String avatar) {
+    public String doGenerateToken(String userId, String fullName, String email, String phone , String role, boolean isConfirm) {
         Timestamp createAt = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
         Timestamp expirationAt = DateHelper.plusMinutes(createAt, 120);
 
@@ -34,7 +34,6 @@ public class JwtTokenUtils {
                 .claim("phone", phone)
                 .claim("role", role)
                 .claim("isConfirmed", isConfirm)
-                .claim("avatar", avatar)
                 .setIssuedAt(createAt)
                 .setExpiration(expirationAt)
                 .signWith(SignatureAlgorithm.HS512, secretKey)

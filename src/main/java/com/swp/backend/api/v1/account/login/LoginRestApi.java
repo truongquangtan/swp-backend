@@ -68,13 +68,20 @@ public class LoginRestApi {
                         account.getEmail(),
                         account.getPhone(),
                         role.getRoleName(),
-                        account.isConfirmed(),
-                        account.getAvatar()
+                        account.isConfirmed()
                 );
                 accountLoginService.saveLogin(account.getUserId(), token);
                 //Save state login of user on app's database login context
                 //Generate response
-                LoginResponse loginResponse = LoginResponse.builder().token(token).build();
+                LoginResponse loginResponse = LoginResponse.builder()
+                        .token(token)
+                        .userId(account.getUserId())
+                        .avatar(account.getAvatar())
+                        .email(account.getEmail())
+                        .phone(account.getPhone())
+                        .role(role.getRoleName())
+                        .fullName(account.getFullName())
+                        .build();
                 return ResponseEntity.ok().body(gson.toJson(loginResponse));
 
             } else {
