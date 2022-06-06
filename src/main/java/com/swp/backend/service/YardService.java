@@ -26,7 +26,7 @@ public class YardService {
     private YardPictureRepository yardPictureRepository;
 
     @Transactional(rollbackFor = DataAccessException.class)
-    public boolean createNewYard(String userId, YardRequest yardRequest) throws DataAccessException {
+    public void createNewYard(String userId, YardRequest yardRequest) throws DataAccessException {
         YardEntity parentYard = YardEntity.builder()
                 .id(UUID.randomUUID().toString())
                 .ownerId(userId)
@@ -69,7 +69,6 @@ public class YardService {
             subYardRepository.saveAll(subYardEntityList);
             slotRepository.saveAll(slotEntityList);
         }
-        return true;
     }
     public List<YardEntity> getYardFilterByDistrict(int districtId)
     {
@@ -81,7 +80,7 @@ public class YardService {
         List<DistrictEntity> districts = districtRepository.findAllByProvinceId(provinceId);
         List<YardEntity> result = new ArrayList<YardEntity>();
 
-        districts.stream().forEach(district -> {
+        districts.forEach(district -> {
             List<YardEntity> yardsPerDistrict = getYardFilterByDistrict(district.getId());
             result.addAll(yardsPerDistrict);
         });
@@ -97,7 +96,7 @@ public class YardService {
             return yardResponseMember;
         }
         List<String> allImagesUrl = new ArrayList<>();
-        allImages.stream().forEach(image -> {
+        allImages.forEach(image -> {
             allImagesUrl.add(image.getImage());
         });
 
