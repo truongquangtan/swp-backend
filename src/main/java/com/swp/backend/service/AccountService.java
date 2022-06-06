@@ -11,6 +11,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -81,5 +82,9 @@ public class AccountService {
 
     public void updateUser(AccountEntity accountEntity) throws DataAccessException{
          accountRepository.save(accountEntity);
+    }
+
+    public List<AccountEntity> getAllUserHasRoleUser(){
+        return accountRepository.findAccountEntitiesByRoleIdOrRoleId(1, 3);
     }
 }
