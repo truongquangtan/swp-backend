@@ -6,7 +6,13 @@ public class ApiEndpointProperties {
             "/api/v1/register",
             "/v3/api-docs/**",
             "/swagger-ui/**",
-            "/swagger-ui.html",
-            "/api/v1/filter"
+            "/api/v1/filter",
+            "/api/v1/district",
+            "/api/v1/district/**",
+            "/api/v1/province",
+            "/api/v1/province/**",
+            "/api/v1/forgot/send-mail",
+            "/api/v1/forgot/confirm-otp",
+            "/api/v1/yard/add-yard"
     };
 }

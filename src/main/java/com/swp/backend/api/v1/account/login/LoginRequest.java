@@ -1,9 +1,11 @@
-package com.swp.backend.api.v1.login;
+package com.swp.backend.api.v1.account.login;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
-@Setter
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor

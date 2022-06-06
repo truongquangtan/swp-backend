@@ -1,9 +1,9 @@
-package com.swp.backend.api.v1.uploadavatar;
+package com.swp.backend.api.v1.account.uploadavatar;
 
 import com.google.gson.Gson;
 import com.swp.backend.entity.AccountEntity;
-import com.swp.backend.service.FirebaseStoreService;
 import com.swp.backend.service.AccountService;
+import com.swp.backend.service.FirebaseStoreService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -48,7 +48,7 @@ public class UploadAvatarRestApi {
             if(userDetails instanceof UserDetails){
                 String userId = ((UserDetails) userDetails).getUsername();
                 //Get details of user
-                AccountEntity accountEntity = accountService.findUserByUsername(userId);
+                AccountEntity accountEntity = accountService.findAccountByUsername(userId);
                 //Case user notfound
                 if (accountEntity == null){
                     return ResponseEntity.badRequest().body("Account not exist, can't query user on database.");

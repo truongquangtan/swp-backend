@@ -1,12 +1,10 @@
 package com.swp.backend.utils;
 
-import com.swp.backend.security.SecurityUserDetails;
 import io.jsonwebtoken.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
-import java.util.Date;
 @Component
 public class JwtTokenUtils {
     private final String secretKey = "SWP391";
@@ -21,17 +19,21 @@ public class JwtTokenUtils {
     }
 
     //Generate token via UserId to identity user and role of user.
-    public String doGenerateToken(SecurityUserDetails account) {
-        return doGenerateToken(account.getUsername(), account.getRole());
-    }
+//    public String doGenerateToken(SecurityUserDetails account) {
+//        return doGenerateToken(account.getUsername(), account.getRole());
+//    }
 
-    public String doGenerateToken(String userName, String role) {
+    public String doGenerateToken(String userId, String fullName, String email, String phone , String role, boolean isConfirm) {
         Timestamp createAt = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
         Timestamp expirationAt = DateHelper.plusMinutes(createAt, 120);
 
         return Jwts.builder()
-                .setSubject(userName)
+                .setSubject(userId)
+                .claim("fullName", fullName)
+                .claim("email", email)
+                .claim("phone", phone)
                 .claim("role", role)
+                .claim("isConfirmed", isConfirm)
                 .setIssuedAt(createAt)
                 .setExpiration(expirationAt)
                 .signWith(SignatureAlgorithm.HS512, secretKey)

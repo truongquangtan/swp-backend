@@ -1,14 +1,10 @@
 package com.swp.backend.exception;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class ErrorResponse {
-    private String error;
     private String message;
-    private String details;
 }

@@ -2,11 +2,9 @@ package com.swp.backend.security;
 
 import com.google.gson.Gson;
 import com.swp.backend.constance.ApiEndpointProperties;
-import com.swp.backend.entity.AccountEntity;
 import com.swp.backend.entity.AccountLoginEntity;
 import com.swp.backend.exception.ErrorResponse;
 import com.swp.backend.service.AccountLoginService;
-import com.swp.backend.service.AccountService;
 import com.swp.backend.utils.JwtTokenUtils;
 import io.jsonwebtoken.*;
 import lombok.AllArgsConstructor;
@@ -29,13 +27,12 @@ import java.util.UUID;
 @AllArgsConstructor
 public class JwtTokenFilter extends OncePerRequestFilter {
     JwtTokenUtils jwtTokenUtils;
-    AccountService accountService;
     AccountLoginService accountLoginService;
     Gson gson;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
-        boolean isPublicApi = Arrays.stream(ApiEndpointProperties.publicEndpoint).anyMatch(url -> url.startsWith(request.getRequestURI()));
+        boolean isPublicApi = Arrays.stream(ApiEndpointProperties.publicEndpoint).anyMatch(url -> request.getRequestURI().startsWith(url));
         if(isPublicApi){
             chain.doFilter(request, response);
             return;
@@ -53,48 +50,43 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             Claims claims = jwtTokenUtils.deCodeToken(token);
             AccountLoginEntity login = accountLoginService.findLogin(claims.getSubject());
             if(login == null){
-                sendErrorResponse(response, 400, "auth-001", "Token not available.", "Can't find info user login in Database.");
+                sendErrorResponse(response, 400, "Token not available.");
                 return;
             }
 
             if(!login.getAccessToken().matches(token)){
-                sendErrorResponse(response, 400, "auth-002", "Token does not match the latest token.", "Try login to get latest token.");
+                sendErrorResponse(response, 400, "Token does not match the latest token.");
                 return;
             }
 
             if(login.isLogout()){
-                sendErrorResponse(response, 400, "auth-003", "User logged out.", "Token has been delete.");
+                sendErrorResponse(response, 400, "User logged out.");
                 return;
             }
 
-            AccountEntity accountEntity = accountService.findUserByUsername(claims.getSubject());
-            if(accountEntity != null){
-                SecurityUserDetails securityUserDetails = SecurityUserDetails.builder()
-                        .userName(claims.getSubject())
-                        .role((String) claims.get("role"))
-                        .password(UUID.randomUUID().toString())
-                        .build();
+            SecurityUserDetails securityUserDetails = SecurityUserDetails.builder()
+                    .username(claims.getSubject())
+                    .role((String) claims.get("role"))
+                    .password(UUID.randomUUID().toString())
+                    .build();
 
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(securityUserDetails, null, securityUserDetails.getAuthorities());
-                authenticationToken.setDetails(token);
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-            }else {
-                sendErrorResponse(response, 400, "auth-004", "User is not exist.", "User may be delete by admin.");
-                return;
-            }
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(securityUserDetails, null, securityUserDetails.getAuthorities());
+            authenticationToken.setDetails(token);
+            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         } catch (SignatureException | MalformedJwtException | ExpiredJwtException | UnsupportedJwtException | IllegalArgumentException e) {
-            sendErrorResponse(response, 400, "auth-005", "Token invalid.", e.getMessage());
+            sendErrorResponse(response, 400,  "Token invalid.");
+            return;
+        }catch (Exception exception){
+            sendErrorResponse(response, 500,  "Server temp error.");
             return;
         }
         chain.doFilter(request, response);
     }
 
-    private void sendErrorResponse(HttpServletResponse response, int status, String error, String message, String details) throws IOException {
+    private void sendErrorResponse(HttpServletResponse response, int status, String message) throws IOException {
         response.setStatus(status);
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .error(error)
                 .message(message)
-                .details(details)
                 .build();
         PrintWriter out = response.getWriter();
         response.setContentType("application/json");

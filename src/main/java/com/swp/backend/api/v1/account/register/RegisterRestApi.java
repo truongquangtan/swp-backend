@@ -1,14 +1,12 @@
-package com.swp.backend.api.v1.register;
+package com.swp.backend.api.v1.account.register;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonParseException;
 import com.swp.backend.constance.RoleProperties;
 import com.swp.backend.entity.AccountEntity;
 import com.swp.backend.entity.AccountOtpEntity;
-import com.swp.backend.service.AccountLoginService;
-import com.swp.backend.service.OtpStateService;
+import com.swp.backend.exception.ErrorResponse;
 import com.swp.backend.service.AccountService;
-import com.swp.backend.utils.JwtTokenUtils;
+import com.swp.backend.service.OtpStateService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -26,8 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class RegisterRestApi {
     Gson gson;
     AccountService accountService;
-    JwtTokenUtils jwtTokenUtils;
-    AccountLoginService accountLoginService;
     OtpStateService otpStateService;
 
     @PostMapping("register")
@@ -39,39 +35,30 @@ public class RegisterRestApi {
             }
     )
     public ResponseEntity<String> register(@RequestBody(required = false) RegisterRequest registerRequest){
-        //Case request empty body
-        if(registerRequest == null){
-            return ResponseEntity.badRequest().body("Missing body.");
-        }
-        //Case request body missing required username, password, email.
-        if(!registerRequest.isValidRequest()){
-            return ResponseEntity.badRequest().body("Request body incorrect formant");
-        }
-
         try {
+            //Case request empty body
+            if(registerRequest == null){
+                ErrorResponse errorResponse = ErrorResponse.builder().message("Missing body.").build();
+                return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
+            }
+            //Case request body missing required username, password, email.
+            if(!registerRequest.isValidRequest()){
+                ErrorResponse errorResponse = ErrorResponse.builder().message("Request body incorrect format").build();
+                return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
+            }
+
             //Call user-service's create new user method
-            AccountEntity accountEntity = accountService.createUser(registerRequest.getEmail(), registerRequest.getFullName(), registerRequest.getPassword(), registerRequest.getPhone(), RoleProperties.ROLE_USER);
+            AccountEntity accountEntity = accountService.createAccount(registerRequest.getEmail(), registerRequest.getFullName(), registerRequest.getPassword(), registerRequest.getPhone(), RoleProperties.ROLE_USER);
             //Call otp-service's otp generate method
             AccountOtpEntity accountOtpEntity = otpStateService.generateOtp(accountEntity.getUserId());
             //Call user-service's send mail asynchronous method
             accountService.sendOtpVerifyAccount(accountEntity, accountOtpEntity);
-            //Generate login token
-            String token = jwtTokenUtils.doGenerateToken(accountEntity.getUserId(), RoleProperties.ROLE_USER);
-            //Save login state on app's login context-database
-            accountLoginService.saveLogin(accountEntity.getUserId(), token);
-            //Generate response
-            RegisterResponse registerResponse = RegisterResponse.builder()
-                    .userId(accountEntity.getUserId())
-                    .email(accountEntity.getEmail())
-                    .role(RoleProperties.ROLE_USER)
-                    .isConfirmed(accountEntity.isConfirmed())
-                    .token(token)
-                    .build();
-            return ResponseEntity.ok(gson.toJson(registerResponse));
-        }catch (JsonParseException jsonException){
-            return ResponseEntity.internalServerError().body("Jwt token generate failed.");
+            return ResponseEntity.ok("Create account success!");
         }catch (DataAccessException dataAccessException){
-            return ResponseEntity.internalServerError().body(dataAccessException.getMessage());
+            return ResponseEntity.badRequest().body(dataAccessException.getMessage());
+        }catch (Exception exception){
+            exception.printStackTrace();
+            return ResponseEntity.internalServerError().body("Server temp error.");
         }
     }
 

@@ -1,13 +1,9 @@
-package com.swp.backend.api.v1.register;
+package com.swp.backend.api.v1.account.register;
 
-import lombok.*;
-
-import java.sql.Timestamp;
-@Getter
-@Setter
+import lombok.Builder;
+import lombok.Data;
+@Data
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class RegisterResponse {
     private String userId;
     private String fullName;

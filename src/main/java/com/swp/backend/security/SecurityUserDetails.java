@@ -15,7 +15,7 @@ import java.util.Collections;
 @NoArgsConstructor
 @Builder
 public class SecurityUserDetails implements UserDetails {
-    private String userName;
+    private String username;
     private String password;
     private String role;
 
@@ -31,7 +31,7 @@ public class SecurityUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return userName;
+        return username;
     }
 
     @Override
