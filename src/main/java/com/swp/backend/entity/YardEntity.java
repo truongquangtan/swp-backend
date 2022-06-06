@@ -34,8 +34,6 @@ public class YardEntity {
     private boolean active;
     @Column(name = "is_deleted")
     private boolean deleted;
-    @Column(name = "is_approved")
-    private boolean approved;
     @Column(name = "owner_id")
     private String ownerId;
     @Column(name = "open_at")

@@ -7,9 +7,9 @@ import java.util.List;
 public class YardRequest {
     private String name;
     private String address;
-    private int districtId;
+    private Integer districtId;
     private String openAt;
     private String closeAt;
     private int slotDuration;
-    private List<SubYardRequest> listSubYard;
+    private List<SubYardRequest> subYards;
 }
