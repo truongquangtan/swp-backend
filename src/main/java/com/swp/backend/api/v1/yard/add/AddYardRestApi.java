@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "api/v1/yard")
@@ -30,24 +28,10 @@ public class AddYardRestApi {
         try {
             SecurityContext context = SecurityContextHolder.getContext();
             String userId = securityContextService.extractUsernameFromContext(context);
-//            YardEntity yard = yardService.createNewYard(userId,
-//                    yardRequest.getName(),
-//                    yardRequest.getAddress(),
-//                    yardRequest.getDistrictId(),
-//                    yardRequest.getOpenAt(),
-//                    yardRequest.getCloseAt(),
-//                    yardRequest.getSlotDuration()
-//            );
-            System.out.println(gson.toJson(yardRequest));
-
-            List<SubYardRequest> listSubYard = yardRequest.getListSubYard();
-            if(listSubYard != null && listSubYard.size() > 0){
-                listSubYard.forEach(subYard -> {
-                    System.out.println(gson.toJson(subYard));
-                });
-            }
+            yardService.createNewYard(userId, yardRequest);
             return ResponseEntity.ok("Create yard success!");
         }catch (Exception e){
+            e.printStackTrace();
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
 

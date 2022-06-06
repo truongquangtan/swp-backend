@@ -27,6 +27,7 @@ public class LogoutRestApi {
             Object user = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             if(user instanceof UserDetails){
                 String userId = ((UserDetails) user).getUsername();
+                System.out.println(userId);
                 accountLoginService.expireLogin(userId);
             }
             return ResponseEntity.ok("Logout success!");
