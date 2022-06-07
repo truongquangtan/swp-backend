@@ -81,7 +81,7 @@ public class YardService {
         int ofSetValue = (ofSet == null || ofSet <= 1) ? 6 : ofSet;
 
         int maxResult = yardCustomRepository.getMaxResultFindYardByFilter(provinceId, districtId);
-        List<?> listResult = yardCustomRepository.findYardByFilter(provinceId, districtId, pageValue, ofSetValue);
+        List<?> listResult = yardCustomRepository.findYardByFilter(provinceId, districtId);
         List<YardModel> yardModels = listResult.stream().map(item -> {
             if(item instanceof YardEntity){
                 YardEntity yard = (YardEntity) item;
@@ -105,6 +105,7 @@ public class YardService {
             listPicture.forEach(picture -> images.add(picture.getImage()));
             yardModel.setImages(images);
         });
+
         return YardResponse.builder().yards(yardModels).maxResult(maxResult).page(pageValue).build();
     }
 }

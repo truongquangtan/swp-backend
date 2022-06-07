@@ -14,10 +14,8 @@ public class YardCustomRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public List<?> findYardByFilter(Integer provinceId, Integer districtId, Integer ofSet, Integer page){
+    public List<?> findYardByFilter(Integer provinceId, Integer districtId){
         Query query = null;
-        page = (page == null || page <= 1) ? 1 : (int) page;
-        ofSet = (ofSet == null || ofSet <= 1) ? 6 : (int) page;
 
         if(districtId == null && provinceId == null){
             String nativeQuery = "SELECT * FROM yards";
