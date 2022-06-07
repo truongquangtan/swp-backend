@@ -26,6 +26,7 @@ public class YardService {
     private YardRepository yardRepository;
     private SlotRepository slotRepository;
     private SubYardRepository subYardRepository;
+    private DistrictRepository districtRepository;
 
     private YardPictureRepository yardPictureRepository;
     private YardCustomRepository yardCustomRepository;
@@ -93,7 +94,7 @@ public class YardService {
                         .id(yard.getId())
                         .name(yard.getName())
                         .address(yard.getAddress())
-                        .districtId(yard.getDistrictId())
+                        .districtName(districtRepository.findById(yard.getDistrictId()).getDistrictName())
                         .openAt(yard.getOpenAt().format(formatter))
                         .closeAt(yard.getCloseAt().format(formatter))
                         .build();

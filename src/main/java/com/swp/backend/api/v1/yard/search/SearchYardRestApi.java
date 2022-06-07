@@ -26,7 +26,7 @@ public class SearchYardRestApi {
             return ResponseEntity.ok().body(gson.toJson(yardResponse));
         }
 
-        YardResponse yardResponse = yardService.findYardByFilter(searchYardRequest.getProvinceId(), searchYardRequest.getDistrictId(), searchYardRequest.getOfSet(), searchYardRequest.getPage());
+        YardResponse yardResponse = yardService.findYardByFilter(searchYardRequest.getProvinceId(), searchYardRequest.getDistrictId(), searchYardRequest.getItemsPerPage(), searchYardRequest.getPage());
         return ResponseEntity.ok().body(gson.toJson(yardResponse));
     }
 

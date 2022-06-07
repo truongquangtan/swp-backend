@@ -6,6 +6,6 @@ import lombok.Data;
 public class SearchYardRequest {
     private Integer provinceId;
     private Integer districtId;
-    private Integer ofSet;
+    private Integer itemsPerPage;
     private Integer page;
 }
