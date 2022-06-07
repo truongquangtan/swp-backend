@@ -2,8 +2,10 @@ package com.swp.backend.service;
 
 import com.swp.backend.api.v1.yard.add.SubYardRequest;
 import com.swp.backend.api.v1.yard.add.YardRequest;
-import com.swp.backend.api.v1.yard.search.YardResponseMember;
+import com.swp.backend.api.v1.yard.search.YardResponse;
 import com.swp.backend.entity.*;
+import com.swp.backend.model.YardModel;
+import com.swp.backend.myrepository.YardCustomRepository;
 import com.swp.backend.repository.*;
 import com.swp.backend.utils.DateHelper;
 import lombok.AllArgsConstructor;
@@ -12,9 +14,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -23,10 +27,12 @@ public class YardService {
     private SlotRepository slotRepository;
     private SubYardRepository subYardRepository;
     private DistrictRepository districtRepository;
+
     private YardPictureRepository yardPictureRepository;
+    private YardCustomRepository yardCustomRepository;
 
     @Transactional(rollbackFor = DataAccessException.class)
-    public boolean createNewYard(String userId, YardRequest yardRequest) throws DataAccessException {
+    public void createNewYard(String userId, YardRequest yardRequest) throws DataAccessException {
         YardEntity parentYard = YardEntity.builder()
                 .id(UUID.randomUUID().toString())
                 .ownerId(userId)
@@ -69,39 +75,40 @@ public class YardService {
             subYardRepository.saveAll(subYardEntityList);
             slotRepository.saveAll(slotEntityList);
         }
-        return true;
-    }
-    public List<YardEntity> getYardFilterByDistrict(int districtId)
-    {
-        return yardRepository.findYardEntitiesByDistrictIdAndActiveAndDeleted(districtId, true, false);
     }
 
-    public List<YardEntity> getYardFilterByProvince(int provinceId)
-    {
-        List<DistrictEntity> districts = districtRepository.findAllByProvinceId(provinceId);
-        List<YardEntity> result = new ArrayList<YardEntity>();
+    public YardResponse findYardByFilter(Integer provinceId, Integer districtId, Integer ofSet, Integer page){
+        int pageValue = (page == null || page < 1) ? 1 : page;
+        int ofSetValue = (ofSet == null || ofSet < 1) ? 6 : ofSet;
 
-        districts.stream().forEach(district -> {
-            List<YardEntity> yardsPerDistrict = getYardFilterByDistrict(district.getId());
-            result.addAll(yardsPerDistrict);
-        });
-
-        return result;
-    }
-
-    public YardResponseMember loadAllImages(YardResponseMember yardResponseMember)
-    {
-        List<YardPictureEntity> allImages = yardPictureRepository.getAllByRefId(yardResponseMember.getId());
-        if(allImages == null)
-        {
-            return yardResponseMember;
+        int maxResult = yardCustomRepository.getMaxResultFindYardByFilter(provinceId, districtId);
+        if((pageValue * ofSetValue) > maxResult){
+            pageValue = 1;
         }
-        List<String> allImagesUrl = new ArrayList<>();
-        allImages.stream().forEach(image -> {
-            allImagesUrl.add(image.getImage());
-        });
+        List<?> listResult = yardCustomRepository.findYardByFilter(provinceId, districtId, ofSetValue, pageValue);
+        List<YardModel> yardModels = listResult.stream().map(item -> {
+            if(item instanceof YardEntity){
+                YardEntity yard = (YardEntity) item;
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+                return YardModel.builder()
+                        .id(yard.getId())
+                        .name(yard.getName())
+                        .address(yard.getAddress())
+                        .districtName(districtRepository.findById(yard.getDistrictId()).getDistrictName())
+                        .openAt(yard.getOpenAt().format(formatter))
+                        .closeAt(yard.getCloseAt().format(formatter))
+                        .build();
+            }else {
+                return null;
+            }
+        }).collect(Collectors.toList());
 
-        yardResponseMember.setImages(allImagesUrl);
-        return yardResponseMember;
+        yardModels.forEach(yardModel -> {
+            List<String> images = new ArrayList<>();
+            List<YardPictureEntity> listPicture = yardPictureRepository.getAllByRefId(yardModel.getId());
+            listPicture.forEach(picture -> images.add(picture.getImage()));
+            yardModel.setImages(images);
+        });
+        return YardResponse.builder().yards(yardModels).maxResult(maxResult).page(pageValue).build();
     }
 }

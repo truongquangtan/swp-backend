@@ -7,5 +7,5 @@ public class SearchYardRequest {
     private Integer provinceId;
     private Integer districtId;
     private Integer itemsPerPage;
-    private Integer page = 1;
+    private Integer page;
 }

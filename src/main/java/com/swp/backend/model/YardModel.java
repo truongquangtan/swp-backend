@@ -1,17 +1,17 @@
-package com.swp.backend.api.v1.yard.search;
+package com.swp.backend.model;
 
+import lombok.Builder;
 import lombok.Data;
-import org.apache.tomcat.jni.Local;
 
-import java.time.LocalTime;
 import java.util.List;
 
 @Data
-public class YardResponseMember {
+@Builder
+public class YardModel {
     private String id;
     private String name;
     private String address;
-    private int districtId;
+    private String districtName;
     private String openAt;
     private String closeAt;
     private List<String> images;
