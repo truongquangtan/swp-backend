@@ -77,11 +77,16 @@ public class YardService {
     }
 
     public YardResponse findYardByFilter(Integer provinceId, Integer districtId, Integer ofSet, Integer page){
-        int pageValue = (page == null || page <= 1) ? 1 : page;
-        int ofSetValue = (ofSet == null || ofSet <= 1) ? 6 : ofSet;
+        int pageValue = (page == null || page < 1) ? 1 : page;
+        int ofSetValue = (ofSet == null || ofSet < 1) ? 6 : ofSet;
 
         int maxResult = yardCustomRepository.getMaxResultFindYardByFilter(provinceId, districtId);
-        List<?> listResult = yardCustomRepository.findYardByFilter(provinceId, districtId, pageValue, ofSetValue);
+
+        if(ofSetValue * pageValue > maxResult ){
+            pageValue = 1;
+        }
+
+        List<?> listResult = yardCustomRepository.findYardByFilter(provinceId, districtId, ofSetValue, pageValue);
         List<YardModel> yardModels = listResult.stream().map(item -> {
             if(item instanceof YardEntity){
                 YardEntity yard = (YardEntity) item;

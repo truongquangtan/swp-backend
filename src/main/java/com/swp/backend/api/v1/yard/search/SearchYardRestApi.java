@@ -21,17 +21,13 @@ public class SearchYardRestApi {
     @PostMapping(value = "search")
     public ResponseEntity<String> searchYardByLocation(@RequestBody(required = false) SearchYardRequest searchYardRequest)
     {
-
         if(searchYardRequest == null){
             YardResponse yardResponse = yardService.findYardByFilter(null, null, null, null);
             return ResponseEntity.ok().body(gson.toJson(yardResponse));
         }
 
-
         YardResponse yardResponse = yardService.findYardByFilter(searchYardRequest.getProvinceId(), searchYardRequest.getDistrictId(), searchYardRequest.getOfSet(), searchYardRequest.getPage());
         return ResponseEntity.ok().body(gson.toJson(yardResponse));
-
-
     }
 
 

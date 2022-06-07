@@ -85,7 +85,7 @@ public class LoginRestApi {
 
             } else {
                 //Case password not match
-                ErrorResponse error = ErrorResponse.builder().message("Can't determined username and password from request.").build();
+                ErrorResponse error = ErrorResponse.builder().message("Password incorrect.").build();
                 return ResponseEntity.badRequest().body(gson.toJson(error));
             }
         } catch (Exception exception) {
