@@ -14,8 +14,10 @@ public class YardCustomRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public List<?> findYardByFilter(Integer provinceId, Integer districtId, int ofSet, int page){
+    public List<?> findYardByFilter(Integer provinceId, Integer districtId, Integer ofSet, Integer page){
         Query query = null;
+        page = (page == null || page <= 1) ? 1 : (int) page;
+        ofSet = (ofSet == null || ofSet <= 1) ? 6 : (int) page;
 
         if(districtId == null && provinceId == null){
             String nativeQuery = "SELECT * FROM yards";
@@ -38,8 +40,8 @@ public class YardCustomRepository {
             query.setParameter(1, provinceId);
         }
         if(query != null){
-            query.setMaxResults(ofSet);
-            query.setFirstResult((page - 1) * ofSet);
+            query.setFirstResult(0);
+            query.setMaxResults(2);
             return query.getResultList();
         }else {
             return null;
