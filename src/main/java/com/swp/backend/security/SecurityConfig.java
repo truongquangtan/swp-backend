@@ -1,6 +1,8 @@
 package com.swp.backend.security;
 
+import com.google.protobuf.Api;
 import com.swp.backend.constance.ApiEndpointProperties;
+import com.swp.backend.constance.RoleProperties;
 import com.swp.backend.service.AccountService;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -48,8 +50,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         //Public endpoints
         http.authorizeHttpRequests().antMatchers(ApiEndpointProperties.publicEndpoint).permitAll();
+        http.authorizeHttpRequests().antMatchers(ApiEndpointProperties.ownerOnlyEndpoint).hasAuthority(RoleProperties.ROLE_OWNER);
         //Permission endpoints
         http.authorizeHttpRequests().anyRequest().authenticated();
+
+
+
         http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
