@@ -17,9 +17,9 @@ public class ApiEndpointProperties {
             "/api/v1/admin/view-all-user",
             "/api/v1/sub-yard/get-by-big-yard",
             "/api/v1/slot/get-by-date",
-            "/api/v1/owner/admin-register"
+            //"/api/v1/owner/admin-register"
     };
     public static String[] ownerOnlyEndpoint = {
-            //"/api/v1/owner/admin-register"
+            "/api/v1/owner/admin-register"
     };
 }
