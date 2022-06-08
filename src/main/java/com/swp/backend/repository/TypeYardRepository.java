@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TypeYardRepository extends JpaRepository<TypeYard, Integer> {
+    TypeYard getTypeYardById(int id);
 }
