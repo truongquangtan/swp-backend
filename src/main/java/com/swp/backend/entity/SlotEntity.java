@@ -20,7 +20,7 @@ public class SlotEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(name = "is_active")
-    private boolean isActive;
+    private boolean active;
     @Column(name = "ref_yard")
     private String refYard;
     @Column(name = "price")

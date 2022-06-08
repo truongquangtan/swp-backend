@@ -66,7 +66,7 @@ public class YardService {
                             .refYard(subYardId)
                             .startTime(LocalTime.parse(slot.getStartTime()))
                             .endTime(LocalTime.parse(slot.getEndTime()))
-                            .isActive(true)
+                            .active(true)
                             .price(slot.getPrice())
                             .build();
                     slotEntityList.add(slotEntity);
