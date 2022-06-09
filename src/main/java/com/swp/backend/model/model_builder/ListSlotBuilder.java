@@ -2,10 +2,9 @@ package com.swp.backend.model.model_builder;
 
 import com.swp.backend.entity.SlotEntity;
 import com.swp.backend.model.Slot;
-import com.swp.backend.model.model_builder.SlotBuilder;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class ListSlotBuilder {

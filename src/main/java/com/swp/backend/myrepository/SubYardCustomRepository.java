@@ -1,7 +1,6 @@
 package com.swp.backend.myrepository;
 
 import com.swp.backend.entity.SubYardEntity;
-import com.swp.backend.model.SubYardModel;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;

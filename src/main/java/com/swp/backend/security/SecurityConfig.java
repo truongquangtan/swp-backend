@@ -1,6 +1,5 @@
 package com.swp.backend.security;
 
-import com.google.protobuf.Api;
 import com.swp.backend.constance.ApiEndpointProperties;
 import com.swp.backend.constance.RoleProperties;
 import com.swp.backend.service.AccountService;
