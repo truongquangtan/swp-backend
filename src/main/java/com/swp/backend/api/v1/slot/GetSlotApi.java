@@ -1,10 +1,10 @@
 package com.swp.backend.api.v1.slot;
 
 import com.google.gson.Gson;
-import com.swp.backend.api.v1.sub_yard.get.SubYardResponse;
 import com.swp.backend.model.Slot;
 import com.swp.backend.service.SlotService;
 import com.swp.backend.service.SubYardService;
+import com.swp.backend.service.YardService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,11 +19,13 @@ import java.util.List;
 public class GetSlotApi {
     private SlotService slotService;
     private SubYardService subYardService;
+    private YardService yardService;
     private Gson gson;
 
     @PostMapping(value = "get-by-date")
     public ResponseEntity<String> getSlotBySubYardAndDate(@RequestBody(required = false) GetSlotRequest getSlotRequest)
     {
+        //Invalid Request Filter
         if(getSlotRequest == null)
         {
             return ResponseEntity.badRequest().body("Empty body");
@@ -33,18 +35,23 @@ public class GetSlotApi {
             return ResponseEntity.badRequest().body("Request can not be parsed");
         }
 
+        //BigYard not available filter
+        String bigYardId = subYardService.getBigYardIdFromSubYard(getSlotRequest.getSubYardId());
+        if(!yardService.isAvailableYard(bigYardId))
+        {
+            return ResponseEntity.badRequest().body("The Yard entity of this sub yard is not active or deleted.");
+        }
+
+        //Subyard not available filter
         if(!subYardService.isActiveSubYard(getSlotRequest.getSubYardId()))
         {
             return ResponseEntity.badRequest().body("SubYard is not active");
         }
 
+        //Successful query
         List<Slot> slots =  slotService.getAllSlotInSubYardByDate(getSlotRequest.getSubYardId(), getSlotRequest.getDate());
-
-        if(slots == null)
-        {
-            return ResponseEntity.internalServerError().body("Error when query!");
-        }
         SlotResponse response = new SlotResponse(slots);
         return ResponseEntity.ok().body(gson.toJson(response));
     }
+
 }

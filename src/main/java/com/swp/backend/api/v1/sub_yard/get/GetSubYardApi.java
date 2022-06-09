@@ -1,7 +1,6 @@
 package com.swp.backend.api.v1.sub_yard.get;
 
 import com.google.gson.Gson;
-import com.swp.backend.entity.SubYardEntity;
 import com.swp.backend.model.SubYardModel;
 import com.swp.backend.service.SubYardService;
 import com.swp.backend.service.YardService;
@@ -29,7 +28,7 @@ public class GetSubYardApi {
             return ResponseEntity.badRequest().body("Empty body");
         }
 
-        if(!yardService.isActiveYard(getSubYardRequest.getYardId()))
+        if(!yardService.isAvailableYard(getSubYardRequest.getYardId()))
         {
             return ResponseEntity.ok().body(gson.toJson(new SubYardResponse("The yard is not active or deleted.", null)));
         }

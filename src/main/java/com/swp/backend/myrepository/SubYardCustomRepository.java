@@ -37,4 +37,25 @@ public class SubYardCustomRepository {
             return null;
         }
     }
+
+    public String getBigYardIdFromSubYard(String subYardId)
+    {
+        Query query = null;
+
+        String nativeQuery = "SELECT s.parent_yard" +
+                " FROM sub_yards s" +
+                " WHERE s.Id = ?1";
+
+        query = entityManager.createNativeQuery(nativeQuery);
+        query.setParameter(1, subYardId);
+
+        if(query != null)
+        {
+            return (String) query.getSingleResult();
+        }
+        else
+        {
+            return null;
+        }
+    }
 }

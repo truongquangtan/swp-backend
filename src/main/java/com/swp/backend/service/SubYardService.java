@@ -40,4 +40,8 @@ public class SubYardService {
         SubYardEntity subYard = subYardRepository.getSubYardEntityByIdAndActive(subYardId, true);
         return subYard != null;
     }
+    public String getBigYardIdFromSubYard(String subYardId)
+    {
+        return subYardCustomRepository.getBigYardIdFromSubYard(subYardId);
+    }
 }
