@@ -42,7 +42,7 @@ public class GetSlotApi {
             return ResponseEntity.badRequest().body("The Yard entity of this sub yard is not active or deleted.");
         }
 
-        //Subyard not available filter
+        //SubYard not available filter
         if(!subYardService.isActiveSubYard(getSlotRequest.getSubYardId()))
         {
             return ResponseEntity.badRequest().body("SubYard is not active");
