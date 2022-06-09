@@ -111,4 +111,10 @@ public class YardService {
         });
         return YardResponse.builder().yards(yardModels).maxResult(maxResult).page(pageValue).build();
     }
+
+    public boolean isAvailableYard(String yardId)
+    {
+        YardEntity yard = yardRepository.findYardEntityByIdAndActiveAndDeleted(yardId, true, false);
+        return yard != null;
+    }
 }

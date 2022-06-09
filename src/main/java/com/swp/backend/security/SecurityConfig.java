@@ -50,7 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         //Public endpoints
         http.authorizeHttpRequests().antMatchers(ApiEndpointProperties.publicEndpoint).permitAll();
-        http.authorizeHttpRequests().antMatchers(ApiEndpointProperties.ownerOnlyEndpoint).hasAuthority(RoleProperties.ROLE_OWNER);
+        http.authorizeHttpRequests().antMatchers(ApiEndpointProperties.ownerOnlyEndpoint).hasAuthority(RoleProperties.ROLE_ADMIN);
         //Permission endpoints
         http.authorizeHttpRequests().anyRequest().authenticated();
 

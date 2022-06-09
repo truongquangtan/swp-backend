@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SubYardRepository extends JpaRepository<SubYardEntity, String> {
+    SubYardEntity getSubYardEntityByIdAndActive(String id, boolean isActive);
 }

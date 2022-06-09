@@ -14,11 +14,13 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class SubYardService {
     private SubYardCustomRepository subYardCustomRepository;
+    private SubYardRepository subYardRepository;
     private TypeYardRepository typeYardRepository;
 
     public List<SubYardModel> getSubYardsByBigYard(String bigYardId)
     {
         List<?> queriedSubYards = subYardCustomRepository.getAllSubYardByBigYard(bigYardId);
+
         List<SubYardModel> subYards = queriedSubYards.stream().map(subYardQueried -> {
             SubYardEntity subYardEntity = (SubYardEntity) subYardQueried;
             String typeYard = typeYardRepository.getTypeYardById(subYardEntity.getTypeYard()).getTypeName();
@@ -32,5 +34,14 @@ public class SubYardService {
         }).collect(Collectors.toList());
 
         return subYards;
+    }
+    public boolean isActiveSubYard(String subYardId)
+    {
+        SubYardEntity subYard = subYardRepository.getSubYardEntityByIdAndActive(subYardId, true);
+        return subYard != null;
+    }
+    public String getBigYardIdFromSubYard(String subYardId)
+    {
+        return subYardCustomRepository.getBigYardIdFromSubYard(subYardId);
     }
 }

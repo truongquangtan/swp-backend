@@ -34,27 +34,6 @@ public class AccountService {
         return account;
     }
 
-    public String generatePasswordForAdminAccount()
-    {
-        int PASS_GEN_LENGTH = 15;
-        String capitalCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        String lowerCaseLetters = "abcdefghijklmnopqrstuvwxyz";
-        String specialCharacters = "!@#$";
-        String numbers = "1234567890";
-        String combinedChars = capitalCaseLetters + lowerCaseLetters + specialCharacters + numbers;
-        Random random = new Random();
-        char[] password = new char[PASS_GEN_LENGTH];
-
-        password[0] = lowerCaseLetters.charAt(random.nextInt(lowerCaseLetters.length()));
-        password[1] = capitalCaseLetters.charAt(random.nextInt(capitalCaseLetters.length()));
-        password[2] = specialCharacters.charAt(random.nextInt(specialCharacters.length()));
-        password[3] = numbers.charAt(random.nextInt(numbers.length()));
-
-        for(int i = 4; i< PASS_GEN_LENGTH ; i++) {
-            password[i] = combinedChars.charAt(random.nextInt(combinedChars.length()));
-        }
-        return String.copyValueOf(password);
-    }
 
     public AccountEntity findAccountByUsername(String username){
         //Case username is null
@@ -111,7 +90,7 @@ public class AccountService {
             throw new DataIntegrityViolationException("Email already use by another account.");
         }
         String uuid = UUID.randomUUID().toString();
-        RoleEntity roleEntity = roleService.getRoleByRoleName(RoleProperties.ROLE_ADMIN);
+        RoleEntity roleEntity = roleService.getRoleByRoleName(RoleProperties.ROLE_OWNER);
         AccountEntity accountEntity = AccountEntity.builder()
                 .userId(uuid)
                 .email(email)
