@@ -1,6 +1,6 @@
 package com.swp.backend.service;
 
-import com.swp.backend.api.v1.slot.ListSlotBuilder;
+import com.swp.backend.model.model_builder.ListSlotBuilder;
 import com.swp.backend.entity.SlotEntity;
 import com.swp.backend.model.Slot;
 import com.swp.backend.myrepository.SlotCustomRepository;
