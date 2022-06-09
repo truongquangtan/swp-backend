@@ -1,4 +1,4 @@
-package com.swp.backend.api.v1.admin;
+package com.swp.backend.api.v1.admin.view_user;
 
 import com.google.gson.Gson;
 import com.swp.backend.service.AccountService;
