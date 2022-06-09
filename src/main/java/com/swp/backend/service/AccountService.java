@@ -85,26 +85,29 @@ public class AccountService {
         emailService.sendHtmlTemplateMessage(accountEntity.getEmail(), emailSubject, htmlBody);
     }
 
-
     public AccountEntity createOwnerAccount(String email, String fullName, String password, String phone) throws DataAccessException{
-        AccountEntity account = findAccountByUsername(email);
-        if(account != null){
-            throw new DataIntegrityViolationException("Email already use by another account.");
+        try {
+            String uuid = UUID.randomUUID().toString();
+            RoleEntity roleEntity = roleService.getRoleByRoleName(RoleProperties.ROLE_OWNER);
+            AccountEntity accountEntity = AccountEntity.builder()
+                    .userId(uuid)
+                    .email(email)
+                    .fullName(fullName)
+                    .phone(phone)
+                    .password(passwordEncoder.encode(password))
+                    .roleId(roleEntity.getId())
+                    .isConfirmed(true)
+                    .isActive(true)
+                    .build();
+            accountRepository.save(accountEntity);
+            return accountEntity;
+        }catch (DataAccessException dataAccessException){
+            if (dataAccessException instanceof  DataIntegrityViolationException){
+                throw new DataIntegrityViolationException("Email already use by another account.");
+            }else {
+                throw dataAccessException;
+            }
         }
-        String uuid = UUID.randomUUID().toString();
-        RoleEntity roleEntity = roleService.getRoleByRoleName(RoleProperties.ROLE_OWNER);
-        AccountEntity accountEntity = AccountEntity.builder()
-                .userId(uuid)
-                .email(email)
-                .fullName(fullName)
-                .phone(phone)
-                .password(passwordEncoder.encode(password))
-                .roleId(roleEntity.getId())
-                .isConfirmed(true)
-                .isActive(true)
-                .build();
-        accountRepository.save(accountEntity);
-        return accountEntity;
     }
     public void sendOwnerAccountViaEmail(String email, String password)
     {

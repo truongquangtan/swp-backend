@@ -29,14 +29,13 @@ public class InviteOwnerApi {
                     @ApiResponse(responseCode = "500", description = "Can't generate jwt token or access database failed.")
             }
     )
-    public ResponseEntity<String> register(@RequestBody(required = false) InviteOwnerRequest inviteRequest){
+    public ResponseEntity<String> register(@RequestBody(required = false) InviteOwnerRequest inviteRequest) {
         try {
-            if(inviteRequest == null){
+            if (inviteRequest == null) {
                 ErrorResponse errorResponse = ErrorResponse.builder().message("Missing body.").build();
                 return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
             }
-            if(!inviteRequest.isValid())
-            {
+            if (!inviteRequest.isValid()) {
                 return ResponseEntity.badRequest().body("Body is in incorrect format.");
             }
 
@@ -47,12 +46,16 @@ public class InviteOwnerApi {
 
             accountService.sendOwnerAccountViaEmail(accountEntity.getEmail(), password);
 
-            InviteOwnerResponse response = new InviteOwnerResponse("Invite admin success", accountEntity.getEmail(), password);
+            InviteOwnerResponse response = InviteOwnerResponse.builder()
+                    .message("Invite admin success")
+                    .email(accountEntity.getEmail())
+                    .password(password)
+                    .build();
 
             return ResponseEntity.ok().body(gson.toJson(response));
-        }catch (DataAccessException dataAccessException){
+        } catch (DataAccessException dataAccessException) {
             return ResponseEntity.badRequest().body(dataAccessException.getMessage());
-        }catch (Exception exception){
+        } catch (Exception exception) {
             exception.printStackTrace();
             return ResponseEntity.internalServerError().body("Server temp error.");
         }
