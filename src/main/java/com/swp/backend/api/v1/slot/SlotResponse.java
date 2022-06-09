@@ -10,5 +10,6 @@ import java.util.List;
 @AllArgsConstructor
 @Data
 public class SlotResponse {
-    List<Slot> slots;
+    private String message;
+    private List<Slot> slots;
 }
