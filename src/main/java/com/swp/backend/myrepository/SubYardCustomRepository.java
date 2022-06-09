@@ -20,7 +20,10 @@ public class SubYardCustomRepository {
 
         String nativeQuery = "SELECT s.*" +
                 " FROM sub_yards s INNER JOIN yards y ON s.parent_yard = y.id" +
-                " WHERE s.parent_yard = ?1";
+                " WHERE s.parent_yard = ?1" +
+                  " AND s.is_active = true" +
+                  " AND y.is_active = true" +
+                  " AND y.is_deleted = false";
 
         query = entityManager.createNativeQuery(nativeQuery, SubYardEntity.class);
         query.setParameter(1, bigYardId);

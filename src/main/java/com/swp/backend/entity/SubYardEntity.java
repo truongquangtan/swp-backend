@@ -29,4 +29,6 @@ public class SubYardEntity {
     private int typeYard;
     @Column(name = "create_at")
     private Timestamp createAt;
+    @Column(name = "is_active")
+    private boolean active;
 }

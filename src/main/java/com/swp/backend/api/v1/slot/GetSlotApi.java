@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.swp.backend.api.v1.sub_yard.get.SubYardResponse;
 import com.swp.backend.model.Slot;
 import com.swp.backend.service.SlotService;
+import com.swp.backend.service.SubYardService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +18,7 @@ import java.util.List;
 @RequestMapping(value = "api/v1/slot")
 public class GetSlotApi {
     private SlotService slotService;
+    private SubYardService subYardService;
     private Gson gson;
 
     @PostMapping(value = "get-by-date")
@@ -31,7 +33,12 @@ public class GetSlotApi {
             return ResponseEntity.badRequest().body("Request can not be parsed");
         }
 
-        List<Slot> slots = slotService.getAllSlotInSubYardByDate(getSlotRequest.getSubYardId(), getSlotRequest.getDate());
+        if(!subYardService.isActiveSubYard(getSlotRequest.getSubYardId()))
+        {
+            return ResponseEntity.badRequest().body("SubYard is not active");
+        }
+
+        List<Slot> slots =  slotService.getAllSlotInSubYardByDate(getSlotRequest.getSubYardId(), getSlotRequest.getDate());
 
         if(slots == null)
         {

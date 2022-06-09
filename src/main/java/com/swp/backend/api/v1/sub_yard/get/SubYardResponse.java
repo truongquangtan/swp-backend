@@ -9,5 +9,6 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class SubYardResponse {
+    private String message;
     private List<SubYardModel> subYards;
 }

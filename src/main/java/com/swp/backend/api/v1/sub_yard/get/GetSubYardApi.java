@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.swp.backend.entity.SubYardEntity;
 import com.swp.backend.model.SubYardModel;
 import com.swp.backend.service.SubYardService;
+import com.swp.backend.service.YardService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +18,7 @@ import java.util.List;
 @RequestMapping(value = "api/v1/sub-yard")
 public class GetSubYardApi {
     private SubYardService subYardService;
+    private YardService yardService;
     private Gson gson;
 
     @PostMapping(value = "get-by-big-yard")
@@ -27,8 +29,13 @@ public class GetSubYardApi {
             return ResponseEntity.badRequest().body("Empty body");
         }
 
+        if(!yardService.isActiveYard(getSubYardRequest.getYardId()))
+        {
+            return ResponseEntity.ok().body(gson.toJson(new SubYardResponse("The yard is not active or deleted.", null)));
+        }
+
         List<SubYardModel> subYards = subYardService.getSubYardsByBigYard(getSubYardRequest.getYardId());
-        SubYardResponse response = new SubYardResponse(subYards);
+        SubYardResponse response = new SubYardResponse("Get successful", subYards);
 
         return ResponseEntity.ok().body(gson.toJson(response));
     }

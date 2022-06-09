@@ -90,7 +90,7 @@ public class AccountService {
             throw new DataIntegrityViolationException("Email already use by another account.");
         }
         String uuid = UUID.randomUUID().toString();
-        RoleEntity roleEntity = roleService.getRoleByRoleName(RoleProperties.ROLE_ADMIN);
+        RoleEntity roleEntity = roleService.getRoleByRoleName(RoleProperties.ROLE_OWNER);
         AccountEntity accountEntity = AccountEntity.builder()
                 .userId(uuid)
                 .email(email)
