@@ -1,9 +1,9 @@
-package com.swp.backend.api.v1.slot;
+package com.swp.backend.model.model_builder;
 
 import com.swp.backend.entity.SlotEntity;
 import com.swp.backend.model.Slot;
+import com.swp.backend.model.model_builder.SlotBuilder;
 
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
