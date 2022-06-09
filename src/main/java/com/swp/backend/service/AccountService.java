@@ -103,7 +103,7 @@ public class AccountService {
             return accountEntity;
         }catch (DataAccessException dataAccessException){
             if (dataAccessException instanceof  DataIntegrityViolationException){
-                throw new DataIntegrityViolationException("Email already use by another account.");
+                throw new DataIntegrityViolationException("Email or phone already use by another account.");
             }else {
                 throw dataAccessException;
             }

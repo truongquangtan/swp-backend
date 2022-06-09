@@ -54,7 +54,10 @@ public class InviteOwnerApi {
 
             return ResponseEntity.ok().body(gson.toJson(response));
         } catch (DataAccessException dataAccessException) {
-            return ResponseEntity.badRequest().body(dataAccessException.getMessage());
+            ErrorResponse errorResponse = ErrorResponse.builder()
+                    .message(dataAccessException.getMessage())
+                    .build();
+            return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
         } catch (Exception exception) {
             exception.printStackTrace();
             return ResponseEntity.internalServerError().body("Server temp error.");
