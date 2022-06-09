@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.swp.backend.entity.AccountEntity;
 import com.swp.backend.exception.ErrorResponse;
 import com.swp.backend.service.AccountService;
+import com.swp.backend.utils.PasswordGenerator;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AllArgsConstructor;
@@ -39,7 +40,8 @@ public class InviteOwnerApi {
                 return ResponseEntity.badRequest().body("Body is in incorrect format.");
             }
 
-            String password = accountService.generatePasswordForAdminAccount();
+            int numOfCharacters = 15;
+            String password = PasswordGenerator.generatePassword(numOfCharacters);
 
             AccountEntity accountEntity = accountService.createOwnerAccount(inviteRequest.getEmail(), inviteRequest.getFullName(), password, inviteRequest.getPhone());
 
