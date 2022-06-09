@@ -1,7 +1,6 @@
-package com.swp.backend.api.v1.owner.invite_admin;
+package com.swp.backend.api.v1.admin.invite_owner;
 
 import com.google.gson.Gson;
-import com.swp.backend.constance.RoleProperties;
 import com.swp.backend.entity.AccountEntity;
 import com.swp.backend.exception.ErrorResponse;
 import com.swp.backend.service.AccountService;
@@ -16,20 +15,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = "api/v1/owner")
+@RequestMapping(value = "api/v1/admin")
 @AllArgsConstructor
-public class InviteAdminApi {
+public class InviteOwnerApi {
     Gson gson;
     AccountService accountService;
 
-    @PostMapping("admin-register")
+    @PostMapping("owner-register")
     @ApiResponses(
             value = {
                     @ApiResponse(responseCode = "400", description = "Missing request body, request body wrong format or email is already used by another account."),
                     @ApiResponse(responseCode = "500", description = "Can't generate jwt token or access database failed.")
             }
     )
-    public ResponseEntity<String> register(@RequestBody(required = false) InviteAdminRequest inviteRequest){
+    public ResponseEntity<String> register(@RequestBody(required = false) InviteOwnerRequest inviteRequest){
         try {
             if(inviteRequest == null){
                 ErrorResponse errorResponse = ErrorResponse.builder().message("Missing body.").build();
@@ -42,11 +41,11 @@ public class InviteAdminApi {
 
             String password = accountService.generatePasswordForAdminAccount();
 
-            AccountEntity accountEntity = accountService.createAdminAccount(inviteRequest.getEmail(), inviteRequest.getFullName(), password, inviteRequest.getPhone());
+            AccountEntity accountEntity = accountService.createOwnerAccount(inviteRequest.getEmail(), inviteRequest.getFullName(), password, inviteRequest.getPhone());
 
-            accountService.sendAdminAccountViaEmail(accountEntity.getEmail(), password);
+            accountService.sendOwnerAccountViaEmail(accountEntity.getEmail(), password);
 
-            InviteAdminResponse response = new InviteAdminResponse("Invite admin success", accountEntity.getEmail(), password);
+            InviteOwnerResponse response = new InviteOwnerResponse("Invite admin success", accountEntity.getEmail(), password);
 
             return ResponseEntity.ok().body(gson.toJson(response));
         }catch (DataAccessException dataAccessException){

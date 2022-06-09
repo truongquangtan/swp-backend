@@ -1,4 +1,4 @@
-package com.swp.backend.api.v1.owner.invite_admin;
+package com.swp.backend.api.v1.admin.invite_owner;
 
 import com.swp.backend.utils.RegexHelper;
 import lombok.AllArgsConstructor;
@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class InviteAdminRequest {
+public class InviteOwnerRequest {
     private String email;
     private String fullName;
     private String phone;
