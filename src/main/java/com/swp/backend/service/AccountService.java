@@ -5,7 +5,6 @@ import com.swp.backend.entity.AccountEntity;
 import com.swp.backend.entity.AccountOtpEntity;
 import com.swp.backend.entity.RoleEntity;
 import com.swp.backend.repository.AccountRepository;
-import com.swp.backend.repository.RoleRepository;
 import com.swp.backend.utils.RegexHelper;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataAccessException;
@@ -106,7 +105,7 @@ public class AccountService {
     }
 
 
-    public AccountEntity createAdminAccount(String email, String fullName, String password, String phone) throws DataAccessException{
+    public AccountEntity createOwnerAccount(String email, String fullName, String password, String phone) throws DataAccessException{
         AccountEntity account = findAccountByUsername(email);
         if(account != null){
             throw new DataIntegrityViolationException("Email already use by another account.");
@@ -126,7 +125,7 @@ public class AccountService {
         accountRepository.save(accountEntity);
         return accountEntity;
     }
-    public void sendAdminAccountViaEmail(String email, String password)
+    public void sendOwnerAccountViaEmail(String email, String password)
     {
         String emailSubject = "INVITE TO USE YARD BOOKING ADMIN ACCOUNT";
         String htmlBody = "<img style=\"display: block; width: 60px; padding: 2px; height: 60px; margin: auto;\" src=\"https://firebasestorage.googleapis.com/v0/b/fu-swp391.appspot.com/o/mail-icon.png?alt=media\">" +
