@@ -4,6 +4,7 @@ import com.swp.backend.constance.RoleProperties;
 import com.swp.backend.entity.AccountEntity;
 import com.swp.backend.entity.AccountOtpEntity;
 import com.swp.backend.entity.RoleEntity;
+import com.swp.backend.model.AccountModel;
 import com.swp.backend.repository.AccountRepository;
 import com.swp.backend.utils.RegexHelper;
 import lombok.AllArgsConstructor;
@@ -12,9 +13,10 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -83,26 +85,29 @@ public class AccountService {
         emailService.sendHtmlTemplateMessage(accountEntity.getEmail(), emailSubject, htmlBody);
     }
 
-
     public AccountEntity createOwnerAccount(String email, String fullName, String password, String phone) throws DataAccessException{
-        AccountEntity account = findAccountByUsername(email);
-        if(account != null){
-            throw new DataIntegrityViolationException("Email already use by another account.");
+        try {
+            String uuid = UUID.randomUUID().toString();
+            RoleEntity roleEntity = roleService.getRoleByRoleName(RoleProperties.ROLE_OWNER);
+            AccountEntity accountEntity = AccountEntity.builder()
+                    .userId(uuid)
+                    .email(email)
+                    .fullName(fullName)
+                    .phone(phone)
+                    .password(passwordEncoder.encode(password))
+                    .roleId(roleEntity.getId())
+                    .isConfirmed(true)
+                    .isActive(true)
+                    .build();
+            accountRepository.save(accountEntity);
+            return accountEntity;
+        }catch (DataAccessException dataAccessException){
+            if (dataAccessException instanceof  DataIntegrityViolationException){
+                throw new DataIntegrityViolationException("Email or phone already use by another account.");
+            }else {
+                throw dataAccessException;
+            }
         }
-        String uuid = UUID.randomUUID().toString();
-        RoleEntity roleEntity = roleService.getRoleByRoleName(RoleProperties.ROLE_OWNER);
-        AccountEntity accountEntity = AccountEntity.builder()
-                .userId(uuid)
-                .email(email)
-                .fullName(fullName)
-                .phone(phone)
-                .password(passwordEncoder.encode(password))
-                .roleId(roleEntity.getId())
-                .isConfirmed(true)
-                .isActive(true)
-                .build();
-        accountRepository.save(accountEntity);
-        return accountEntity;
     }
     public void sendOwnerAccountViaEmail(String email, String password)
     {
@@ -130,7 +135,31 @@ public class AccountService {
          accountRepository.save(accountEntity);
     }
 
-    public List<AccountEntity> getAllUserHasRoleUser(){
-        return accountRepository.findAccountEntitiesByRoleIdOrRoleId(1, 3);
+    public List<AccountModel> getAllUserHasRoleUser(){
+        List<RoleEntity> roleEntities = roleService.getAllRole();
+        if(roleEntities == null || roleEntities.size() == 0){
+            return null;
+        }
+        HashMap<Integer, String> roleMap = new HashMap<>();
+        roleEntities.forEach(role -> {
+            roleMap.put(role.getId(), role.getRoleName());
+        });
+
+        List<AccountEntity> accounts = accountRepository.findAccountEntitiesByRoleIdOrRoleId(1, 3);
+        if(accounts == null || accounts.size() == 0){
+            return null;
+        }
+        return accounts.stream().map(account -> {
+            return AccountModel.builder()
+                    .userId(account.getUserId())
+                    .fullName(account.getFullName())
+                    .email(account.getEmail())
+                    .phone(account.getPhone())
+                    .isActive(account.isActive())
+                    .isConfirmed(account.isConfirmed())
+                    .avatar(account.getAvatar())
+                    .role(roleMap.get(account.getRoleId()))
+                    .build();
+        }).collect(Collectors.toList());
     }
 }
