@@ -26,7 +26,7 @@ public class SlotService {
 
         if(DateHelper.isToday(DateHelper.parseFromStringToDate(date)))
         {
-            allSlots = getAllSlotsInSubYardByToday(subYardId, date);
+            allSlots = getAllSlotsInSubYardByToday(subYardId);
             bookedSlots = getBookedSlotsInSubYardByToday(subYardId, date);
         }
         else
@@ -40,9 +40,10 @@ public class SlotService {
         return allSlots;
 
     }
-    public List<Slot> getAllSlotsInSubYardByToday(String subYardId, String date)
+    public List<Slot> getAllSlotsInSubYardByToday(String subYardId)
     {
-        LocalTime localTime = DateHelper.getLocalTimeFromDateString(date);
+        Timestamp now = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
+        LocalTime localTime = DateHelper.getLocalTimeFromTimeStamp(now);
         List<SlotEntity> allSlotEntities = slotRepository.findSlotEntitiesByStartTimeGreaterThanAndRefYardAndActiveIsTrue(localTime, subYardId);
         return ListSlotBuilder.getAvailableSlotsFromSlotEntities(allSlotEntities);
     }
@@ -54,14 +55,15 @@ public class SlotService {
     public List<Slot> getBookedSlotsInSubYardByToday(String subYardId, String date)
     {
         Timestamp timestampFromDate = DateHelper.parseFromStringToTimestamp(date);
-        LocalTime localTimeFromDate = DateHelper.getLocalTimeFromDateString(date);
-        List<?> queriedSlots = slotCustomRepository.getAllBookedSlotInSubYardByToday(subYardId, timestampFromDate, localTimeFromDate);
+        Timestamp now = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
+        LocalTime localTimeNow = DateHelper.getLocalTimeFromTimeStamp(now);
+        List<?> queriedSlots = slotCustomRepository.getAllBookedSlotInSubYardByToday(subYardId, timestampFromDate, localTimeNow);
 
         return ListSlotBuilder.getBookedSlotsFromQueriedSlotEntities(queriedSlots);
     }
     public List<Slot> getBookedSlotsInSubYardByFutureDate(String subYardId, String date)
     {
-        Timestamp timestamp = DateHelper.parseFromStringToTimestampOfDate(date);
+        Timestamp timestamp = DateHelper.parseFromStringToTimestamp(date);
         List<?> queriedSlots = slotCustomRepository.getAllBookedSlotInSubYardByFutureDate(subYardId, timestamp);
         return ListSlotBuilder.getBookedSlotsFromQueriedSlotEntities(queriedSlots);
     }

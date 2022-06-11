@@ -16,7 +16,9 @@ public class ApiEndpointProperties {
             "/api/v1/yards/search",
             "/api/v1/yards",
             "/api/v1/yards/**",
-            "/api/v1/slots/get-by-date"
+            "/api/v1/slots/get-by-date",
+            "/api/v1/sub-yards",
+            "/api/v1/sub-yards/**"
     };
     public static String[] ownerOnlyEndpoint = {
 
