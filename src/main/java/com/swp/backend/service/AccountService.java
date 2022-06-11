@@ -5,6 +5,8 @@ import com.swp.backend.entity.AccountEntity;
 import com.swp.backend.entity.AccountOtpEntity;
 import com.swp.backend.entity.RoleEntity;
 import com.swp.backend.model.AccountModel;
+import com.swp.backend.repository.AccountLoginRepository;
+import com.swp.backend.repository.AccountOtpRepository;
 import com.swp.backend.repository.AccountRepository;
 import com.swp.backend.utils.RegexHelper;
 import lombok.AllArgsConstructor;
@@ -25,6 +27,7 @@ public class AccountService {
     private final RoleService roleService;
     private final BCryptPasswordEncoder passwordEncoder;
     private final EmailService emailService;
+    private final AccountLoginService accountLoginService;
 
     public AccountEntity updatePassword(String username, String password) throws DataAccessException{
         AccountEntity account = findAccountByUsername(username);
@@ -33,6 +36,7 @@ public class AccountService {
         }
         account.setPassword(passwordEncoder.encode(password));
         accountRepository.save(account);
+        accountLoginService.deleteLogin(username);
         return account;
     }
 

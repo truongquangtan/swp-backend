@@ -73,16 +73,10 @@ public class ForgotPasswordRestApi {
                         account.isConfirmed()
                 );
                 accountLoginService.saveLogin(account.getUserId(), token);
-                LoginResponse loginResponse = LoginResponse.builder()
+                ConfirmOtpResponse confirmOtpResponse = ConfirmOtpResponse.builder()
                         .token(token)
-                        .userId(account.getUserId())
-                        .avatar(account.getAvatar())
-                        .email(account.getEmail())
-                        .phone(account.getPhone())
-                        .role(role.getRoleName())
-                        .fullName(account.getFullName())
                         .build();
-                return ResponseEntity.ok().body(gson.toJson(loginResponse));
+                return ResponseEntity.ok().body(gson.toJson(confirmOtpResponse));
             }
         } catch (Exception exception) {
             exception.printStackTrace();
