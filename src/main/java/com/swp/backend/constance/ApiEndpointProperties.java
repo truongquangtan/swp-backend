@@ -15,7 +15,7 @@ public class ApiEndpointProperties {
             "/api/v1/forgot/confirm-otp",
             "/api/v1/yards/search",
             "/api/v1/admin/view-all-user",
-            "/api/v1/sub-yards/{yardId}",
+            "/api/v1/yards/{yardId}",
             "/api/v1/slots/get-by-date"
     };
     public static String[] ownerOnlyEndpoint = {

@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping(value = "api/v1/sub-yards")
+@RequestMapping(value = "api/v1/yards")
 public class GetSubYardApi {
     private SubYardService subYardService;
     private YardService yardService;
