@@ -1,22 +1,26 @@
 package com.swp.backend.api.v1.booking;
 
+import com.swp.backend.entity.BookingEntity;
 import com.swp.backend.model.BookingModel;
-import com.swp.backend.utils.DateHelper;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import java.util.List;
+
 import java.util.List;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class BookingRequest {
-    private List<BookingModel> bookingModels;
+    private List<BookingModel> bookingList;
+    private String voucherId;
+
     public boolean isValid()
     {
-        for(int i = 0; i < bookingModels.size(); ++i)
+        for(BookingModel bookingModel : bookingList)
         {
-            BookingModel bookingModel = bookingModels.get(i);
-            String date = bookingModel.getDate();
-            if(DateHelper.parseFromStringToTimestampOfDate(date) == null)
+            if(bookingModel.isValid() == false)
             {
                 return false;
             }

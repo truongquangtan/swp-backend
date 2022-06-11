@@ -15,7 +15,7 @@ public class ApiEndpointProperties {
             "/api/v1/forgot/confirm-otp",
             "/api/v1/yards/search",
             "/api/v1/yards",
-            "/api/v1/yards/**",
+            "/api/v1/yards/{yardId}",
             "/api/v1/slots/get-by-date",
             "/api/v1/sub-yards",
             "/api/v1/sub-yards/**"
@@ -29,5 +29,9 @@ public class ApiEndpointProperties {
             "/api/v1/admin/deactivate-account",
             "/api/v1/admin/owner-register",
             "/api/v1/admin/view-all-user"
+    };
+
+    public static String[] userOnlyEndpoint = {
+            "/api/v1/yards/{yardId}/booking"
     };
 }

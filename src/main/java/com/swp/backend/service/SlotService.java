@@ -1,14 +1,17 @@
 package com.swp.backend.service;
 
+import com.swp.backend.constance.BookingStatus;
 import com.swp.backend.entity.SlotEntity;
 import com.swp.backend.model.Slot;
 import com.swp.backend.model.model_builder.ListSlotBuilder;
 import com.swp.backend.myrepository.SlotCustomRepository;
+import com.swp.backend.repository.BookingRepository;
 import com.swp.backend.repository.SlotRepository;
 import com.swp.backend.utils.DateHelper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalTime;
 import java.util.List;
@@ -18,6 +21,7 @@ import java.util.List;
 public class SlotService {
     private SlotCustomRepository slotCustomRepository;
     private SlotRepository slotRepository;
+    private BookingRepository bookingRepository;
 
     public List<Slot> getAllSlotInSubYardByDate(String subYardId, String date)
     {
@@ -87,12 +91,28 @@ public class SlotService {
         return allSlots;
     }
 
-    public String getYardIdFromSlotId(int slotId)
-    {
-        return slotCustomRepository.findYardIdFromSlotId(slotId);
-    }
     public String getSubYardIdFromSlotId(int slotId)
     {
         return slotCustomRepository.findSubYardIdFromSlotId(slotId);
+    }
+    public boolean isSlotAvailableFromBooking(int slotId, Timestamp timestamp)
+    {
+        return bookingRepository.getBookingEntityBySlotIdAndStatusAndDate(slotId, BookingStatus.SUCCESS, timestamp) == null;
+    }
+    public boolean isSlotActive(int slotId)
+    {
+        return slotRepository.findSlotEntityByIdAndActive(slotId, true) != null;
+    }
+    public boolean isSlotExist(int slotId)
+    {
+        return slotRepository.findSlotEntityById(slotId) != null;
+    }
+
+    public boolean isSlotExceedTimeToday(int slotId)
+    {
+        Timestamp now = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
+        LocalTime localTimeToday = DateHelper.getLocalTimeFromTimeStamp(now);
+        SlotEntity slotEntity = slotRepository.findSlotEntityByIdAndStartTimeGreaterThanAndActive(slotId, localTimeToday, true);
+        return slotEntity != null;
     }
 }

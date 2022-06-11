@@ -2,85 +2,80 @@ package com.swp.backend.api.v1.booking;
 
 import com.google.gson.Gson;
 import com.swp.backend.api.v1.slot.SlotResponse;
+import com.swp.backend.constance.BookingStatus;
+import com.swp.backend.constance.RoleProperties;
+import com.swp.backend.entity.BookingEntity;
 import com.swp.backend.model.BookingModel;
-import com.swp.backend.service.SecurityContextService;
-import com.swp.backend.service.SlotService;
-import com.swp.backend.service.SubYardService;
-import com.swp.backend.service.YardService;
+import com.swp.backend.service.*;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+import java.util.ArrayList;
 
 import java.awt.print.Book;
 
 @RestController
-@RequestMapping(value = "api/v1/booking")
+@AllArgsConstructor
+@RequestMapping(value = "api/v1/yards")
 public class BookingApi {
     private SecurityContextService securityContextService;
     private YardService yardService;
     private SlotService slotService;
-    private SubYardService subYardService;
     private Gson gson;
+    private BookingService bookingService;
 
 
-    @PostMapping(value = "book")
-    public ResponseEntity<String> bookSlots(@RequestBody(required = false) BookingRequest request)
+    @PostMapping(value = "{yardId}/booking")
+    public ResponseEntity<String> bookSlots(@RequestBody(required = false) BookingRequest request, @PathVariable String yardId)
     {
         BookingResponse response;
+        List<BookingEntity> bookingEntities = new ArrayList<>();
 
+        String userId;
         SecurityContext context = SecurityContextHolder.getContext();
-        String userIdRequest = securityContextService.extractUsernameFromContext(context);
+        userId = securityContextService.extractUsernameFromContext(context);
 
         //Request Validation filter
         if(request == null)
         {
-            response = new BookingResponse("Null request body", null);
+            response = new BookingResponse("Null request body", true, null);
             return ResponseEntity.badRequest().body(gson.toJson(response));
         }
         if(!request.isValid())
         {
-            response = new BookingResponse("Cannot parse request", null);
+            response = new BookingResponse("Cannot parse request", true,null);
             return ResponseEntity.badRequest().body(gson.toJson(response));
         }
 
         //BigYard not available filter
-        for(BookingModel bookingModel : request.getBookingModels())
+        if(!yardService.isAvailableYard(yardId))
         {
-            String bigYardId = slotService.getYardIdFromSlotId(bookingModel.getSlotId());
-            if(bigYardId == null)
-            {
-                response = new BookingResponse("Cannot find big yard from slot id", null);
-                return ResponseEntity.badRequest().body(gson.toJson(response));
-            }
-            if(!yardService.isAvailableYard(bigYardId))
-            {
-                response = new BookingResponse("The Yard entity of this slot is not active or deleted.", null);
-                return ResponseEntity.badRequest().body(gson.toJson(response));
-            }
+            response = new BookingResponse("The Yard entity of this slots is not active or deleted.", true, null);
+            return ResponseEntity.badRequest().body(gson.toJson(response));
         }
 
-        //SubYard not available filter
-        for(BookingModel bookingModel : request.getBookingModels())
+        //Booking process
+        try
         {
-            String subYardId = slotService.getSubYardIdFromSlotId(bookingModel.getSlotId());
-            if(subYardId == null)
+            boolean isError = false, isChecked = false;
+            for(BookingModel bookingModel : request.getBookingList())
             {
-                response = new BookingResponse("Cannot find sub yard from slot id " + bookingModel.getSlotId(), null);
-                return ResponseEntity.badRequest().body(gson.toJson(response));
+                BookingEntity booking = bookingService.book(userId, bookingModel);
+                bookingEntities.add(booking);
+                if(!isChecked && booking.getStatus().equals(BookingStatus.FAILED))
+                {
+                    isError = true;
+                    isChecked = true;
+                }
             }
-            if(!subYardService.isActiveSubYard(subYardId))
-            {
-                response = new BookingResponse("SubYard of slot id " + bookingModel.getSlotId() + " is not active", null);
-                return ResponseEntity.badRequest().body(gson.toJson(response));
-            }
+            response = new BookingResponse(isError ? "There were some booking slot error." : "Booking all slot successfully", isError, bookingEntities);
+            return ResponseEntity.ok().body(gson.toJson(response));
+        } catch (Exception ex)
+        {
+            return ResponseEntity.internalServerError().body("Error when save in database");
         }
-
-        //Slot not available filter
-
-        return ResponseEntity.ok().body("");
     }
 }
