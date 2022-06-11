@@ -7,26 +7,24 @@ import com.swp.backend.service.SubYardService;
 import com.swp.backend.service.YardService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping(value = "api/v1/slots")
+@RequestMapping(value = "api/v1")
 public class GetSlotApi {
     private SlotService slotService;
     private SubYardService subYardService;
     private YardService yardService;
     private Gson gson;
 
-    @PostMapping(value = "get-by-date")
-    public ResponseEntity<String> getSlotBySubYardAndDate(@RequestBody(required = false) GetSlotRequest getSlotRequest)
+    @PostMapping(value = "sub-yards/{subYardId}/slots")
+    public ResponseEntity<String> getSlotBySubYardAndDate(@PathVariable String subYardId, @RequestBody(required = false) GetSlotRequest getSlotRequest)
     {
         SlotResponse response;
+
         //Invalid Request Filter
         if(getSlotRequest == null)
         {
@@ -40,7 +38,7 @@ public class GetSlotApi {
         }
 
         //BigYard not available filter
-        String bigYardId = subYardService.getBigYardIdFromSubYard(getSlotRequest.getSubYardId());
+        String bigYardId = subYardService.getBigYardIdFromSubYard(subYardId);
         if(!yardService.isAvailableYard(bigYardId))
         {
             response = new SlotResponse("The Yard entity of this sub yard is not active or deleted.", null);
@@ -48,14 +46,14 @@ public class GetSlotApi {
         }
 
         //SubYard not available filter
-        if(!subYardService.isActiveSubYard(getSlotRequest.getSubYardId()))
+        if(!subYardService.isActiveSubYard(subYardId))
         {
             response = new SlotResponse("SubYard is not active", null);
             return ResponseEntity.badRequest().body(gson.toJson(response));
         }
 
         //Successful query
-        List<Slot> slots =  slotService.getAllSlotInSubYardByDate(getSlotRequest.getSubYardId(), getSlotRequest.getDate());
+        List<Slot> slots =  slotService.getAllSlotInSubYardByDate(subYardId, getSlotRequest.getDate());
         response = new SlotResponse("Query successful", slots);
         return ResponseEntity.ok().body(gson.toJson(response));
     }
