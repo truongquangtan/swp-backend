@@ -15,7 +15,7 @@ public class GetSlotRequest {
 
     public boolean isValid()
     {
-        Timestamp dateParsed = DateHelper.parseFromStringToTimestampOfDate(date);
+        Timestamp dateParsed = DateHelper.parseFromStringToTimestamp(date);
         return dateParsed != null;
     }
 }

@@ -1,6 +1,7 @@
 package com.swp.backend.utils;
 
 import java.sql.Timestamp;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -22,20 +23,7 @@ public class DateHelper {
     }
 
     public static Timestamp parseFromStringToTimestamp(String input) {
-        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-        Date dateParsed;
-        Timestamp timestamp;
-        try {
-            dateParsed = format.parse(input);
-            timestamp = Timestamp.from(dateParsed.toInstant());
-        } catch (Exception ex) {
-            return null;
-        }
-        return timestamp;
-    }
-
-    public static Timestamp parseFromStringToTimestampOfDate(String input) {
-        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        DateFormat format =  new SimpleDateFormat("dd/MM/yyyy");
         format.setLenient(false);
         Date dateParsed;
         Timestamp timestamp;
@@ -78,15 +66,5 @@ public class DateHelper {
         String formattedLocalTime = format.format(date);
         LocalTime localTime = LocalTime.parse(formattedLocalTime);
         return localTime;
-    }
-    public static LocalTime getLocalTimeFromDateString(String date)
-    {
-        Timestamp timestamp = DateHelper.parseFromStringToTimestamp(date);
-        try {
-            LocalTime localTime = DateHelper.getLocalTimeFromTimeStamp(timestamp);
-            return localTime;
-        } catch (Exception ex){
-            return null;
-        }
     }
 }

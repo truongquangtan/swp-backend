@@ -7,7 +7,6 @@ import com.swp.backend.myrepository.SlotCustomRepository;
 import com.swp.backend.repository.SlotRepository;
 import com.swp.backend.utils.DateHelper;
 import lombok.AllArgsConstructor;
-import org.apache.tomcat.jni.Local;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -64,7 +63,7 @@ public class SlotService {
     }
     public List<Slot> getBookedSlotsInSubYardByFutureDate(String subYardId, String date)
     {
-        Timestamp timestamp = DateHelper.parseFromStringToTimestampOfDate(date);
+        Timestamp timestamp = DateHelper.parseFromStringToTimestamp(date);
         List<?> queriedSlots = slotCustomRepository.getAllBookedSlotInSubYardByFutureDate(subYardId, timestamp);
         return ListSlotBuilder.getBookedSlotsFromQueriedSlotEntities(queriedSlots);
     }
