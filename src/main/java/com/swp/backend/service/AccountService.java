@@ -5,8 +5,6 @@ import com.swp.backend.entity.AccountEntity;
 import com.swp.backend.entity.AccountOtpEntity;
 import com.swp.backend.entity.RoleEntity;
 import com.swp.backend.model.AccountModel;
-import com.swp.backend.repository.AccountLoginRepository;
-import com.swp.backend.repository.AccountOtpRepository;
 import com.swp.backend.repository.AccountRepository;
 import com.swp.backend.utils.RegexHelper;
 import lombok.AllArgsConstructor;
@@ -40,12 +38,12 @@ public class AccountService {
         return account;
     }
 
-
     public AccountEntity findAccountByUsername(String username){
         //Case username is null
         if(username == null){
             return null;
         }
+
         //Find user by username, phone, or password
         if(username.matches(RegexHelper.EMAIL_REGEX)){
             return accountRepository.findUserEntityByEmail(username);
@@ -165,5 +163,32 @@ public class AccountService {
                     .role(roleMap.get(account.getRoleId()))
                     .build();
         }).collect(Collectors.toList());
+    }
+
+    public boolean deactivateAccount(String userId) throws DataAccessException{
+        AccountEntity account = findAccountByUsername(userId);
+        if(account == null){
+            return false;
+        }
+        account.setActive(false);
+        accountRepository.save(account);
+        new Thread(() -> {
+            try {
+                accountLoginService.deleteLogin(userId);
+            }catch (Exception exception){
+                exception.printStackTrace();
+            }
+        }).start();
+        return true;
+    }
+
+    public boolean reactivateAccount(String userId) throws DataAccessException{
+        AccountEntity account = findAccountByUsername(userId);
+        if(account == null){
+            return false;
+        }
+        account.setActive(true);
+        accountRepository.save(account);
+        return true;
     }
 }

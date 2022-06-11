@@ -39,6 +39,8 @@ public class AccountLoginService {
 
     public void deleteLogin(String userId){
         AccountLoginEntity login = accountLoginRepository.findLoginStateByUserId(userId);
-        accountLoginRepository.deleteById(login.getId());
+        if(login != null){
+            accountLoginRepository.deleteById(login.getId());
+        }
     }
 }

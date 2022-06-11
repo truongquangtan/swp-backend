@@ -57,6 +57,11 @@ public class LoginRestApi {
                 return ResponseEntity.badRequest().body(gson.toJson(error));
             }
 
+            if(!account.isActive()){
+                ErrorResponse error = ErrorResponse.builder().message("Sorry, account has been disabled.").build();
+                return ResponseEntity.badRequest().body(gson.toJson(error));
+            }
+
             //Checking password
             if (bCryptPasswordEncoder.matches(loginRequest.getPassword(), account.getPassword())) {
                 RoleEntity role = roleService.getRoleById(account.getRoleId());

@@ -1,14 +1,14 @@
-package com.swp.backend.api.v1.admin.reactive_account;
+package com.swp.backend.api.v1.admin.deactivate_account;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
 @Builder
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
-public class ReactiveAccountRequest {
+@NoArgsConstructor
+public class DeactivateAccountRequest {
     private String userId;
 }

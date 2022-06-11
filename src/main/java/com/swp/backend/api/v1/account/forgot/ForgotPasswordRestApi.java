@@ -1,7 +1,6 @@
 package com.swp.backend.api.v1.account.forgot;
 
 import com.google.gson.Gson;
-import com.swp.backend.api.v1.account.login.LoginResponse;
 import com.swp.backend.entity.AccountEntity;
 import com.swp.backend.entity.RoleEntity;
 import com.swp.backend.exception.ErrorResponse;
