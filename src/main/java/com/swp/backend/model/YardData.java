@@ -1,8 +1,6 @@
 package com.swp.backend.model;
 
-import com.swp.backend.entity.SubYardEntity;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

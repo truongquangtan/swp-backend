@@ -32,6 +32,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
+        String URI = request.getRequestURI();
         boolean isPublicApi = Arrays.stream(ApiEndpointProperties.publicEndpoint).anyMatch(url -> request.getRequestURI().startsWith(url));
         if(isPublicApi){
             chain.doFilter(request, response);

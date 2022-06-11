@@ -148,4 +148,12 @@ public class YardService {
             return yardModel;
         }
     }
+
+    public YardEntity getYardById(String yardId){
+        return yardRepository.findYardEntitiesById(yardId);
+    }
+
+    public void updateYard(YardEntity yard) throws DataAccessException{
+        yardRepository.save(yard);
+    }
 }

@@ -8,6 +8,7 @@ import java.util.List;
 
 @Repository
 public interface YardRepository extends JpaRepository<YardEntity, String> {
-    List<YardEntity> findYardEntitiesByDistrictIdAndActiveAndDeleted(int districtId, boolean isActive, boolean isDeleted);
-    YardEntity findYardEntityByIdAndActiveAndDeleted(String yardId, boolean isActive, boolean isDeleted);
+    public List<YardEntity> findYardEntitiesByDistrictIdAndActiveAndDeleted(int districtId, boolean isActive, boolean isDeleted);
+    public YardEntity findYardEntityByIdAndActiveAndDeleted(String yardId, boolean isActive, boolean isDeleted);
+    public YardEntity findYardEntitiesById(String yardId);
 }
