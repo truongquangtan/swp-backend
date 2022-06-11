@@ -2,6 +2,7 @@ package com.swp.backend.api.v1.sub_yard.get;
 
 import com.google.gson.Gson;
 import com.swp.backend.model.SubYardModel;
+import com.swp.backend.model.YardModel;
 import com.swp.backend.service.SubYardService;
 import com.swp.backend.service.YardService;
 import lombok.AllArgsConstructor;
@@ -31,11 +32,12 @@ public class GetSubYardApi {
 
         if(!yardService.isAvailableYard(getSubYardRequest.getYardId()))
         {
-            return ResponseEntity.ok().body(gson.toJson(new SubYardResponse("The yard is not active or deleted.", null)));
+            return ResponseEntity.ok().body(gson.toJson(new SubYardResponse("The yard is not active or deleted.",null, null)));
         }
 
         List<SubYardModel> subYards = subYardService.getSubYardsByBigYard(getSubYardRequest.getYardId());
-        SubYardResponse response = new SubYardResponse("Get successful", subYards);
+        YardModel bigYard = yardService.getYardModelFromYardId(getSubYardRequest.getYardId());
+        SubYardResponse response = new SubYardResponse("Get successful", bigYard, subYards);
 
         return ResponseEntity.ok().body(gson.toJson(response));
     }
