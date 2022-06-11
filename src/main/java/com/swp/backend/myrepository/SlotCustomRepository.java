@@ -4,6 +4,7 @@ import com.swp.backend.entity.SlotEntity;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.sql.Timestamp;
@@ -58,6 +59,48 @@ public class SlotCustomRepository {
             return query.getResultList();
         }
         else
+        {
+            return null;
+        }
+    }
+
+    public String findYardIdFromSlotId(int slotId)
+    {
+        try {
+            Query query = null;
+
+            String nativeQuery = "SELECT parent_yard" +
+                    " FROM sub_yards" +
+                    " WHERE id = (SELECT ref_yard FROM slots WHERE id = ?1)";
+
+            query = entityManager.createNativeQuery(nativeQuery);
+            query.setParameter(1, slotId);
+            if (query != null) {
+                return (String) query.getSingleResult();
+            }
+            return null;
+        } catch (NoResultException noResultException)
+        {
+            return null;
+        }
+    }
+
+    public String findSubYardIdFromSlotId(int slotId)
+    {
+        try {
+            Query query = null;
+
+            String nativeQuery = "SELECT id" +
+                    " FROM sub_yards" +
+                    " WHERE id = (SELECT ref_yard FROM slots WHERE id = ?1)";
+
+            query = entityManager.createNativeQuery(nativeQuery);
+            query.setParameter(1, slotId);
+            if (query != null) {
+                return (String) query.getSingleResult();
+            }
+            return null;
+        } catch (NoResultException noResultException)
         {
             return null;
         }

@@ -85,4 +85,12 @@ public class SlotService {
         return allSlots;
     }
 
+    public String getYardIdFromSlotId(int slotId)
+    {
+        return slotCustomRepository.findYardIdFromSlotId(slotId);
+    }
+    public String getSubYardIdFromSlotId(int slotId)
+    {
+        return slotCustomRepository.findSubYardIdFromSlotId(slotId);
+    }
 }
