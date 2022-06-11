@@ -36,6 +36,7 @@ public class DateHelper {
 
     public static Timestamp parseFromStringToTimestampOfDate(String input) {
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        format.setLenient(false);
         Date dateParsed;
         Timestamp timestamp;
         try {

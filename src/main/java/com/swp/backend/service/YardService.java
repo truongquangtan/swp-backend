@@ -3,10 +3,7 @@ package com.swp.backend.service;
 import com.swp.backend.api.v1.yard.add.SubYardRequest;
 import com.swp.backend.api.v1.yard.add.YardRequest;
 import com.swp.backend.api.v1.yard.search.YardResponse;
-import com.swp.backend.entity.SlotEntity;
-import com.swp.backend.entity.SubYardEntity;
-import com.swp.backend.entity.YardEntity;
-import com.swp.backend.entity.YardPictureEntity;
+import com.swp.backend.entity.*;
 import com.swp.backend.model.YardModel;
 import com.swp.backend.myrepository.YardCustomRepository;
 import com.swp.backend.repository.*;
@@ -30,6 +27,7 @@ public class YardService {
     private SlotRepository slotRepository;
     private SubYardRepository subYardRepository;
     private DistrictRepository districtRepository;
+    private ProvinceRepository provinceRepository;
 
     private YardPictureRepository yardPictureRepository;
     private YardCustomRepository yardCustomRepository;
@@ -95,11 +93,14 @@ public class YardService {
             if(item instanceof YardEntity){
                 YardEntity yard = (YardEntity) item;
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+                DistrictEntity districtEntity = districtRepository.findById(yard.getDistrictId());
+                String province = provinceRepository.findDistinctById(districtEntity.getProvinceId()).getProvinceName();
                 return YardModel.builder()
                         .id(yard.getId())
                         .name(yard.getName())
                         .address(yard.getAddress())
                         .districtName(districtRepository.findById(yard.getDistrictId()).getDistrictName())
+                        .province(province)
                         .openAt(yard.getOpenAt().format(formatter))
                         .closeAt(yard.getCloseAt().format(formatter))
                         .build();
