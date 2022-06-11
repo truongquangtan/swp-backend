@@ -49,7 +49,7 @@ public class DateHelper {
 
     public static Date parseFromStringToDate(String input)
     {
-        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
 
         Date dateParsed;
         try {
