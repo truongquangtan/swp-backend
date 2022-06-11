@@ -11,6 +11,7 @@ public class LoginResponse {
     private String role;
     private String fullName;
     private String email;
+    private boolean isConfirm;
     private String phone;
     private String token;
 }

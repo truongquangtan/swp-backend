@@ -80,6 +80,7 @@ public class LoginRestApi {
                         .phone(account.getPhone())
                         .role(role.getRoleName())
                         .fullName(account.getFullName())
+                        .isConfirm(account.isConfirmed())
                         .build();
                 return ResponseEntity.ok().body(gson.toJson(loginResponse));
 

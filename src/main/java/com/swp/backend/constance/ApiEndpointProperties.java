@@ -21,4 +21,8 @@ public class ApiEndpointProperties {
     public static String[] ownerOnlyEndpoint = {
             "/api/v1/admin/owner-register"
     };
+
+    public static String[] adminOnlyEndpoint = {
+            "api/v1/admin/re-activate-account"
+    };
 }
