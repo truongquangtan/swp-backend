@@ -63,7 +63,7 @@ public class DateHelper {
 
     public static boolean isToday(Date requestDate)
     {
-        Date today = new Date();
+        Timestamp today = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
         String todayFormatted = format.format(today);
         String dateFormatted = format.format(requestDate);
