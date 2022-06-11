@@ -24,34 +24,34 @@ public class LocationRestAPI {
     private Gson gson;
 
     @GetMapping(value = "provinces")
-    public ResponseEntity<String> getAllProvince(){
+    public ResponseEntity<String> getAllProvince() {
         try {
             List<ProvinceEntity> listProvince = provinceService.getAllProvince();
             return ResponseEntity.ok().body(gson.toJson(listProvince));
-        }catch (DataAccessException dataAccessException){
+        } catch (DataAccessException dataAccessException) {
             return ResponseEntity.internalServerError().body(dataAccessException.getMessage());
         }
     }
+
     @GetMapping(value = "districts")
-    public ResponseEntity<String> getAllDistrict(){
+    public ResponseEntity<String> getAllDistrict() {
         try {
             List<DistrictEntity> listDistrict = districtService.getAllDistrict();
             return ResponseEntity.ok(gson.toJson(listDistrict));
-        }catch (DataAccessException accessException){
+        } catch (DataAccessException accessException) {
             return ResponseEntity.internalServerError().body(accessException.getMessage());
         }
     }
 
-    @GetMapping (value = "provinces/{provinceId}/districts")
-    public ResponseEntity<String> getAllDistrictByProvinceId(@PathVariable String provinceId){
+    @GetMapping(value = "provinces/{provinceId}/districts")
+    public ResponseEntity<String> getAllDistrictByProvinceId(@PathVariable String provinceId) {
         try {
             int id = Integer.parseInt(provinceId);
             List<DistrictEntity> listDistrict = districtService.getAllDistrictByProvinceId(id);
             return ResponseEntity.ok(gson.toJson(listDistrict));
-        }catch (NumberFormatException numberFormatException){
+        } catch (NumberFormatException numberFormatException) {
             return ResponseEntity.badRequest().body("Province Id invalid.");
-        }
-        catch (DataAccessException accessException){
+        } catch (DataAccessException accessException) {
             return ResponseEntity.internalServerError().body(accessException.getMessage());
         }
     }

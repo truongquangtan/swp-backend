@@ -19,9 +19,8 @@ public class SearchYardRestApi {
     private Gson gson;
 
     @PostMapping(value = "search")
-    public ResponseEntity<String> searchYardByLocation(@RequestBody(required = false) SearchYardRequest searchYardRequest)
-    {
-        if(searchYardRequest == null){
+    public ResponseEntity<String> searchYardByLocation(@RequestBody(required = false) SearchYardRequest searchYardRequest) {
+        if (searchYardRequest == null) {
             YardResponse yardResponse = yardService.findYardByFilter(null, null, null, null);
             return ResponseEntity.ok().body(gson.toJson(yardResponse));
         }

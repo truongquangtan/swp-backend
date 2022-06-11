@@ -57,7 +57,7 @@ public class LoginRestApi {
                 return ResponseEntity.badRequest().body(gson.toJson(error));
             }
 
-            if(!account.isActive()){
+            if (!account.isActive()) {
                 ErrorResponse error = ErrorResponse.builder().message("Sorry, account has been disabled.").build();
                 return ResponseEntity.badRequest().body(gson.toJson(error));
             }

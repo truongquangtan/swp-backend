@@ -2,6 +2,7 @@ package com.swp.backend.api.v1.account.register;
 
 import lombok.Builder;
 import lombok.Data;
+
 @Data
 @Builder
 public class RegisterResponse {

@@ -11,9 +11,11 @@ import com.swp.backend.utils.DateHelper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -23,93 +25,78 @@ public class SlotService {
     private SlotRepository slotRepository;
     private BookingRepository bookingRepository;
 
-    public List<Slot> getAllSlotInSubYardByDate(String subYardId, String date)
-    {
-        List<Slot> allSlots;
-        List<Slot> bookedSlots;
+    public List<Slot> getAllSlotInSubYardByDate(String subYardId, String date) {
+        try {
 
-        if(DateHelper.isToday(DateHelper.parseFromStringToDate(date)))
-        {
-            allSlots = getAllSlotsInSubYardByToday(subYardId);
-            bookedSlots = getBookedSlotsInSubYardByToday(subYardId, date);
+            LocalDate today = LocalDate.now(ZoneId.of(DateHelper.VIETNAM_ZONE));
+            LocalDate queryDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("d/M/yyyy"));
+
+            if (queryDate.compareTo(today) < 0) {
+                return null;
+            }
+
+            List<Slot> allSlots = getAllSlotsInSubYardByDate(subYardId, today, queryDate);
+            List<Slot>  bookedSlots = getBookedSlotsInSubYardByDate(subYardId, today, queryDate);
+
+            return updateBookedStateOfAllSlots(allSlots, bookedSlots);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
-        else
-        {
-            allSlots = getAllSlotsInSubYardByFutureDate(subYardId);
-            bookedSlots = getBookedSlotsInSubYardByFutureDate(subYardId, date);
-        }
-
-        allSlots = updateBookedStateOfAllSlots(allSlots, bookedSlots);
-
-        return allSlots;
-
     }
-    public List<Slot> getAllSlotsInSubYardByToday(String subYardId)
-    {
-        Timestamp now = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
-        LocalTime localTime = DateHelper.getLocalTimeFromTimeStamp(now);
-        List<SlotEntity> allSlotEntities = slotRepository.findSlotEntitiesByStartTimeGreaterThanAndRefYardAndActiveIsTrue(localTime, subYardId);
+
+    //Get all slots by date
+    private List<Slot> getAllSlotsInSubYardByDate(String subYardId, LocalDate today, LocalDate queryDate) {
+        List<SlotEntity> allSlotEntities;
+        if (today.compareTo(queryDate) == 0) {
+            LocalTime now = LocalTime.now(ZoneId.of(DateHelper.VIETNAM_ZONE));
+            allSlotEntities = slotRepository.findSlotEntitiesByStartTimeGreaterThanAndRefYardAndActiveIsTrue(now, subYardId);
+        } else {
+            allSlotEntities = slotRepository.findSlotEntitiesByRefYardAndActiveIsTrue(subYardId);
+        }
         return ListSlotBuilder.getAvailableSlotsFromSlotEntities(allSlotEntities);
     }
-    public List<Slot> getAllSlotsInSubYardByFutureDate(String subYardId)
-    {
-        List<SlotEntity> allSlotEntities = slotRepository.findSlotEntitiesByRefYardAndActiveIsTrue(subYardId);
-        return ListSlotBuilder.getAvailableSlotsFromSlotEntities(allSlotEntities);
-    }
-    public List<Slot> getBookedSlotsInSubYardByToday(String subYardId, String date)
-    {
-        Timestamp timestampFromDate = DateHelper.parseFromStringToTimestamp(date);
-        Timestamp now = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
-        LocalTime localTimeNow = DateHelper.getLocalTimeFromTimeStamp(now);
-        List<?> queriedSlots = slotCustomRepository.getAllBookedSlotInSubYardByToday(subYardId, timestampFromDate, localTimeNow);
 
-        return ListSlotBuilder.getBookedSlotsFromQueriedSlotEntities(queriedSlots);
-    }
-    public List<Slot> getBookedSlotsInSubYardByFutureDate(String subYardId, String date)
-    {
-        Timestamp timestamp = DateHelper.parseFromStringToTimestamp(date);
-        List<?> queriedSlots = slotCustomRepository.getAllBookedSlotInSubYardByFutureDate(subYardId, timestamp);
+    //Get slot booked by date
+    private List<Slot> getBookedSlotsInSubYardByDate(String subYardId, LocalDate today, LocalDate queryDate) {
+        List<?> queriedSlots = slotCustomRepository.getAllBookedSlotInSubYardByDate(subYardId, today, queryDate);
         return ListSlotBuilder.getBookedSlotsFromQueriedSlotEntities(queriedSlots);
     }
 
-    private List<Slot> updateBookedStateOfAllSlots(List<Slot> allSlots, List<Slot> bookedSlots)
-    {
+    //Merge and update state of slots
+    private List<Slot> updateBookedStateOfAllSlots(List<Slot> allSlots, List<Slot> bookedSlots) {
         bookedSlots.forEach(slot -> {
             int pos = -1;
-            for(int i = 0; i < allSlots.size(); ++i)
-            {
-                if(allSlots.get(i).getId() == slot.getId())
-                {
+            for (int i = 0; i < allSlots.size(); ++i) {
+                if (allSlots.get(i).getId() == slot.getId()) {
                     pos = i;
                     break;
                 }
             }
-            if(pos != -1) {
+            if (pos != -1) {
                 allSlots.get(pos).setBooked(true);
             }
         });
         return allSlots;
     }
 
-    public String getSubYardIdFromSlotId(int slotId)
-    {
+    public String getSubYardIdFromSlotId(int slotId) {
         return slotCustomRepository.findSubYardIdFromSlotId(slotId);
     }
-    public boolean isSlotAvailableFromBooking(int slotId, Timestamp timestamp)
-    {
+
+    public boolean isSlotAvailableFromBooking(int slotId, Timestamp timestamp) {
         return bookingRepository.getBookingEntityBySlotIdAndStatusAndDate(slotId, BookingStatus.SUCCESS, timestamp) == null;
     }
-    public boolean isSlotActive(int slotId)
-    {
+
+    public boolean isSlotActive(int slotId) {
         return slotRepository.findSlotEntityByIdAndActive(slotId, true) != null;
     }
-    public boolean isSlotExist(int slotId)
-    {
+
+    public boolean isSlotExist(int slotId) {
         return slotRepository.findSlotEntityById(slotId) != null;
     }
 
-    public boolean isSlotExceedTimeToday(int slotId)
-    {
+    public boolean isSlotExceedTimeToday(int slotId) {
         Timestamp now = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
         LocalTime localTimeToday = DateHelper.getLocalTimeFromTimeStamp(now);
         SlotEntity slotEntity = slotRepository.findSlotEntityByIdAndStartTimeGreaterThanAndActive(slotId, localTimeToday, true);

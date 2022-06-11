@@ -7,7 +7,7 @@ import lombok.Data;
 public class SendMailRequest {
     private String email;
 
-    public boolean isValid(){
+    public boolean isValid() {
         return email != null && email.matches(RegexHelper.EMAIL_REGEX);
     }
 }

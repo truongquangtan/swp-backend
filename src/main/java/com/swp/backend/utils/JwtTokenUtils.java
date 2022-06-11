@@ -5,16 +5,17 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
+
 @Component
 public class JwtTokenUtils {
     private final String secretKey = "SWP391";
 
     @Bean
-    public JwtTokenUtils getJwtTokenUtil(){
-        return  new JwtTokenUtils();
+    public JwtTokenUtils getJwtTokenUtil() {
+        return new JwtTokenUtils();
     }
 
-    public Claims deCodeToken(String token) throws SignatureException, MalformedJwtException, ExpiredJwtException, UnsupportedJwtException, IllegalArgumentException{
+    public Claims deCodeToken(String token) throws SignatureException, MalformedJwtException, ExpiredJwtException, UnsupportedJwtException, IllegalArgumentException {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
     }
 
@@ -23,7 +24,7 @@ public class JwtTokenUtils {
 //        return doGenerateToken(account.getUsername(), account.getRole());
 //    }
 
-    public String doGenerateToken(String userId, String fullName, String email, String phone , String role, boolean isConfirm) {
+    public String doGenerateToken(String userId, String fullName, String email, String phone, String role, boolean isConfirm) {
         Timestamp createAt = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
         Timestamp expirationAt = DateHelper.plusMinutes(createAt, 120);
 

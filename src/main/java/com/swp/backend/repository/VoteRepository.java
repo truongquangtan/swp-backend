@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface VoteRepository extends JpaRepository<VoteEntity, String> {
-    public VoteEntity findVoteEntityById(String voteId);
+    VoteEntity findVoteEntityById(String voteId);
 }

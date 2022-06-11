@@ -8,9 +8,11 @@ import java.util.List;
 
 @Repository
 public interface AccountRepository extends JpaRepository<AccountEntity, String> {
-    public AccountEntity findUserEntityByEmail(String email);
-    public AccountEntity findUserEntityByUserId(String userId);
+    AccountEntity findUserEntityByEmail(String email);
 
-    public AccountEntity findUserEntityByPhone(String phone);
-    public List<AccountEntity> findAccountEntitiesByRoleIdOrRoleId(int role1, int role2);
+    AccountEntity findUserEntityByUserId(String userId);
+
+    AccountEntity findUserEntityByPhone(String phone);
+
+    List<AccountEntity> findAccountEntitiesByRoleIdOrRoleId(int role1, int role2);
 }

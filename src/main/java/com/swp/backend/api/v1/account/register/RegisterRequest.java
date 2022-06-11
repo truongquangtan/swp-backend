@@ -13,11 +13,11 @@ public class RegisterRequest {
     private String phone;
 
     //Check valid request form
-    public boolean isValidRequest(){
-        if(email == null || fullName == null || password == null){
+    public boolean isValidRequest() {
+        if (email == null || fullName == null || password == null) {
             return false;
         }
-        if(email.trim().length() <= 0 && fullName.trim().length() <= 0 && password.trim().length() <= 0){
+        if (email.trim().length() <= 0 && fullName.trim().length() <= 0 && password.trim().length() <= 0) {
             return false;
         }
         return email.matches(RegexHelper.EMAIL_REGEX);

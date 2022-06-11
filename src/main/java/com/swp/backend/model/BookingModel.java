@@ -14,8 +14,7 @@ public class BookingModel {
     private int price;
     private String date;
 
-    public boolean isValid()
-    {
+    public boolean isValid() {
         return DateHelper.parseFromStringToTimestamp(date) != null && price > 0;
     }
 }

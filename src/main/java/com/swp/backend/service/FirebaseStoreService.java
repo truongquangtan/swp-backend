@@ -21,6 +21,6 @@ public class FirebaseStoreService {
         BlobId blobId = BlobId.of(bucket.getName(), fileName);
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(multipartFile.getContentType()).build();
         Blob blob = bucket.getStorage().create(blobInfo, multipartFile.getInputStream().readAllBytes());
-        return  "https://firebasestorage.googleapis.com/v0/b/" + bucket.getName() + "/o/" + fileName + "?alt=media";
+        return "https://firebasestorage.googleapis.com/v0/b/" + bucket.getName() + "/o/" + fileName + "?alt=media";
     }
 }

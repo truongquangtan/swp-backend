@@ -87,22 +87,22 @@ public class ForgotPasswordRestApi {
     }
 
     @PostMapping(value = "new-password")
-    public ResponseEntity<String> saveNewPassword(@RequestBody(required = false) NewPasswordRequest newPasswordRequest){
+    public ResponseEntity<String> saveNewPassword(@RequestBody(required = false) NewPasswordRequest newPasswordRequest) {
         try {
-            if(newPasswordRequest == null || !newPasswordRequest.isValid()){
+            if (newPasswordRequest == null || !newPasswordRequest.isValid()) {
                 ErrorResponse error = ErrorResponse.builder().message("Missing or incorrect format body.").build();
                 return ResponseEntity.badRequest().body(gson.toJson(error));
             }
             SecurityContext securityContext = SecurityContextHolder.getContext();
             String username = securityContextService.extractUsernameFromContext(securityContext);
             AccountEntity account = accountService.updatePassword(username, newPasswordRequest.getPassword());
-            if(account == null){
+            if (account == null) {
                 ErrorResponse error = ErrorResponse.builder().message("Update password failed.").build();
                 return ResponseEntity.badRequest().body(gson.toJson(error));
-            }else {
+            } else {
                 return ResponseEntity.ok().body("Reset password success!");
             }
-        }catch (Exception exception){
+        } catch (Exception exception) {
             exception.printStackTrace();
             ErrorResponse error = ErrorResponse.builder().message("Server busy update password failed.").build();
             return ResponseEntity.internalServerError().body(gson.toJson(error));

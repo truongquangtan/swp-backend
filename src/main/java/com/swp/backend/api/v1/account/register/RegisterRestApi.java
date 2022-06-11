@@ -34,15 +34,15 @@ public class RegisterRestApi {
                     @ApiResponse(responseCode = "500", description = "Can't generate jwt token or access database failed.")
             }
     )
-    public ResponseEntity<String> register(@RequestBody(required = false) RegisterRequest registerRequest){
+    public ResponseEntity<String> register(@RequestBody(required = false) RegisterRequest registerRequest) {
         try {
             //Case request empty body
-            if(registerRequest == null){
+            if (registerRequest == null) {
                 ErrorResponse errorResponse = ErrorResponse.builder().message("Missing body.").build();
                 return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
             }
             //Case request body missing required username, password, email.
-            if(!registerRequest.isValidRequest()){
+            if (!registerRequest.isValidRequest()) {
                 ErrorResponse errorResponse = ErrorResponse.builder().message("Request body incorrect format").build();
                 return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
             }
@@ -54,9 +54,9 @@ public class RegisterRestApi {
             //Call user-service's send mail asynchronous method
             accountService.sendOtpVerifyAccount(accountEntity, accountOtpEntity);
             return ResponseEntity.ok("Create account success!");
-        }catch (DataAccessException dataAccessException){
+        } catch (DataAccessException dataAccessException) {
             return ResponseEntity.badRequest().body(dataAccessException.getMessage());
-        }catch (Exception exception){
+        } catch (Exception exception) {
             exception.printStackTrace();
             return ResponseEntity.internalServerError().body("Server temp error.");
         }

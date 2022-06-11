@@ -1,7 +1,7 @@
 package com.swp.backend.constance;
 
 public class ApiEndpointProperties {
-    public static String [] nonFilterEndpoint = {
+    public static String[] nonFilterEndpoint = {
             "^/api/v1/login{1}",
             "^/api/v1/register{1}",
             "^/v3/api-docs{1}.*",
@@ -16,7 +16,7 @@ public class ApiEndpointProperties {
             "^/api/v1/slots/get-by-date{1}",
             "^/api/v1/sub-yards{1}.*"
     };
-    public static String [] publicEndpoint = {
+    public static String[] publicEndpoint = {
             "/api/v1/login",
             "/api/v1/register",
             "/v3/api-docs/**",

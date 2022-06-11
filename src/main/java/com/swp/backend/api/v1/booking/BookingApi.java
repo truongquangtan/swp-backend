@@ -1,21 +1,21 @@
 package com.swp.backend.api.v1.booking;
 
 import com.google.gson.Gson;
-import com.swp.backend.api.v1.slot.SlotResponse;
 import com.swp.backend.constance.BookingStatus;
-import com.swp.backend.constance.RoleProperties;
 import com.swp.backend.entity.BookingEntity;
 import com.swp.backend.model.BookingModel;
-import com.swp.backend.service.*;
+import com.swp.backend.service.BookingService;
+import com.swp.backend.service.SecurityContextService;
+import com.swp.backend.service.SlotService;
+import com.swp.backend.service.YardService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
-import java.util.ArrayList;
 
-import java.awt.print.Book;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -29,8 +29,7 @@ public class BookingApi {
 
 
     @PostMapping(value = "{yardId}/booking")
-    public ResponseEntity<String> bookSlots(@RequestBody(required = false) BookingRequest request, @PathVariable String yardId)
-    {
+    public ResponseEntity<String> bookSlots(@RequestBody(required = false) BookingRequest request, @PathVariable String yardId) {
         BookingResponse response;
         List<BookingEntity> bookingEntities = new ArrayList<>();
 
@@ -39,42 +38,35 @@ public class BookingApi {
         userId = securityContextService.extractUsernameFromContext(context);
 
         //Request Validation filter
-        if(request == null)
-        {
+        if (request == null) {
             response = new BookingResponse("Null request body", true, null);
             return ResponseEntity.badRequest().body(gson.toJson(response));
         }
-        if(!request.isValid())
-        {
-            response = new BookingResponse("Cannot parse request", true,null);
+        if (!request.isValid()) {
+            response = new BookingResponse("Cannot parse request", true, null);
             return ResponseEntity.badRequest().body(gson.toJson(response));
         }
 
         //BigYard not available filter
-        if(!yardService.isAvailableYard(yardId))
-        {
+        if (!yardService.isAvailableYard(yardId)) {
             response = new BookingResponse("The Yard entity of this slots is not active or deleted.", true, null);
             return ResponseEntity.badRequest().body(gson.toJson(response));
         }
 
         //Booking process
-        try
-        {
+        try {
             boolean isError = false, isChecked = false;
-            for(BookingModel bookingModel : request.getBookingList())
-            {
+            for (BookingModel bookingModel : request.getBookingList()) {
                 BookingEntity booking = bookingService.book(userId, bookingModel);
                 bookingEntities.add(booking);
-                if(!isChecked && booking.getStatus().equals(BookingStatus.FAILED))
-                {
+                if (!isChecked && booking.getStatus().equals(BookingStatus.FAILED)) {
                     isError = true;
                     isChecked = true;
                 }
             }
             response = new BookingResponse(isError ? "There were some booking slot error." : "Booking all slot successfully", isError, bookingEntities);
             return ResponseEntity.ok().body(gson.toJson(response));
-        } catch (Exception ex)
-        {
+        } catch (Exception ex) {
             return ResponseEntity.internalServerError().body("Error when save in database");
         }
     }

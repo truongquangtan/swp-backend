@@ -17,7 +17,7 @@ public class DistrictService {
         return districtRepository.findAll();
     }
 
-    public List<DistrictEntity> getAllDistrictByProvinceId(int provinceId) throws DataAccessException{
+    public List<DistrictEntity> getAllDistrictByProvinceId(int provinceId) throws DataAccessException {
         return districtRepository.findAllByProvinceId(provinceId);
     }
 }

@@ -33,8 +33,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
         boolean isPublicApi = Arrays.stream(ApiEndpointProperties.nonFilterEndpoint).anyMatch(regexUri -> request.getRequestURI().matches(regexUri));
-        if(isPublicApi){
-            System.out.println(request.getRequestURI());
+        if (isPublicApi) {
             chain.doFilter(request, response);
             return;
         }
@@ -50,17 +49,17 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         try {
             Claims claims = jwtTokenUtils.deCodeToken(token);
             AccountLoginEntity login = accountLoginService.findLogin(claims.getSubject());
-            if(login == null){
+            if (login == null) {
                 sendErrorResponse(response, 400, "Token not available.");
                 return;
             }
 
-            if(!login.getAccessToken().matches(token)){
+            if (!login.getAccessToken().matches(token)) {
                 sendErrorResponse(response, 400, "Token does not match the latest token.");
                 return;
             }
 
-            if(login.isLogout()){
+            if (login.isLogout()) {
                 sendErrorResponse(response, 400, "User logged out.");
                 return;
             }
@@ -74,11 +73,12 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(securityUserDetails, null, securityUserDetails.getAuthorities());
             authenticationToken.setDetails(token);
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-        } catch (SignatureException | MalformedJwtException | ExpiredJwtException | UnsupportedJwtException | IllegalArgumentException e) {
-            sendErrorResponse(response, 400,  "Token invalid.");
+        } catch (SignatureException | MalformedJwtException | ExpiredJwtException | UnsupportedJwtException |
+                 IllegalArgumentException e) {
+            sendErrorResponse(response, 400, "Token invalid.");
             return;
-        }catch (Exception exception){
-            sendErrorResponse(response, 500,  "Server temp error.");
+        } catch (Exception exception) {
+            sendErrorResponse(response, 500, "Server temp error.");
             return;
         }
         chain.doFilter(request, response);

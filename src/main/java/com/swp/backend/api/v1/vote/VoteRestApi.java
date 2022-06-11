@@ -21,9 +21,9 @@ public class VoteRestApi {
     private Gson gson;
 
     @PostMapping(value = "vote")
-    public ResponseEntity<String> postVote(@RequestBody(required = false) PostVoteRequest voteRequest){
+    public ResponseEntity<String> postVote(@RequestBody(required = false) PostVoteRequest voteRequest) {
         try {
-            if(voteRequest == null){
+            if (voteRequest == null) {
                 ErrorResponse errorResponse = ErrorResponse.builder().message("Missing body.").build();
                 return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
             }
@@ -36,13 +36,13 @@ public class VoteRestApi {
                     voteRequest.getComment()
             );
 
-            if(postVote){
+            if (postVote) {
                 return ResponseEntity.ok("Vote success!");
-            }else {
+            } else {
                 ErrorResponse errorResponse = ErrorResponse.builder().message("Server busy can't handle this vote.").build();
                 return ResponseEntity.internalServerError().body(gson.toJson(errorResponse));
             }
-        }catch (Exception exception){
+        } catch (Exception exception) {
             exception.printStackTrace();
             ErrorResponse errorResponse = ErrorResponse.builder().message("Server busy can't handle this request!").build();
             return ResponseEntity.internalServerError().body(gson.toJson(errorResponse));
