@@ -41,6 +41,7 @@ public class YardService {
                 .ownerId(userId)
                 .name(yardRequest.getName())
                 .address(yardRequest.getAddress())
+                .active(true)
                 .districtId(yardRequest.getDistrictId())
                 .createAt(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE))
                 .openAt(LocalTime.parse(yardRequest.getOpenAt()))
@@ -61,6 +62,7 @@ public class YardService {
                         .name(subYard.getName())
                         .parentYard(parentYard.getId())
                         .typeYard(Integer.parseInt(subYard.getType()))
+                        .active(true)
                         .createAt(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE))
                         .build();
                 subYardEntityList.add(subYardEntity);
@@ -119,5 +121,31 @@ public class YardService {
     {
         YardEntity yard = yardRepository.findYardEntityByIdAndActiveAndDeleted(yardId, true, false);
         return yard != null;
+    }
+
+    public YardModel getYardModelFromYardId(String yardId)
+    {
+        YardEntity yard = yardRepository.findYardEntityByIdAndActiveAndDeleted(yardId, true, false);
+        if(yard == null)
+        {
+            return null;
+        }
+        else
+        {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+            YardModel yardModel = YardModel.builder()
+                    .id(yard.getId())
+                    .name(yard.getName())
+                    .address(yard.getAddress())
+                    .districtName(districtRepository.findById(yard.getDistrictId()).getDistrictName())
+                    .openAt(yard.getOpenAt().format(formatter))
+                    .closeAt(yard.getCloseAt().format(formatter))
+                    .build();
+            List<String> images = new ArrayList<>();
+            List<YardPictureEntity> listPicture = yardPictureRepository.getAllByRefId(yardModel.getId());
+            listPicture.forEach(picture -> images.add(picture.getImage()));
+            yardModel.setImages(images);
+            return yardModel;
+        }
     }
 }

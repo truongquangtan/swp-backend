@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping(value = "api/v1/slot")
+@RequestMapping(value = "api/v1/slots")
 public class GetSlotApi {
     private SlotService slotService;
     private SubYardService subYardService;
