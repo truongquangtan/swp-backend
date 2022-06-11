@@ -16,6 +16,7 @@ public class YardModel {
     private String name;
     private String address;
     private String districtName;
+    private String province;
     private String openAt;
     private String closeAt;
     private List<String> images;

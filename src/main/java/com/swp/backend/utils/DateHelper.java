@@ -1,6 +1,7 @@
 package com.swp.backend.utils;
 
 import java.sql.Timestamp;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -22,20 +23,8 @@ public class DateHelper {
     }
 
     public static Timestamp parseFromStringToTimestamp(String input) {
-        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
-        Date dateParsed;
-        Timestamp timestamp;
-        try {
-            dateParsed = format.parse(input);
-            timestamp = Timestamp.from(dateParsed.toInstant());
-        } catch (Exception ex) {
-            return null;
-        }
-        return timestamp;
-    }
-
-    public static Timestamp parseFromStringToTimestampOfDate(String input) {
-        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        DateFormat format =  new SimpleDateFormat("dd/MM/yyyy");
+        format.setLenient(false);
         Date dateParsed;
         Timestamp timestamp;
         try {
@@ -50,7 +39,7 @@ public class DateHelper {
     public static Date parseFromStringToDate(String input)
     {
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-
+        format.setLenient(false);
         Date dateParsed;
         try {
             dateParsed = format.parse(input);
@@ -65,8 +54,18 @@ public class DateHelper {
     {
         Timestamp today = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        format.setLenient(false);
         String todayFormatted = format.format(today);
         String dateFormatted = format.format(requestDate);
+        return dateFormatted.equals(todayFormatted);
+    }
+    public static boolean isToday(Timestamp timestamp)
+    {
+        Timestamp today = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        format.setLenient(false);
+        String todayFormatted = format.format(timestamp);
+        String dateFormatted = format.format(today);
         return dateFormatted.equals(todayFormatted);
     }
 
@@ -77,15 +76,5 @@ public class DateHelper {
         String formattedLocalTime = format.format(date);
         LocalTime localTime = LocalTime.parse(formattedLocalTime);
         return localTime;
-    }
-    public static LocalTime getLocalTimeFromDateString(String date)
-    {
-        Timestamp timestamp = DateHelper.parseFromStringToTimestamp(date);
-        try {
-            LocalTime localTime = DateHelper.getLocalTimeFromTimeStamp(timestamp);
-            return localTime;
-        } catch (Exception ex){
-            return null;
-        }
     }
 }
