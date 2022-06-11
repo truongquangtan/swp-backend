@@ -41,6 +41,7 @@ public class YardService {
                 .ownerId(userId)
                 .name(yardRequest.getName())
                 .address(yardRequest.getAddress())
+                .active(true)
                 .districtId(yardRequest.getDistrictId())
                 .createAt(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE))
                 .openAt(LocalTime.parse(yardRequest.getOpenAt()))
@@ -61,6 +62,7 @@ public class YardService {
                         .name(subYard.getName())
                         .parentYard(parentYard.getId())
                         .typeYard(Integer.parseInt(subYard.getType()))
+                        .active(true)
                         .createAt(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE))
                         .build();
                 subYardEntityList.add(subYardEntity);

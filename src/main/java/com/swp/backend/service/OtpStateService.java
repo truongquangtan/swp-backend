@@ -64,6 +64,10 @@ public class OtpStateService {
         if(accountOtp == null){
             return false;
         }
-        return accountOtp.getOtpCode().matches(otp);
+        if(accountOtp.getOtpCode().matches(otp)){
+            accountOtpRepository.delete(accountOtp);
+            return true;
+        }
+        return false;
     }
 }

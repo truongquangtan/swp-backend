@@ -24,15 +24,19 @@ public class EmailService {
     }
 
     //Send text email
-    public void sendSimpleMessage(String to, String subject, String text) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(senderEmail);
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(text);
-        new Thread(() -> {
-            mailSender.send(message);
-        }).start();
+    public void sendSimpleMessage(String to, String subject, String text)  {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(new InternetAddress(senderEmail, "Playground Basketball").toUnicodeString());
+            message.setTo(to);
+            message.setSubject(subject);
+            message.setText(text);
+            new Thread(() -> {
+                mailSender.send(message);
+            }).start();
+        }catch (UnsupportedEncodingException unsupportedEncodingException){
+            unsupportedEncodingException.printStackTrace();
+        }
     }
 
     //Send email with attaches file.

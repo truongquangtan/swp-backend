@@ -36,4 +36,11 @@ public class AccountLoginService {
            login.setLogout(true);
            accountLoginRepository.save(login);
     }
+
+    public void deleteLogin(String userId){
+        AccountLoginEntity login = accountLoginRepository.findLoginStateByUserId(userId);
+        if(login != null){
+            accountLoginRepository.deleteById(login.getId());
+        }
+    }
 }

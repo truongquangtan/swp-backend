@@ -1,7 +1,6 @@
 package com.swp.backend.api.v1.account.forgot;
 
 import com.google.gson.Gson;
-import com.swp.backend.api.v1.account.login.LoginResponse;
 import com.swp.backend.entity.AccountEntity;
 import com.swp.backend.entity.RoleEntity;
 import com.swp.backend.exception.ErrorResponse;
@@ -73,16 +72,10 @@ public class ForgotPasswordRestApi {
                         account.isConfirmed()
                 );
                 accountLoginService.saveLogin(account.getUserId(), token);
-                LoginResponse loginResponse = LoginResponse.builder()
+                ConfirmOtpResponse confirmOtpResponse = ConfirmOtpResponse.builder()
                         .token(token)
-                        .userId(account.getUserId())
-                        .avatar(account.getAvatar())
-                        .email(account.getEmail())
-                        .phone(account.getPhone())
-                        .role(role.getRoleName())
-                        .fullName(account.getFullName())
                         .build();
-                return ResponseEntity.ok().body(gson.toJson(loginResponse));
+                return ResponseEntity.ok().body(gson.toJson(confirmOtpResponse));
             }
         } catch (Exception exception) {
             exception.printStackTrace();
