@@ -30,9 +30,9 @@ public class GetSubYardApi {
 
         List<SubYardModel> subYards = subYardService.getSubYardsByBigYard(yardId);
         YardModel bigYard = yardService.getYardModelFromYardId(yardId);
-        YardData data;
+        YardData data = new YardData(bigYard, subYards);
 
-        SubYardResponse response = new SubYardResponse("Get successful", );
+        SubYardResponse response = new SubYardResponse("Get successful", data);
 
         return ResponseEntity.ok().body(gson.toJson(response));
     }

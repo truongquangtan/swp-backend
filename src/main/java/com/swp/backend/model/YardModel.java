@@ -12,11 +12,11 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class YardModel {
-    protected String id;
-    protected String name;
-    protected String address;
-    protected String districtName;
-    protected String openAt;
-    protected String closeAt;
-    protected List<String> images;
+    private String id;
+    private String name;
+    private String address;
+    private String districtName;
+    private String openAt;
+    private String closeAt;
+    private List<String> images;
 }
