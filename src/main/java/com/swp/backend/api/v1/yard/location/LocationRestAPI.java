@@ -23,7 +23,7 @@ public class LocationRestAPI {
     private ProvinceService provinceService;
     private Gson gson;
 
-    @GetMapping(value = "province")
+    @GetMapping(value = "provinces")
     public ResponseEntity<String> getAllProvince(){
         try {
             List<ProvinceEntity> listProvince = provinceService.getAllProvince();
@@ -32,7 +32,7 @@ public class LocationRestAPI {
             return ResponseEntity.internalServerError().body(dataAccessException.getMessage());
         }
     }
-    @GetMapping(value = "district")
+    @GetMapping(value = "districts")
     public ResponseEntity<String> getAllDistrict(){
         try {
             List<DistrictEntity> listDistrict = districtService.getAllDistrict();
@@ -42,7 +42,7 @@ public class LocationRestAPI {
         }
     }
 
-    @GetMapping (value = "province/{provinceId}/district")
+    @GetMapping (value = "provinces/{provinceId}/districts")
     public ResponseEntity<String> getAllDistrictByProvinceId(@PathVariable String provinceId){
         try {
             int id = Integer.parseInt(provinceId);
