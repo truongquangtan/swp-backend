@@ -120,4 +120,30 @@ public class YardService {
         YardEntity yard = yardRepository.findYardEntityByIdAndActiveAndDeleted(yardId, true, false);
         return yard != null;
     }
+
+    public YardModel getYardModelFromYardId(String yardId)
+    {
+        YardEntity yard = yardRepository.findYardEntityByIdAndActiveAndDeleted(yardId, true, false);
+        if(yard == null)
+        {
+            return null;
+        }
+        else
+        {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+            YardModel yardModel = YardModel.builder()
+                    .id(yard.getId())
+                    .name(yard.getName())
+                    .address(yard.getAddress())
+                    .districtName(districtRepository.findById(yard.getDistrictId()).getDistrictName())
+                    .openAt(yard.getOpenAt().format(formatter))
+                    .closeAt(yard.getCloseAt().format(formatter))
+                    .build();
+            List<String> images = new ArrayList<>();
+            List<YardPictureEntity> listPicture = yardPictureRepository.getAllByRefId(yardModel.getId());
+            listPicture.forEach(picture -> images.add(picture.getImage()));
+            yardModel.setImages(images);
+            return yardModel;
+        }
+    }
 }

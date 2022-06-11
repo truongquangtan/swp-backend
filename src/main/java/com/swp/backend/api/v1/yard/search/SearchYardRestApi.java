@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping(value = "api/v1/yard")
+@RequestMapping(value = "api/v1/yards")
 public class SearchYardRestApi {
 
     private YardService yardService;
