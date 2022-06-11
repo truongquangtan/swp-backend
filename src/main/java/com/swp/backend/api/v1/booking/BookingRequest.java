@@ -6,6 +6,5 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class BookingRequest {
-    private String userId;
-    private String slotId;
+    private int slotId;
 }

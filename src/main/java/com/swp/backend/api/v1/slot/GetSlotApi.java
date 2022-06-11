@@ -54,7 +54,7 @@ public class GetSlotApi {
 
         //Successful query
         List<Slot> slots =  slotService.getAllSlotInSubYardByDate(subYardId, getSlotRequest.getDate());
-        response = new SlotResponse("Query successful", slots);
+        response = new SlotResponse("Get slots successful", slots);
         return ResponseEntity.ok().body(gson.toJson(response));
     }
 

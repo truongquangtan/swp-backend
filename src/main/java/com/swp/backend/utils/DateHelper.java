@@ -22,7 +22,7 @@ public class DateHelper {
     }
 
     public static Timestamp parseFromStringToTimestamp(String input) {
-        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
         Date dateParsed;
         Timestamp timestamp;
         try {
