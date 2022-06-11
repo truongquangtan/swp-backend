@@ -21,8 +21,14 @@ public class BookingEntity {
     private int id;
     @Column(name = "account_id")
     private String accountId;
+    @Column(name = "slot_id")
+    private int slotId;
     @Column(name = "status")
     private String status;
     @Column(name = "date")
     private Timestamp date;
+    @Column(name = "note")
+    private String note;
+    @Column(name = "price")
+    private int price;
 }

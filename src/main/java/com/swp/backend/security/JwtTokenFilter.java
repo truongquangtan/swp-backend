@@ -32,11 +32,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
-        boolean isPublicApi = Arrays.stream(ApiEndpointProperties.publicEndpoint).anyMatch(url -> request.getRequestURI().startsWith(url));
-        if(isPublicApi){
-            chain.doFilter(request, response);
-            return;
-        }
+//        boolean isPublicApi = Arrays.stream(ApiEndpointProperties.publicEndpoint).anyMatch(url -> request.getRequestURI().startsWith(url));
+//        if(isPublicApi){
+//            chain.doFilter(request, response);
+//            return;
+//        }
         // Get authorization header and validate
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (header == null || !header.startsWith("Bearer ")) {

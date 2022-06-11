@@ -49,7 +49,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         //Public endpoints
         http.authorizeHttpRequests().antMatchers(ApiEndpointProperties.publicEndpoint).permitAll();
-        http.authorizeHttpRequests().antMatchers(ApiEndpointProperties.ownerOnlyEndpoint).hasAuthority(RoleProperties.ROLE_ADMIN);
+        http.authorizeHttpRequests().antMatchers(ApiEndpointProperties.userOnlyEndpoint).hasAuthority(RoleProperties.ROLE_USER);
+        http.authorizeHttpRequests().antMatchers(ApiEndpointProperties.ownerOnlyEndpoint).hasAuthority(RoleProperties.ROLE_OWNER);
         http.authorizeHttpRequests().antMatchers(ApiEndpointProperties.adminOnlyEndpoint).hasAuthority(RoleProperties.ROLE_ADMIN);
         //Permission endpoints
         http.authorizeHttpRequests().anyRequest().authenticated();

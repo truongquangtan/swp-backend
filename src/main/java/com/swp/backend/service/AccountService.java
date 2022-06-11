@@ -6,6 +6,7 @@ import com.swp.backend.entity.AccountOtpEntity;
 import com.swp.backend.entity.RoleEntity;
 import com.swp.backend.model.AccountModel;
 import com.swp.backend.repository.AccountRepository;
+import com.swp.backend.repository.RoleRepository;
 import com.swp.backend.utils.RegexHelper;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataAccessException;
@@ -26,6 +27,7 @@ public class AccountService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final AccountLoginService accountLoginService;
+    private final RoleRepository roleRepository;
 
     public AccountEntity updatePassword(String username, String password) throws DataAccessException{
         AccountEntity account = findAccountByUsername(username);
@@ -190,5 +192,12 @@ public class AccountService {
         account.setActive(true);
         accountRepository.save(account);
         return true;
+    }
+
+    public String getRoleFromUserId(String userId)
+    {
+        AccountEntity accountEntity = accountRepository.findUserEntityByUserId(userId);
+        int roleId = accountEntity.getRoleId();
+        return roleRepository.findRoleEntityById(roleId).getRoleName();
     }
 }

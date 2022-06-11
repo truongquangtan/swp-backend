@@ -39,7 +39,7 @@ public class DateHelper {
     public static Date parseFromStringToDate(String input)
     {
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-
+        format.setLenient(false);
         Date dateParsed;
         try {
             dateParsed = format.parse(input);
@@ -54,8 +54,18 @@ public class DateHelper {
     {
         Timestamp today = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        format.setLenient(false);
         String todayFormatted = format.format(today);
         String dateFormatted = format.format(requestDate);
+        return dateFormatted.equals(todayFormatted);
+    }
+    public static boolean isToday(Timestamp timestamp)
+    {
+        Timestamp today = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        format.setLenient(false);
+        String todayFormatted = format.format(timestamp);
+        String dateFormatted = format.format(today);
         return dateFormatted.equals(todayFormatted);
     }
 

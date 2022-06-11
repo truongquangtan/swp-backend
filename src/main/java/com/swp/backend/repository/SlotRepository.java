@@ -11,4 +11,7 @@ import java.util.List;
 public interface SlotRepository extends JpaRepository<SlotEntity, String> {
     List<SlotEntity> findSlotEntitiesByRefYardAndActiveIsTrue(String refYard);
     List<SlotEntity> findSlotEntitiesByStartTimeGreaterThanAndRefYardAndActiveIsTrue(LocalTime startTime,String refYard);
+    SlotEntity findSlotEntityByIdAndStartTimeGreaterThanAndActive(int slotId, LocalTime startTime, boolean isActive);
+    SlotEntity findSlotEntityByIdAndActive(int slotId, boolean isActive);
+    SlotEntity findSlotEntityById(int slotId);
 }
