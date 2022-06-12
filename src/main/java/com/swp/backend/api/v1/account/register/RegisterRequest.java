@@ -23,12 +23,14 @@ public class RegisterRequest {
         password = password.trim();
         confirmPassword = confirmPassword.trim();
         fullName = fullName.trim();
+        phone = (phone != null && phone.trim().length() == 0) ? null : phone;
+
+        if (phone != null && !phone.matches(RegexHelper.PHONE_REGEX_LOCAL)) {
+            return "Phone is not valid.";
+        }
 
         if (!email.matches(RegexHelper.EMAIL_REGEX)) {
             return "Email is not valid.";
-        }
-        if (phone != null && !phone.matches(RegexHelper.PHONE_REGEX_LOCAL)) {
-            return "Phone is not valid.";
         }
 
         if (password.length() < 8) {
