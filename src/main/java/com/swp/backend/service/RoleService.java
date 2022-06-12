@@ -12,15 +12,15 @@ import java.util.List;
 public class RoleService {
     RoleRepository roleRepository;
 
-    public RoleEntity getRoleById(int id){
+    public RoleEntity getRoleById(int id) {
         return roleRepository.findRoleEntityById(id);
     }
 
-    public RoleEntity getRoleByRoleName(String roleName){
+    public RoleEntity getRoleByRoleName(String roleName) {
         return roleRepository.findRoleEntityByRoleName(roleName);
     }
 
-    public List<RoleEntity> getAllRole(){
+    public List<RoleEntity> getAllRole() {
         return roleRepository.findAll();
     }
 }

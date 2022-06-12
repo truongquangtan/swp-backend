@@ -21,29 +21,29 @@ public class OtpStateService {
         return new DecimalFormat("000000").format(new Random().nextInt(999999));
     }
 
-    public AccountOtpEntity generateOtp(String userId){
+    public AccountOtpEntity generateOtp(String userId) {
         String otp = generateOtp();
         Timestamp createAt = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
         Timestamp expireAt = DateHelper.plusMinutes(createAt, 20);
         AccountOtpEntity accountOtpEntity = accountOtpRepository.findOtpStateByUserId(userId);
-        if(accountOtpEntity != null){
+        if (accountOtpEntity != null) {
             accountOtpEntity.setOtpCode(otp);
             accountOtpEntity.setCreateAt(createAt);
             accountOtpEntity.setExpireAt(expireAt);
-        }else {
+        } else {
             accountOtpEntity = AccountOtpEntity.builder().userId(userId).createAt(createAt).expireAt(expireAt).otpCode(otp).build();
         }
         accountOtpRepository.save(accountOtpEntity);
         return accountOtpEntity;
     }
 
-    public AccountOtpEntity findOtpStateByUserId(String userId){
+    public AccountOtpEntity findOtpStateByUserId(String userId) {
         return accountOtpRepository.findOtpStateByUserId(userId);
     }
 
     public void sendEmailOtpRestPassword(String userId, String email) throws DataAccessException {
         AccountOtpEntity accountOtp = accountOtpRepository.findOtpStateByUserId(userId);
-        if(accountOtp == null){
+        if (accountOtp == null) {
             accountOtp = AccountOtpEntity.builder().userId(userId).build();
         }
         String otp = generateOtp();
@@ -59,12 +59,12 @@ public class OtpStateService {
         emailService.sendSimpleMessage(email, emailSubject, body);
     }
 
-    public boolean verifyOtp(String userId, String otp){
+    public boolean verifyOtp(String userId, String otp) {
         AccountOtpEntity accountOtp = accountOtpRepository.findOtpStateByUserId(userId);
-        if(accountOtp == null){
+        if (accountOtp == null) {
             return false;
         }
-        if(accountOtp.getOtpCode().matches(otp)){
+        if (accountOtp.getOtpCode().matches(otp)) {
             accountOtpRepository.delete(accountOtp);
             return true;
         }

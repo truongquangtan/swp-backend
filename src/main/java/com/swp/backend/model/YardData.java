@@ -19,8 +19,7 @@ public class YardData {
     private List<String> images;
     private List<SubYardModel> subYards;
 
-    public YardData(YardModel yardModel, List<SubYardModel> subYards)
-    {
+    public YardData(YardModel yardModel, List<SubYardModel> subYards) {
         this.id = yardModel.getId();
         this.address = yardModel.getAddress();
         this.closeAt = yardModel.getCloseAt();

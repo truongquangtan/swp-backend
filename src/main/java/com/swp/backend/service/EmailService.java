@@ -24,7 +24,7 @@ public class EmailService {
     }
 
     //Send text email
-    public void sendSimpleMessage(String to, String subject, String text)  {
+    public void sendSimpleMessage(String to, String subject, String text) {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom(new InternetAddress(senderEmail, "Playground Basketball").toUnicodeString());
@@ -34,7 +34,7 @@ public class EmailService {
             new Thread(() -> {
                 mailSender.send(message);
             }).start();
-        }catch (UnsupportedEncodingException unsupportedEncodingException){
+        } catch (UnsupportedEncodingException unsupportedEncodingException) {
             unsupportedEncodingException.printStackTrace();
         }
     }
@@ -58,7 +58,7 @@ public class EmailService {
         }).start();
     }
 
-    public void sendHtmlTemplateMessage(String to, String subject, String htmlText){
+    public void sendHtmlTemplateMessage(String to, String subject, String htmlText) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             message.setFrom(new InternetAddress(senderEmail, "Playground Basketball"));
@@ -71,7 +71,7 @@ public class EmailService {
             new Thread(() -> {
                 mailSender.send(message);
             }).start();
-        }catch (MessagingException | UnsupportedEncodingException e){
+        } catch (MessagingException | UnsupportedEncodingException e) {
             e.printStackTrace();
         }
     }

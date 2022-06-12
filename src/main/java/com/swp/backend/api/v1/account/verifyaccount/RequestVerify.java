@@ -8,7 +8,8 @@ import lombok.Setter;
 @Setter
 public class RequestVerify {
     private String otpCode;
-    public boolean isValid(){
+
+    public boolean isValid() {
         return otpCode != null && otpCode.matches(RegexHelper.OTP_REGEX);
     }
 }

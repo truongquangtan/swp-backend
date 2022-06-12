@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class SecurityContextService {
-    public String extractUsernameFromContext(SecurityContext securityContext) throws ClassCastException{
+    public String extractUsernameFromContext(SecurityContext securityContext) throws ClassCastException {
         UserDetails userDetails = (UserDetails) securityContext.getAuthentication().getPrincipal();
         return userDetails.getUsername();
     }

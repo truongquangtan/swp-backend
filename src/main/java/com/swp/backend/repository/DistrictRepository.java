@@ -8,7 +8,9 @@ import java.util.List;
 
 @Repository
 public interface DistrictRepository extends JpaRepository<DistrictEntity, Integer> {
-    public DistrictEntity findDistrictEntityByDistrictName(String districtName);
-    public List<DistrictEntity> findAllByProvinceId(int provinceId);
-    public DistrictEntity findById(int provinceId);
+    DistrictEntity findDistrictEntityByDistrictName(String districtName);
+
+    List<DistrictEntity> findAllByProvinceId(int provinceId);
+
+    DistrictEntity findById(int provinceId);
 }

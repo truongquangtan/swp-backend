@@ -3,6 +3,7 @@ package com.swp.backend.api.v1.yard.add;
 import lombok.Data;
 
 import java.util.List;
+
 @Data
 public class YardRequest {
     private String name;

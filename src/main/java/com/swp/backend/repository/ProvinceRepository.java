@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ProvinceRepository extends JpaRepository<ProvinceEntity, Integer> {
-    public ProvinceEntity findDistinctById(int id);
+    ProvinceEntity findDistinctById(int id);
 }

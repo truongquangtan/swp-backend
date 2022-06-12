@@ -1,9 +1,6 @@
 package com.swp.backend.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,7 +10,8 @@ import java.sql.Timestamp;
 
 @Entity
 @Table(name = "sub_yards")
-@Data
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor

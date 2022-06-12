@@ -39,18 +39,18 @@ public class UploadAvatarRestApi {
     )
     public ResponseEntity<String> uploadAvatar(@RequestParam(value = "file", required = false) MultipartFile file) throws IOException {
         //Case request missing file
-        if(file == null){
+        if (file == null) {
             return ResponseEntity.badRequest().body("Can't get attribute 'file' MultipartFile from request, request must body type form-data.");
         }
         try {
             //Determine current user call api from spring-security context
             Object userDetails = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            if(userDetails instanceof UserDetails){
+            if (userDetails instanceof UserDetails) {
                 String userId = ((UserDetails) userDetails).getUsername();
                 //Get details of user
                 AccountEntity accountEntity = accountService.findAccountByUsername(userId);
                 //Case user notfound
-                if (accountEntity == null){
+                if (accountEntity == null) {
                     return ResponseEntity.badRequest().body("Account not exist, can't query user on database.");
                 }
                 //Call FirebaseStoreService's upload file method and receive url store on firebase store
@@ -60,9 +60,9 @@ public class UploadAvatarRestApi {
                 accountService.updateUser(accountEntity);
                 return ResponseEntity.ok().body(url);
             }
-        }catch (DataAccessException dataAccessException){
+        } catch (DataAccessException dataAccessException) {
             return ResponseEntity.internalServerError().body("Access database failed. " + dataAccessException.getMessage());
-        }catch (Exception exception){
+        } catch (Exception exception) {
             return ResponseEntity.internalServerError().body(exception.getMessage());
         }
         return ResponseEntity.internalServerError().build();

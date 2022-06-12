@@ -6,8 +6,7 @@ import com.swp.backend.model.Slot;
 import java.time.format.DateTimeFormatter;
 
 public class SlotBuilder {
-    public static Slot getBookedSlotFromSlotEntity(SlotEntity slotEntity)
-    {
+    public static Slot getBookedSlotFromSlotEntity(SlotEntity slotEntity) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
         Slot slot = Slot.builder()
                 .id(slotEntity.getId())
@@ -19,8 +18,8 @@ public class SlotBuilder {
                 .build();
         return slot;
     }
-    public static Slot getAvailableSlotFromSlotEntity(SlotEntity slotEntity)
-    {
+
+    public static Slot getAvailableSlotFromSlotEntity(SlotEntity slotEntity) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
         Slot slot = Slot.builder()
                 .id(slotEntity.getId())

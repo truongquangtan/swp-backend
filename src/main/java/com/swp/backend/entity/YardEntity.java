@@ -1,9 +1,6 @@
 package com.swp.backend.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,7 +11,8 @@ import java.time.LocalTime;
 
 @Entity
 @Table(name = "yards")
-@Data
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -42,4 +40,8 @@ public class YardEntity {
     private LocalTime closeAt;
     @Column(name = "slot_duration")
     private int slotDuration;
+    @Column(name = "score")
+    private int score;
+    @Column(name = "number_of_vote")
+    private int numberOfVote;
 }

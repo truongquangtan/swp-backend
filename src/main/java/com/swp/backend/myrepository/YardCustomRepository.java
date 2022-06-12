@@ -4,7 +4,6 @@ import com.swp.backend.entity.YardEntity;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.math.BigInteger;
@@ -15,21 +14,21 @@ public class YardCustomRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public List<?> findYardByFilter(Integer provinceId, Integer districtId, int ofSet, int page){
+    public List<?> findYardByFilter(Integer provinceId, Integer districtId, int ofSet, int page) {
         Query query = null;
 
-        if(districtId == null && provinceId == null){
+        if (districtId == null && provinceId == null) {
             String nativeQuery = "SELECT * FROM yards";
             query = entityManager.createNativeQuery(nativeQuery, YardEntity.class);
         }
 
-        if(query == null && districtId != null){
+        if (query == null && districtId != null) {
             String nativeQuery = "SELECT * FROM yards WHERE is_deleted = false AND is_active = true AND district_id = ?1";
             query = entityManager.createNativeQuery(nativeQuery, YardEntity.class);
             query.setParameter(1, districtId);
         }
 
-        if(query == null && provinceId != null){
+        if (query == null && provinceId != null) {
             String nativeQuery = "SELECT yards.* FROM yards" +
                     " INNER JOIN districts district ON district.id = yards.district_id" +
                     " WHERE yards.is_active = true" +
@@ -38,30 +37,30 @@ public class YardCustomRepository {
             query = entityManager.createNativeQuery(nativeQuery, YardEntity.class);
             query.setParameter(1, provinceId);
         }
-        if(query != null){
+        if (query != null) {
             query.setFirstResult((page - 1) * ofSet);
             query.setMaxResults(ofSet);
             return query.getResultList();
-        }else {
+        } else {
             return null;
         }
     }
 
-    public int getMaxResultFindYardByFilter(Integer provinceId, Integer districtId){
+    public int getMaxResultFindYardByFilter(Integer provinceId, Integer districtId) {
         Query query = null;
 
-        if(districtId == null && provinceId == null){
+        if (districtId == null && provinceId == null) {
             String nativeQuery = "SELECT COUNT(*) FROM yards";
             query = entityManager.createNativeQuery(nativeQuery);
         }
 
-        if(query == null && districtId != null){
+        if (query == null && districtId != null) {
             String nativeQuery = "SELECT COUNT(*) FROM yards WHERE is_deleted = false AND is_active = true AND district_id = ?1";
             query = entityManager.createNativeQuery(nativeQuery);
             query.setParameter(1, districtId);
         }
 
-        if(query == null && provinceId != null){
+        if (query == null && provinceId != null) {
             String nativeQuery = "SELECT COUNT(yards.*) FROM yards" +
                     " INNER JOIN districts district ON district.id = yards.district_id" +
                     " WHERE yards.is_active = true" +
@@ -71,10 +70,10 @@ public class YardCustomRepository {
             query.setParameter(1, provinceId);
         }
 
-        if(query != null){
+        if (query != null) {
             Object result = query.getSingleResult();
             return result instanceof BigInteger ? ((BigInteger) result).intValue() : 0;
-        }else {
+        } else {
             return 0;
         }
     }

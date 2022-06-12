@@ -22,26 +22,26 @@ public class DeactivateAccountRestApi {
     private AccountService accountService;
 
     @PutMapping(value = "deactivate-account")
-    public ResponseEntity<String> reactiveAccount(@RequestBody(required = false) DeactivateAccountRequest deactivateAccount){
+    public ResponseEntity<String> reactiveAccount(@RequestBody(required = false) DeactivateAccountRequest deactivateAccount) {
         try {
-            if(deactivateAccount == null){
+            if (deactivateAccount == null) {
                 ErrorResponse errorResponse = ErrorResponse.builder().message("Missing body").build();
                 return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
             }
 
             SecurityContext context = SecurityContextHolder.getContext();
             String requestUserId = securityContextService.extractUsernameFromContext(context);
-            if(requestUserId.equals(deactivateAccount.getUserId())){
+            if (requestUserId.equals(deactivateAccount.getUserId())) {
                 ErrorResponse errorResponse = ErrorResponse.builder().message("Can't disable account itself.").build();
                 return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
             }
-            if(accountService.deactivateAccount(deactivateAccount.getUserId())){
+            if (accountService.deactivateAccount(deactivateAccount.getUserId())) {
                 return ResponseEntity.ok().body("Disable account success!");
-            }else {
+            } else {
                 ErrorResponse errorResponse = ErrorResponse.builder().message("Server busy disable account failed.").build();
                 return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
             }
-        }catch (Exception exception){
+        } catch (Exception exception) {
             ErrorResponse errorResponse = ErrorResponse.builder().message("Server busy can't handle this request.").build();
             return ResponseEntity.internalServerError().body(gson.toJson(errorResponse));
         }

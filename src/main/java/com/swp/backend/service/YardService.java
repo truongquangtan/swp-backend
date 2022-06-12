@@ -50,7 +50,7 @@ public class YardService {
         yardRepository.save(parentYard);
         //Save sub-yard
         List<SubYardRequest> subYardList = yardRequest.getSubYards();
-        if(subYardList != null && subYardList.size() > 0){
+        if (subYardList != null && subYardList.size() > 0) {
             List<SubYardEntity> subYardEntityList = new ArrayList<>();
             List<SlotEntity> slotEntityList = new ArrayList<>();
             subYardList.forEach(subYard -> {
@@ -80,17 +80,17 @@ public class YardService {
         }
     }
 
-    public YardResponse findYardByFilter(Integer provinceId, Integer districtId, Integer ofSet, Integer page){
+    public YardResponse findYardByFilter(Integer provinceId, Integer districtId, Integer ofSet, Integer page) {
         int pageValue = (page == null || page < 1) ? 1 : page;
         int ofSetValue = (ofSet == null || ofSet < 1) ? 6 : ofSet;
 
         int maxResult = yardCustomRepository.getMaxResultFindYardByFilter(provinceId, districtId);
-        if((pageValue * ofSetValue) > maxResult){
+        if ((pageValue * ofSetValue) > maxResult) {
             pageValue = 1;
         }
         List<?> listResult = yardCustomRepository.findYardByFilter(provinceId, districtId, ofSetValue, pageValue);
         List<YardModel> yardModels = listResult.stream().map(item -> {
-            if(item instanceof YardEntity){
+            if (item instanceof YardEntity) {
                 YardEntity yard = (YardEntity) item;
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
                 DistrictEntity districtEntity = districtRepository.findById(yard.getDistrictId());
@@ -104,7 +104,7 @@ public class YardService {
                         .openAt(yard.getOpenAt().format(formatter))
                         .closeAt(yard.getCloseAt().format(formatter))
                         .build();
-            }else {
+            } else {
                 return null;
             }
         }).collect(Collectors.toList());
@@ -118,21 +118,16 @@ public class YardService {
         return YardResponse.builder().yards(yardModels).maxResult(maxResult).page(pageValue).build();
     }
 
-    public boolean isAvailableYard(String yardId)
-    {
+    public boolean isAvailableYard(String yardId) {
         YardEntity yard = yardRepository.findYardEntityByIdAndActiveAndDeleted(yardId, true, false);
         return yard != null;
     }
 
-    public YardModel getYardModelFromYardId(String yardId)
-    {
+    public YardModel getYardModelFromYardId(String yardId) {
         YardEntity yard = yardRepository.findYardEntityByIdAndActiveAndDeleted(yardId, true, false);
-        if(yard == null)
-        {
+        if (yard == null) {
             return null;
-        }
-        else
-        {
+        } else {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
             YardModel yardModel = YardModel.builder()
                     .id(yard.getId())
@@ -148,5 +143,13 @@ public class YardService {
             yardModel.setImages(images);
             return yardModel;
         }
+    }
+
+    public YardEntity getYardById(String yardId) {
+        return yardRepository.findYardEntitiesById(yardId);
+    }
+
+    public void updateYard(YardEntity yard) throws DataAccessException {
+        yardRepository.save(yard);
     }
 }

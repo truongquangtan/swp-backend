@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AccountOtpRepository extends JpaRepository<AccountOtpEntity, Integer> {
-    public AccountOtpEntity findOtpStateByUserId(String userId);
+    AccountOtpEntity findOtpStateByUserId(String userId);
 }

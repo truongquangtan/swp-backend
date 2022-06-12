@@ -18,31 +18,37 @@ public class SubYardService {
     private SubYardRepository subYardRepository;
     private TypeYardRepository typeYardRepository;
 
-    public List<SubYardModel> getSubYardsByBigYard(String bigYardId)
-    {
-        List<?> queriedSubYards = subYardCustomRepository.getAllSubYardByBigYard(bigYardId);
-
-        List<SubYardModel> subYards = queriedSubYards.stream().map(subYardQueried -> {
-            SubYardEntity subYardEntity = (SubYardEntity) subYardQueried;
-            String typeYard = typeYardRepository.getTypeYardById(subYardEntity.getTypeYard()).getTypeName();
-            return SubYardModel.builder()
-                    .id(subYardEntity.getId())
-                    .name(subYardEntity.getName())
-                    .typeYard(typeYard)
-                    .parentYard(subYardEntity.getParentYard())
-                    .createAt(subYardEntity.getCreateAt())
-                    .build();
-        }).collect(Collectors.toList());
-
-        return subYards;
+    private List<?> findSubYardByParentId(String bigYardId) {
+        return subYardCustomRepository.getAllSubYardByBigYard(bigYardId);
     }
-    public boolean isActiveSubYard(String subYardId)
-    {
+
+    public List<SubYardModel> getSubYardsByBigYard(String bigYardId) {
+        List<?> queriedSubYards = findSubYardByParentId(bigYardId);
+
+        return queriedSubYards.stream().map(object -> {
+            if (object instanceof SubYardEntity) {
+                SubYardEntity subYardEntity = (SubYardEntity) object;
+                String typeYard = typeYardRepository.getTypeYardById(subYardEntity.getTypeYard()).getTypeName();
+                return SubYardModel.builder()
+                        .id(subYardEntity.getId())
+                        .name(subYardEntity.getName())
+                        .typeYard(typeYard)
+                        .parentYard(subYardEntity.getParentYard())
+                        .createAt(subYardEntity.getCreateAt())
+                        .build();
+
+            } else {
+                return null;
+            }
+        }).collect(Collectors.toList());
+    }
+
+    public boolean isActiveSubYard(String subYardId) {
         SubYardEntity subYard = subYardRepository.getSubYardEntityByIdAndActive(subYardId, true);
         return subYard != null;
     }
-    public String getBigYardIdFromSubYard(String subYardId)
-    {
+
+    public String getBigYardIdFromSubYard(String subYardId) {
         return subYardCustomRepository.getBigYardIdFromSubYard(subYardId);
     }
 }

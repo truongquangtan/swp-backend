@@ -21,19 +21,19 @@ public class LogoutRestApi {
     @Operation(description = "Required attach header access token.")
     @ApiResponse(responseCode = "500", description = "Logout failed, delete token context login failed.")
     @GetMapping(value = "logout")
-    public ResponseEntity<String> logout(){
+    public ResponseEntity<String> logout() {
         try {
             //Get current user from spring security context container
             Object user = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            if(user instanceof UserDetails){
+            if (user instanceof UserDetails) {
                 String userId = ((UserDetails) user).getUsername();
                 System.out.println(userId);
                 accountLoginService.expireLogin(userId);
             }
             return ResponseEntity.ok("Logout success!");
-        }catch (Exception exception){
+        } catch (Exception exception) {
             exception.printStackTrace();
-            return  ResponseEntity.internalServerError().body("Logout failed.");
+            return ResponseEntity.internalServerError().body("Logout failed.");
         }
     }
 }

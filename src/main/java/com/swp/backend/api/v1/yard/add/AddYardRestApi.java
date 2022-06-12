@@ -21,8 +21,8 @@ public class AddYardRestApi {
     Gson gson;
 
     @PostMapping(value = "add-yard")
-    public ResponseEntity<String> createYard(@RequestBody(required = false) YardRequest yardRequest){
-        if(yardRequest == null){
+    public ResponseEntity<String> createYard(@RequestBody(required = false) YardRequest yardRequest) {
+        if (yardRequest == null) {
             return ResponseEntity.badRequest().body("Missing body");
         }
         try {
@@ -30,7 +30,7 @@ public class AddYardRestApi {
             String userId = securityContextService.extractUsernameFromContext(context);
             yardService.createNewYard(userId, yardRequest);
             return ResponseEntity.ok("Create yard success!");
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().body(e.getMessage());
         }

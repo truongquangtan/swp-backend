@@ -16,7 +16,7 @@ public class GetAllUserRestApi {
     private Gson gson;
 
     @GetMapping("view-all-user")
-    public ResponseEntity<String> getAllUserHasRoleUserOrOwner(){
+    public ResponseEntity<String> getAllUserHasRoleUserOrOwner() {
         return ResponseEntity.ok().body(gson.toJson(accountService.getAllUserHasRoleUser()));
     }
 }

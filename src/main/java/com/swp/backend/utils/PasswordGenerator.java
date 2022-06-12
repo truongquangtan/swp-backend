@@ -3,8 +3,7 @@ package com.swp.backend.utils;
 import java.util.Random;
 
 public class PasswordGenerator {
-    public static String generatePassword(int numOfCharacters)
-    {
+    public static String generatePassword(int numOfCharacters) {
         String capitalCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         String lowerCaseLetters = "abcdefghijklmnopqrstuvwxyz";
         String specialCharacters = "!@#$";
@@ -20,7 +19,7 @@ public class PasswordGenerator {
         password[2] = specialCharacters.charAt(random.nextInt(specialCharacters.length()));
         password[3] = numbers.charAt(random.nextInt(numbers.length()));
 
-        for(int i = 4; i< numOfCharacters ; i++) {
+        for (int i = 4; i < numOfCharacters; i++) {
             password[i] = combinedChars.charAt(random.nextInt(combinedChars.length()));
         }
         return String.copyValueOf(password);

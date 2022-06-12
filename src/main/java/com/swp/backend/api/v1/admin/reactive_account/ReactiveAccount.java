@@ -19,19 +19,19 @@ public class ReactiveAccount {
     private AccountService accountService;
 
     @PutMapping(value = "reactivate-account")
-    public ResponseEntity<String> reactiveAccount(@RequestBody(required = false) ReactiveAccountRequest reactiveAccount){
+    public ResponseEntity<String> reactiveAccount(@RequestBody(required = false) ReactiveAccountRequest reactiveAccount) {
         try {
-            if(reactiveAccount == null){
+            if (reactiveAccount == null) {
                 ErrorResponse errorResponse = ErrorResponse.builder().message("Missing body").build();
                 return ResponseEntity.ok().body(gson.toJson(errorResponse));
             }
-            if(accountService.reactivateAccount(reactiveAccount.getUserId())){
+            if (accountService.reactivateAccount(reactiveAccount.getUserId())) {
                 return ResponseEntity.ok().body("Reactivate account success!");
-            }else {
+            } else {
                 ErrorResponse errorResponse = ErrorResponse.builder().message("Reactive success.").build();
                 return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
             }
-        }catch (DataAccessException dataAccessException){
+        } catch (DataAccessException dataAccessException) {
             ErrorResponse errorResponse = ErrorResponse.builder().message("Server busy can't handle this request.").build();
             return ResponseEntity.internalServerError().body(gson.toJson(errorResponse));
         }

@@ -5,7 +5,8 @@ import lombok.Data;
 @Data
 public class NewPasswordRequest {
     private String password;
-    public boolean isValid(){
+
+    public boolean isValid() {
         return password != null && password.length() >= 8;
     }
 }
