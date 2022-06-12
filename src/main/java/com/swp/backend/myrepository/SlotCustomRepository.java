@@ -29,6 +29,7 @@ public class SlotCustomRepository {
             query = entityManager.createNativeQuery(nativeQuery, SlotEntity.class);
             query.setParameter(1, date);
             query.setParameter(2, BookingStatus.SUCCESS);
+            query.setParameter(3, subYardId);
 
             if(query != null)
             {
