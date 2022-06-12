@@ -11,15 +11,33 @@ public class RegisterRequest {
     private String fullName;
     private String password;
     private String phone;
+    private String confirmPassword;
 
     //Check valid request form
     public boolean isValidRequest() {
-        if (email == null || fullName == null || password == null) {
-            return false;
+        return email != null && fullName != null && password != null && confirmPassword != null;
+    }
+
+    public String checkBusinessError(){
+        email = email.trim();
+        password = password.trim();
+        confirmPassword = confirmPassword.trim();
+        fullName = fullName.trim();
+
+        if(!email.matches(RegexHelper.EMAIL_REGEX)){
+            return "Email is not valid.";
         }
-        if (email.trim().length() <= 0 && fullName.trim().length() <= 0 && password.trim().length() <= 0) {
-            return false;
+        if(phone!= null && !phone.matches(RegexHelper.PHONE_REGEX_LOCAL)){
+            return "Phone is not valid.";
         }
-        return email.matches(RegexHelper.EMAIL_REGEX);
+
+        if(password.length() < 8){
+            return "Password must at least 8 characters";
+        }
+
+        if(!password.matches(confirmPassword)){
+            return "Password and confirm password not matches";
+        }
+        return null;
     }
 }

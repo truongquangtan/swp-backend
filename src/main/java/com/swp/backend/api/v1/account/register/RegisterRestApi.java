@@ -47,6 +47,12 @@ public class RegisterRestApi {
                 return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
             }
 
+            String error = registerRequest.checkBusinessError();
+            if(error != null){
+                ErrorResponse errorResponse = ErrorResponse.builder().message(error).build();
+                return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
+            }
+
             //Call user-service's create new user method
             AccountEntity accountEntity = accountService.createAccount(registerRequest.getEmail(), registerRequest.getFullName(), registerRequest.getPassword(), registerRequest.getPhone(), RoleProperties.ROLE_USER);
             //Call otp-service's otp generate method
@@ -55,7 +61,8 @@ public class RegisterRestApi {
             accountService.sendOtpVerifyAccount(accountEntity, accountOtpEntity);
             return ResponseEntity.ok("Create account success!");
         } catch (DataAccessException dataAccessException) {
-            return ResponseEntity.badRequest().body(dataAccessException.getMessage());
+            ErrorResponse errorResponse = ErrorResponse.builder().message(dataAccessException.getMessage()).build();
+            return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
         } catch (Exception exception) {
             exception.printStackTrace();
             return ResponseEntity.internalServerError().body("Server temp error.");

@@ -57,10 +57,6 @@ public class AccountService {
     }
 
     public AccountEntity createAccount(String email, String fullName, String password, String phone, String roleName) throws DataAccessException {
-        AccountEntity account = findAccountByUsername(email);
-        if (account != null) {
-            throw new DataIntegrityViolationException("Email already use by another account.");
-        }
         String uuid = UUID.randomUUID().toString();
         RoleEntity roleEntity = roleService.getRoleByRoleName(roleName);
         AccountEntity accountEntity = AccountEntity.builder()
@@ -71,8 +67,12 @@ public class AccountService {
                 .password(passwordEncoder.encode(password))
                 .roleId(roleEntity.getId())
                 .build();
-        accountRepository.save(accountEntity);
-        return accountEntity;
+        try {
+            accountRepository.save(accountEntity);
+            return accountEntity;
+        }catch (DataIntegrityViolationException dataIntegrityViolationException){
+            throw new DataIntegrityViolationException("Email or phone already use by another account.");
+        }
     }
 
     public void sendOtpVerifyAccount(AccountEntity accountEntity, AccountOtpEntity accountOtpEntity) {
