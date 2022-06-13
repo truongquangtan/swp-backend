@@ -58,7 +58,7 @@ public class BookingService {
         BookingEntity bookingEntity = BookingEntity.builder()
                 .accountId(userId)
                 .slotId(bookingModel.getSlotId())
-                .date(DateHelper.parseFromStringToTimestamp(bookingModel.getDate()))
+                .date(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE))
                 .status(status)
                 .note(errorNote)
                 .price(bookingModel.getPrice())
