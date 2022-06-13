@@ -3,6 +3,7 @@ package com.swp.backend.myrepository;
 import com.swp.backend.constance.BookingStatus;
 import com.swp.backend.entity.SlotEntity;
 import com.swp.backend.utils.DateHelper;
+import org.apache.tomcat.jni.Local;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -20,39 +21,53 @@ public class SlotCustomRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public List<?> getAllBookedSlotInSubYardByDate(String subYardId, LocalDate today, LocalDate queryTime) {
+    public List<?> getAllBookedSlotInSubYardToday(String subYardId)
+    {
+        Query query = null;
         try {
-            Query query = null;
-            Timestamp startDate = Timestamp.valueOf(queryTime.toString() + " 00:00:00");
-            Timestamp endDate = Timestamp.valueOf(queryTime.toString() + " 23:59:59");
-            if (today.compareTo(queryTime) == 0) {
-                LocalTime timeNow = LocalTime.now(ZoneId.of(DateHelper.VIETNAM_ZONE));
-                String nativeQuery = "SELECT * FROM slots" +
-                        " WHERE (slots.id IN (SELECT slot_id FROM booking WHERE date BETWEEN ?1 AND ?2 AND status = ?3))" +
-                        " AND ref_yard = ?4" +
-                        " AND is_active = true" +
-                        " AND start_time > ?5";
+            LocalDate today = LocalDate.now();
+            Timestamp startTime = Timestamp.valueOf(today.toString() + " 00:00:00");
+            Timestamp endTime = Timestamp.valueOf(today.toString() + " 23:59:59");
+            LocalTime localTimeNow = LocalTime.now(ZoneId.of(DateHelper.VIETNAM_ZONE));
 
-                query = entityManager.createNativeQuery(nativeQuery, SlotEntity.class);
-                query.setParameter(1, startDate);
-                query.setParameter(2, endDate);
-                query.setParameter(3, BookingStatus.SUCCESS);
-                query.setParameter(4, subYardId);
-                query.setParameter(5, timeNow);
-            } else {
-                String nativeQuery = "SELECT * FROM slots" +
-                        " WHERE (slots.id IN (SELECT slot_id FROM booking WHERE date BETWEEN ?1 AND ?2 AND status = ?3))" +
-                        " AND ref_yard = ?4" +
-                        " AND is_active = true";
+            String nativeQuery = "SELECT * FROM slots" +
+                    " WHERE (slots.id IN (SELECT slot_id FROM booking WHERE date BETWEEN ?1 AND ?2 AND status = ?3))" +
+                    " AND ref_yard = ?4" +
+                    " AND is_active = true" +
+                    " AND start_time > ?5";
 
-                query = entityManager.createNativeQuery(nativeQuery, SlotEntity.class);
-                query.setParameter(1, startDate);
-                query.setParameter(2, endDate);
-                query.setParameter(3, BookingStatus.SUCCESS);
-                query.setParameter(4, subYardId);
-            }
+            query = entityManager.createNativeQuery(nativeQuery, SlotEntity.class);
+            query.setParameter(1, startTime);
+            query.setParameter(2, endTime);
+            query.setParameter(3, BookingStatus.SUCCESS);
+            query.setParameter(4, subYardId);
+            query.setParameter(5, localTimeNow);
+
             return query.getResultList();
-        } catch (Exception exception) {
+        } catch (Exception ex)
+        {
+            return null;
+        }
+    }
+
+    public List<?> getAllBookedSlotInSubYardByFutureDate(String subYardId, LocalDate queryDate)
+    {
+        Query query = null;
+        try {
+            Timestamp startTime = Timestamp.valueOf(queryDate.toString() + " 00:00:00");
+            Timestamp endTime = Timestamp.valueOf(queryDate.toString() + " 23:59:59");
+            String nativeQuery = "SELECT * FROM slots" +
+                    " WHERE (slots.id IN (SELECT slot_id FROM booking WHERE date BETWEEN ?1 AND ?2 AND status = ?3))" +
+                    " AND ref_yard = ?4" +
+                    " AND is_active = true";
+            query = entityManager.createNativeQuery(nativeQuery, SlotEntity.class);
+            query.setParameter(1, startTime);
+            query.setParameter(2, endTime);
+            query.setParameter(3, BookingStatus.SUCCESS);
+            query.setParameter(4, subYardId);
+            return query.getResultList();
+        } catch (Exception ex)
+        {
             return null;
         }
     }
