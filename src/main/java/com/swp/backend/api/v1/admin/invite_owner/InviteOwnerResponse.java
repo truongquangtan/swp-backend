@@ -10,5 +10,6 @@ import lombok.Data;
 public class InviteOwnerResponse {
     private String message;
     private String email;
-    private String password;
+    private String fullName;
+    private String phone;
 }

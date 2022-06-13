@@ -49,7 +49,8 @@ public class InviteOwnerApi {
             InviteOwnerResponse response = InviteOwnerResponse.builder()
                     .message("Invite admin success")
                     .email(accountEntity.getEmail())
-                    .password(password)
+                    .phone(accountEntity.getPhone())
+                    .fullName(accountEntity.getFullName())
                     .build();
 
             return ResponseEntity.ok().body(gson.toJson(response));

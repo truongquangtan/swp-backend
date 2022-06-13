@@ -1,7 +1,7 @@
 package com.swp.backend.service;
 
-import com.swp.backend.api.v1.yard.add.SubYardRequest;
-import com.swp.backend.api.v1.yard.add.YardRequest;
+import com.swp.backend.api.v1.owner.add_yard.SubYardRequest;
+import com.swp.backend.api.v1.owner.add_yard.YardRequest;
 import com.swp.backend.api.v1.yard.search.YardResponse;
 import com.swp.backend.entity.*;
 import com.swp.backend.model.YardModel;

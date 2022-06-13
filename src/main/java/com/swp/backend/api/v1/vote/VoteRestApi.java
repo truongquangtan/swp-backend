@@ -8,11 +8,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/api/v1/")
+@RestController
 @AllArgsConstructor
 public class VoteRestApi {
 
@@ -21,7 +20,7 @@ public class VoteRestApi {
     private Gson gson;
 
     @PostMapping(value = "vote")
-    public ResponseEntity<String> postVote(@RequestBody(required = false) PostVoteRequest voteRequest) {
+    public ResponseEntity<String> postVote(@RequestBody(required = false) VoteRequest voteRequest) {
         try {
             if (voteRequest == null) {
                 ErrorResponse errorResponse = ErrorResponse.builder().message("Missing body.").build();
@@ -37,6 +36,62 @@ public class VoteRestApi {
             );
 
             if (postVote) {
+                return ResponseEntity.ok("Vote success!");
+            } else {
+                ErrorResponse errorResponse = ErrorResponse.builder().message("Server busy can't handle this vote.").build();
+                return ResponseEntity.internalServerError().body(gson.toJson(errorResponse));
+            }
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            ErrorResponse errorResponse = ErrorResponse.builder().message("Server busy can't handle this request!").build();
+            return ResponseEntity.internalServerError().body(gson.toJson(errorResponse));
+        }
+    }
+
+    @PutMapping(value = "vote")
+    public ResponseEntity<String> editVote(@RequestBody(required = false) VoteRequest voteRequest) {
+        try {
+            if (voteRequest == null) {
+                ErrorResponse errorResponse = ErrorResponse.builder().message("Missing body.").build();
+                return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
+            }
+            SecurityContext context = SecurityContextHolder.getContext();
+            String userId = securityContextService.extractUsernameFromContext(context);
+            boolean editVote = voteService.editVote(
+                    userId,
+                    voteRequest.getPostId(),
+                    voteRequest.getScore(),
+                    voteRequest.getComment()
+            );
+
+            if (editVote) {
+                return ResponseEntity.ok("Vote success!");
+            } else {
+                ErrorResponse errorResponse = ErrorResponse.builder().message("Server busy can't handle this vote.").build();
+                return ResponseEntity.internalServerError().body(gson.toJson(errorResponse));
+            }
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            ErrorResponse errorResponse = ErrorResponse.builder().message("Server busy can't handle this request!").build();
+            return ResponseEntity.internalServerError().body(gson.toJson(errorResponse));
+        }
+    }
+
+    @DeleteMapping(value = "vote")
+    public ResponseEntity<String> deleteVote(@RequestBody(required = false) VoteRequest voteRequest) {
+        try {
+            if (voteRequest == null) {
+                ErrorResponse errorResponse = ErrorResponse.builder().message("Missing body.").build();
+                return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
+            }
+            SecurityContext context = SecurityContextHolder.getContext();
+            String userId = securityContextService.extractUsernameFromContext(context);
+            boolean deleteVoteVote = voteService.deleteVote(
+                    userId,
+                    voteRequest.getPostId()
+            );
+
+            if (deleteVoteVote) {
                 return ResponseEntity.ok("Vote success!");
             } else {
                 ErrorResponse errorResponse = ErrorResponse.builder().message("Server busy can't handle this vote.").build();

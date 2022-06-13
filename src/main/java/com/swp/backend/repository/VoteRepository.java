@@ -4,7 +4,11 @@ import com.swp.backend.entity.VoteEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface VoteRepository extends JpaRepository<VoteEntity, String> {
-    VoteEntity findVoteEntityById(String voteId);
+    public VoteEntity findVoteEntityById(String voteId);
+    public List<VoteEntity> findBySubYardIdInAndDeletedIsFalse(List<String> subYardId);
+
 }

@@ -18,7 +18,7 @@ public class SubYardService {
     private SubYardRepository subYardRepository;
     private TypeYardRepository typeYardRepository;
 
-    private List<?> findSubYardByParentId(String bigYardId) {
+    private List<SubYardEntity> findSubYardByParentId(String bigYardId) {
         return subYardCustomRepository.getAllSubYardByBigYard(bigYardId);
     }
 
