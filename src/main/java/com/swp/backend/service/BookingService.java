@@ -14,7 +14,6 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 public class BookingService {
     private SlotService slotService;
-    private YardService yardService;
     private SubYardService subYardService;
     private BookingRepository bookingRepository;
 
@@ -55,13 +54,17 @@ public class BookingService {
     }
 
     private BookingEntity processBooking(String userId, BookingModel bookingModel, String errorNote, String status) {
+        Timestamp timestamp = DateHelper.parseFromStringToTimestamp(bookingModel.getDate());
+        Timestamp now = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
+
         BookingEntity bookingEntity = BookingEntity.builder()
                 .accountId(userId)
                 .slotId(bookingModel.getSlotId())
-                .date(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE))
+                .date(timestamp)
                 .status(status)
                 .note(errorNote)
                 .price(bookingModel.getPrice())
+                .bookAt(now)
                 .build();
 
         bookingRepository.save(bookingEntity);

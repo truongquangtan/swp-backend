@@ -29,4 +29,6 @@ public class BookingEntity {
     private String note;
     @Column(name = "price")
     private int price;
+    @Column(name = "book_at")
+    private Timestamp bookAt;
 }

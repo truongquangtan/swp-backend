@@ -3,7 +3,6 @@ package com.swp.backend.myrepository;
 import com.swp.backend.constance.BookingStatus;
 import com.swp.backend.entity.SlotEntity;
 import com.swp.backend.utils.DateHelper;
-import org.apache.tomcat.jni.Local;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
