@@ -120,7 +120,7 @@ public class BookingService {
 
     public List<BookingEntity> getBookingHistoryOfUser(String userId, int itemsPerPage, int page)
     {
-        List<BookingEntity> bookingEntities = bookingRepository.getBookingEntitiesByAccountIdOrderByDateDesc(userId);
+        List<BookingEntity> bookingEntities = bookingRepository.getBookingEntitiesByAccountIdOrderByBookAtDesc(userId);
         List<BookingEntity> result = new ArrayList<>();
 
         int startIndex = itemsPerPage*(page-1);

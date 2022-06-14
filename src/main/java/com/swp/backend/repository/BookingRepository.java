@@ -11,5 +11,5 @@ import java.util.List;
 public interface BookingRepository extends JpaRepository<BookingEntity, Integer> {
     BookingEntity getBookingEntityBySlotIdAndStatusAndDateIsGreaterThanEqualAndDateIsLessThanEqual(int slotId, String status, Timestamp startTime, Timestamp endTime);
     List<BookingEntity> getBookingEntitiesByAccountIdAndDateIsGreaterThanEqualAndStatusOrderByDateAsc(String userId, Timestamp date, String status);
-    List<BookingEntity> getBookingEntitiesByAccountIdOrderByDateDesc(String userId);
+    List<BookingEntity> getBookingEntitiesByAccountIdOrderByBookAtDesc(String userId);
 }
