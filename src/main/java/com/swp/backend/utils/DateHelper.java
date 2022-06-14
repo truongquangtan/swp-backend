@@ -3,6 +3,7 @@ package com.swp.backend.utils;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -60,12 +61,15 @@ public class DateHelper {
     }
 
     public static boolean isToday(Timestamp timestamp) {
-        Timestamp today = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
-        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-        format.setLenient(false);
-        String todayFormatted = format.format(timestamp);
-        String dateFormatted = format.format(today);
-        return dateFormatted.equals(todayFormatted);
+        LocalDate now = LocalDate.now(ZoneId.of(VIETNAM_ZONE));
+        LocalDate localDatefromTimestamp = parseFromTimestampToLocalDate(timestamp);
+        return now.compareTo(localDatefromTimestamp) == 0;
+    }
+
+    public static boolean isToday(LocalDate date)
+    {
+        LocalDate today = LocalDate.now();
+        return today.compareTo(date) == 0;
     }
 
     public static LocalTime getLocalTimeFromTimeStamp(Timestamp timestamp) {
@@ -81,5 +85,11 @@ public class DateHelper {
         DateTimeFormatter formatDateTime = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
         LocalDateTime localDateTime = LocalDateTime.from(formatDateTime.parse(dateTime));
         return Timestamp.valueOf(localDateTime);
+    }
+
+    public static LocalDate parseFromTimestampToLocalDate(Timestamp timestamp)
+    {
+        LocalDate localDate = LocalDate.ofInstant(timestamp.toInstant(), ZoneId.of(VIETNAM_ZONE));
+        return localDate;
     }
 }

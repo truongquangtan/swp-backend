@@ -8,5 +8,5 @@ import java.sql.Timestamp;
 
 @Repository
 public interface BookingRepository extends JpaRepository<BookingEntity, Integer> {
-    BookingEntity getBookingEntityBySlotIdAndStatusAndDate(int slotId, String status, Timestamp date);
+    BookingEntity getBookingEntityBySlotIdAndStatusAndDateIsGreaterThanEqualAndDateIsLessThanEqual(int slotId, String status, Timestamp startTime, Timestamp endTime);
 }

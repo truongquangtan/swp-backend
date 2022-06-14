@@ -55,19 +55,25 @@ public class BookingApi {
 
         //Booking process
         try {
-            boolean isError = false, isChecked = false;
+            boolean isError = false, isAllError = true;
             for (BookingModel bookingModel : request.getBookingList()) {
                 BookingEntity booking = bookingService.book(userId, bookingModel);
                 bookingEntities.add(booking);
-                if (!isChecked && booking.getStatus().equals(BookingStatus.FAILED)) {
+                if (booking.getStatus().equals(BookingStatus.FAILED)) {
                     isError = true;
-                    isChecked = true;
+                } else {
+                    isAllError = false;
                 }
+            }
+            if(isAllError)
+            {
+                response = new BookingResponse("All of your booking slot is error", isError, bookingEntities);
+                return  ResponseEntity.ok().body(gson.toJson(response));
             }
             response = new BookingResponse(isError ? "There were some booking slot error." : "Booking all slot successfully", isError, bookingEntities);
             return ResponseEntity.ok().body(gson.toJson(response));
         } catch (Exception ex) {
-            return ResponseEntity.internalServerError().body("Error when save in database");
+            return ResponseEntity.internalServerError().body("Error when save in database: " + ex.getMessage());
         }
     }
 }
