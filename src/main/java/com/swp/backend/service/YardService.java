@@ -129,11 +129,14 @@ public class YardService {
             return null;
         } else {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+            int provinceId = districtRepository.findById(yard.getDistrictId()).getProvinceId();
+            String provinceName = provinceRepository.findDistinctById(provinceId).getProvinceName();
             YardModel yardModel = YardModel.builder()
                     .id(yard.getId())
                     .name(yard.getName())
                     .address(yard.getAddress())
                     .districtName(districtRepository.findById(yard.getDistrictId()).getDistrictName())
+                    .province(provinceName)
                     .openAt(yard.getOpenAt().format(formatter))
                     .closeAt(yard.getCloseAt().format(formatter))
                     .build();
