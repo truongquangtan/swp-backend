@@ -1,6 +1,5 @@
 package com.swp.backend.api.v1.incoming_match;
 
-import com.swp.backend.entity.BookingEntity;
 import com.swp.backend.model.MatchModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

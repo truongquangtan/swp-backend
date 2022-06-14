@@ -2,19 +2,16 @@ package com.swp.backend.service;
 
 import com.swp.backend.constance.BookingStatus;
 import com.swp.backend.entity.BookingEntity;
-import com.swp.backend.entity.SlotEntity;
 import com.swp.backend.model.BookingModel;
-import com.swp.backend.model.model_builder.SlotBuilder;
 import com.swp.backend.myrepository.BookingCustomRepository;
 import com.swp.backend.repository.BookingRepository;
 import com.swp.backend.utils.DateHelper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-
-import java.sql.Timestamp;
 import java.util.stream.Collectors;
 
 @Service

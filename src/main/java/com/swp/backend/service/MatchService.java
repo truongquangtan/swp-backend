@@ -11,7 +11,6 @@ import com.swp.backend.repository.SlotRepository;
 import com.swp.backend.repository.SubYardRepository;
 import com.swp.backend.utils.DateHelper;
 import lombok.AllArgsConstructor;
-import org.apache.tomcat.jni.Local;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -19,7 +18,6 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Service
