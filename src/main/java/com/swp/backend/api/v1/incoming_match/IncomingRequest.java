@@ -1,4 +1,12 @@
 package com.swp.backend.api.v1.incoming_match;
 
-public class IncomingRequest {
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
+@Data
+public class IncomingRequest
+{
+    private int itemsPerPage;
+    private int page;
 }
