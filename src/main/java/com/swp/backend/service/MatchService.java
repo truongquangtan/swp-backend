@@ -53,7 +53,8 @@ public class MatchService {
                 .type(typeYard)
                 .subYardName(subYardEntity.getName())
                 .province(yardModel.getProvince())
-                .bookAt(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(bookingEntity.getBookAt()))
+                .bookAt((new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")).format(bookingEntity.getBookAt()))
+                .bookingId(bookingEntity.getId())
                 .build();
     }
 

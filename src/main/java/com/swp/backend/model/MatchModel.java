@@ -20,4 +20,5 @@ public class MatchModel {
     private String subYardName;
     private String type;
     private String bookAt;
+    private int bookingId;
 }
