@@ -19,14 +19,9 @@ public class JwtTokenUtils {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
     }
 
-    //Generate token via UserId to identity user and role of user.
-//    public String doGenerateToken(SecurityUserDetails account) {
-//        return doGenerateToken(account.getUsername(), account.getRole());
-//    }
-
     public String doGenerateToken(String userId, String fullName, String email, String phone, String role, boolean isConfirm) {
         Timestamp createAt = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
-        Timestamp expirationAt = DateHelper.plusMinutes(createAt, 120);
+        Timestamp expirationAt = DateHelper.plusMinutes(createAt, 28800);
 
         return Jwts.builder()
                 .setSubject(userId)
