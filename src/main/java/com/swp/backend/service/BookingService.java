@@ -79,22 +79,32 @@ public class BookingService {
 
     public List<BookingEntity> getIncomingMatchesOfUser(String userId, int itemsPerPage, int page)
     {
-        Timestamp now = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
-        List<?> queriedList = bookingCustomRepository.getAllOrderedIncomingBookingEntitiesOfUser(userId);
-        List<BookingEntity> bookingEntities = getBookingEntitiesFromQueriedList(queriedList);
+        List<BookingEntity> incomingMatches = getIncomingMatches(userId);
         List<BookingEntity> result = new ArrayList<>();
+
         int startIndex = itemsPerPage*(page-1);
-        int maxIndex = queriedList.size() - 1;
+        int maxIndex = incomingMatches.size() - 1;
         int endIndex = startIndex + itemsPerPage - 1;
         endIndex = endIndex <= maxIndex ? endIndex : maxIndex;
+
         if(startIndex > endIndex) return result;
+
         for(int i = startIndex; i <= endIndex; ++i)
         {
-            result.add(bookingEntities.get(i));
+            result.add(incomingMatches.get(i));
         }
         return result;
     }
 
+    private List<BookingEntity> getIncomingMatches(String userId)
+    {
+        List<?> queriedListToday = bookingCustomRepository.getAllOrderedIncomingBookingEntitiesOfUserToday(userId);
+        List<?> queriedListFutureDate = bookingCustomRepository.getAllOrderedIncomingBookingEntitiesOfUserFutureDate(userId);
+        List<BookingEntity> bookingEntities = getBookingEntitiesFromQueriedList(queriedListToday);
+        List<BookingEntity> bookingEntitiesFutureDate = getBookingEntitiesFromQueriedList(queriedListFutureDate);
+        bookingEntities.addAll(bookingEntitiesFutureDate);
+        return bookingEntities;
+    }
     private List<BookingEntity> getBookingEntitiesFromQueriedList(List<?> queriedList)
     {
         List<BookingEntity> result = new ArrayList<>();
@@ -107,8 +117,33 @@ public class BookingService {
         }
         return result;
     }
+
+    public List<BookingEntity> getBookingHistoryOfUser(String userId, int itemsPerPage, int page)
+    {
+        List<BookingEntity> bookingEntities = bookingRepository.getBookingEntitiesByAccountIdOrderByDateDesc(userId);
+        List<BookingEntity> result = new ArrayList<>();
+
+        int startIndex = itemsPerPage*(page-1);
+        int maxIndex = bookingEntities.size() - 1;
+        int endIndex = startIndex + itemsPerPage - 1;
+        endIndex = endIndex <= maxIndex ? endIndex : maxIndex;
+        if(startIndex > endIndex) return result;
+        for(int i = startIndex; i <= endIndex; ++i)
+        {
+            result.add(bookingEntities.get(i));
+        }
+        if(result == null)
+        {
+            return new ArrayList<>();
+        }
+        return result;
+    }
+    public int countAllHistoryBookingsOfUser(String userId)
+    {
+        return bookingCustomRepository.countAllHistoryBookingsOfUser(userId);
+    }
     public int countAllIncomingMatchesOfUser(String userId)
     {
-        return bookingCustomRepository.countAllIncomingBookingEntityOfUser(userId);
+        return getIncomingMatches(userId).size();
     }
 }

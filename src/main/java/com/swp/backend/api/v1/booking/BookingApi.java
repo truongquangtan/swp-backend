@@ -23,7 +23,6 @@ import java.util.List;
 public class BookingApi {
     private SecurityContextService securityContextService;
     private YardService yardService;
-    private SlotService slotService;
     private Gson gson;
     private BookingService bookingService;
 

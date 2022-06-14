@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -52,6 +53,7 @@ public class MatchService {
                 .type(typeYard)
                 .subYardName(subYardEntity.getName())
                 .province(yardModel.getProvince())
+                .bookAt(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(bookingEntity.getBookAt()))
                 .build();
     }
 

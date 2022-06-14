@@ -19,4 +19,5 @@ public class MatchModel {
     private String province;
     private String subYardName;
     private String type;
+    private String bookAt;
 }
