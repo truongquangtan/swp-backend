@@ -2,10 +2,7 @@ package com.swp.backend.entity;
 
 import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.sql.Timestamp;
 import java.time.LocalTime;
 
@@ -44,4 +41,7 @@ public class YardEntity {
     private int score;
     @Column(name = "number_of_vote")
     private int numberOfVote;
+    @Column(name = "reference")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int reference;
 }

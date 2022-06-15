@@ -19,5 +19,6 @@ public class YardModel {
     private String province;
     private String openAt;
     private String closeAt;
+    private int reference;
     private List<String> images;
 }

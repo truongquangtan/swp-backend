@@ -38,26 +38,22 @@ public class IncomingMatchApi {
                     @ApiResponse(responseCode = "403", description = "User is not have role 'User'. ")
             }
     )
-    public ResponseEntity<String> incomingMatch(@RequestBody(required = false) IncomingRequest request)
-    {
+    public ResponseEntity<String> incomingMatch(@RequestBody(required = false) IncomingRequest request) {
         IncomingResponse response;
         int itemsPerPage = ITEMS_PER_PAGE_DEFAULT;
         int page = PAGE_DEFAULT;
-        if(request != null)
-        {
+        if (request != null) {
             page = request.getPage() > 0 ? request.getPage() : page;
             itemsPerPage = request.getItemsPerPage() > 0 ? request.getItemsPerPage() : itemsPerPage;
         }
-        try
-        {
+        try {
             String userId;
             SecurityContext context = SecurityContextHolder.getContext();
             userId = securityContextService.extractUsernameFromContext(context);
 
             int countAllItems = bookingService.countAllIncomingMatchesOfUser(userId);
 
-            if(countAllItems <= 0)
-            {
+            if (countAllItems <= 0) {
                 response = IncomingResponse.builder()
                         .message("There were no result in data.")
                         .page(page)
@@ -76,8 +72,7 @@ public class IncomingMatchApi {
                     .build();
 
             return ResponseEntity.ok().body(gson.toJson(response));
-        } catch (Exception ex)
-        {
+        } catch (Exception ex) {
             throw ex;
             //return ResponseEntity.internalServerError().body("Error in server: " + ex.getMessage());
         }

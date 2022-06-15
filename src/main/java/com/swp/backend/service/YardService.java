@@ -103,6 +103,7 @@ public class YardService {
                         .province(province)
                         .openAt(yard.getOpenAt().format(formatter))
                         .closeAt(yard.getCloseAt().format(formatter))
+                        .reference(yard.getReference())
                         .build();
             } else {
                 return null;

@@ -48,7 +48,22 @@ public class SubYardCustomRepository {
 
             query = entityManager.createNativeQuery(nativeQuery);
             query.setParameter(1, subYardId);
+            return (String) query.getSingleResult();
+        } catch (NoResultException noResultException) {
+            return null;
+        }
+    }
 
+    public String findTypeYardFromSubYardId(String subYardId) {
+        try {
+            Query query = null;
+
+            String nativeQuery = "SELECT t.type_name" +
+                    " FROM sub_yards s INNER JOIN type_yards t ON s.type_yard = t.id" +
+                    " WHERE s.id = ?1";
+
+            query = entityManager.createNativeQuery(nativeQuery);
+            query.setParameter(1, subYardId);
             return (String) query.getSingleResult();
         } catch (NoResultException noResultException) {
             return null;

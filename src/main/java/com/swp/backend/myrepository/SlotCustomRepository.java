@@ -20,8 +20,7 @@ public class SlotCustomRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public List<?> getAllBookedSlotInSubYardToday(String subYardId)
-    {
+    public List<?> getAllBookedSlotInSubYardToday(String subYardId) {
         Query query = null;
         try {
             LocalDate today = LocalDate.now();
@@ -43,14 +42,12 @@ public class SlotCustomRepository {
             query.setParameter(5, localTimeNow);
 
             return query.getResultList();
-        } catch (Exception ex)
-        {
+        } catch (Exception ex) {
             return null;
         }
     }
 
-    public List<?> getAllBookedSlotInSubYardByFutureDate(String subYardId, LocalDate queryDate)
-    {
+    public List<?> getAllBookedSlotInSubYardByFutureDate(String subYardId, LocalDate queryDate) {
         Query query = null;
         try {
             Timestamp startTime = Timestamp.valueOf(queryDate.toString() + " 00:00:00");
@@ -65,8 +62,7 @@ public class SlotCustomRepository {
             query.setParameter(3, BookingStatus.SUCCESS);
             query.setParameter(4, subYardId);
             return query.getResultList();
-        } catch (Exception ex)
-        {
+        } catch (Exception ex) {
             return null;
         }
     }
