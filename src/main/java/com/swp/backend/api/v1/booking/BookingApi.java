@@ -6,7 +6,6 @@ import com.swp.backend.entity.BookingEntity;
 import com.swp.backend.model.BookingModel;
 import com.swp.backend.service.BookingService;
 import com.swp.backend.service.SecurityContextService;
-import com.swp.backend.service.SlotService;
 import com.swp.backend.service.YardService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
