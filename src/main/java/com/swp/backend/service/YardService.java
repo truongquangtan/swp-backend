@@ -44,7 +44,7 @@ public class YardService {
                 .createAt(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE))
                 .openAt(LocalTime.parse(yardRequest.getOpenAt()))
                 .closeAt(LocalTime.parse(yardRequest.getCloseAt()))
-                .slotDuration(yardRequest.getSlotDuration())
+                .slotDuration(Integer.parseInt(yardRequest.getSlotDuration()))
                 .build();
         //Save parent yard
         yardRepository.save(parentYard);

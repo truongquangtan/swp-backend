@@ -14,8 +14,8 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping(value = "/api/v1/owner/yard")
-public class AddYardRestApi {
+@RequestMapping(value = "/api/v1/owner")
+public class YardRestApi {
     YardService yardService;
     SecurityContextService securityContextService;
     Gson gson;

@@ -11,6 +11,6 @@ public class YardRequest {
     private Integer districtId;
     private String openAt;
     private String closeAt;
-    private int slotDuration;
+    private String slotDuration;
     private List<SubYardRequest> subYards;
 }
