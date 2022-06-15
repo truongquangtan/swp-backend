@@ -85,7 +85,7 @@ public class YardService {
         int ofSetValue = (ofSet == null || ofSet < 1) ? 6 : ofSet;
 
         int maxResult = yardCustomRepository.getMaxResultFindYardByFilter(provinceId, districtId);
-        if (((pageValue - 1) * ofSetValue) > maxResult) {
+        if (((pageValue - 1) * ofSetValue) >= maxResult) {
             pageValue = 1;
         }
         List<?> listResult = yardCustomRepository.findYardByFilter(provinceId, districtId, ofSetValue, pageValue);
@@ -103,6 +103,7 @@ public class YardService {
                         .province(province)
                         .openAt(yard.getOpenAt().format(formatter))
                         .closeAt(yard.getCloseAt().format(formatter))
+                        .reference(yard.getReference())
                         .build();
             } else {
                 return null;

@@ -66,8 +66,7 @@ public class DateHelper {
         return now.compareTo(localDatefromTimestamp) == 0;
     }
 
-    public static boolean isToday(LocalDate date)
-    {
+    public static boolean isToday(LocalDate date) {
         LocalDate today = LocalDate.now();
         return today.compareTo(date) == 0;
     }
@@ -88,8 +87,7 @@ public class DateHelper {
         return Timestamp.valueOf(localDateTime);
     }
 
-    public static LocalDate parseFromTimestampToLocalDate(Timestamp timestamp)
-    {
+    public static LocalDate parseFromTimestampToLocalDate(Timestamp timestamp) {
         LocalDate localDate = LocalDate.ofInstant(timestamp.toInstant(), ZoneId.of(VIETNAM_ZONE));
         return localDate;
     }

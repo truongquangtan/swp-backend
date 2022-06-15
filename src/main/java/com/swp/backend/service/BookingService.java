@@ -1,14 +1,10 @@
 package com.swp.backend.service;
 
-import com.swp.backend.api.v1.book.cancel_booking.CancelBookingRequest;
 import com.swp.backend.constance.BookingStatus;
 import com.swp.backend.entity.BookingEntity;
-import com.swp.backend.entity.YardEntity;
-import com.swp.backend.exception.CancelBookingProcessException;
 import com.swp.backend.model.BookingModel;
 import com.swp.backend.myrepository.BookingCustomRepository;
 import com.swp.backend.repository.BookingRepository;
-import com.swp.backend.repository.YardRepository;
 import com.swp.backend.utils.DateHelper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,14 +17,10 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class BookingService {
-    public static final int PREVENT_CANCEL_BOOKING_TIME_IN_MINUTE = 30;
-
     private SlotService slotService;
-    private YardService yardService;
     private SubYardService subYardService;
     private BookingRepository bookingRepository;
     private BookingCustomRepository bookingCustomRepository;
-    private YardRepository yardRepository;
 
     public BookingEntity book(String userId, BookingModel bookingModel) {
         String errorNote = "";
@@ -144,7 +136,6 @@ public class BookingService {
         }
         return result;
     }
-
     public int countAllHistoryBookingsOfUser(String userId)
     {
         return bookingCustomRepository.countAllHistoryBookingsOfUser(userId);

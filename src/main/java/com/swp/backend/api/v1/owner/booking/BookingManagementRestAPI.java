@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/api/v1/owner")
 public class BookingManagementRestAPI {
     @GetMapping(value = "booking")
-    public ResponseEntity<String> showAllBooking(){
+    public ResponseEntity<String> showAllBooking() {
         return ResponseEntity.ok().build();
     }
 }

@@ -5,8 +5,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @Data
-public class IncomingRequest
-{
+public class IncomingRequest {
     private int itemsPerPage;
     private int page;
 }

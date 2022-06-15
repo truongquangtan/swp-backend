@@ -54,8 +54,7 @@ public class SubYardCustomRepository {
         }
     }
 
-    public String findTypeYardFromSubYardId(String subYardId)
-    {
+    public String findTypeYardFromSubYardId(String subYardId) {
         try {
             Query query = null;
 
