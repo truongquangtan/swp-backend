@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 public class BookingCustomRepository {
@@ -76,6 +77,29 @@ public class BookingCustomRepository {
         } catch (Exception ex)
         {
             return 0;
+        }
+    }
+
+    public List<BookingEntity> getOrderedBookingEntitiesOfUserByPage(String userId, int startIndex, int endIndex)
+    {
+        try
+        {
+            Query query = null;
+
+            String nativeQuery = "SELECT * FROM booking WHERE account_id=?1 ORDER BY book_at DESC";
+            query = entityManager.createNativeQuery(nativeQuery);
+            query.setParameter(1, userId);
+            query.setFirstResult(startIndex);
+            query.setMaxResults(endIndex - startIndex + 1);
+            List<?> queriedList = query.getResultList();
+            List<BookingEntity> result = queriedList.stream().map(queriedObject -> {
+                return (BookingEntity) queriedObject;
+            }).collect(Collectors.toList());
+
+            return result;
+        } catch (Exception ex)
+        {
+            return null;
         }
     }
 }
