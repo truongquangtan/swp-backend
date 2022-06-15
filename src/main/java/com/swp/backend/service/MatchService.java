@@ -58,6 +58,7 @@ public class MatchService {
                 .bigYardId(yardId)
                 .subYardId(subYardId)
                 .slotId(slotId)
+                .bookingStatus(bookingEntity.getStatus())
                 .build();
     }
 

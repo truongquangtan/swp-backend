@@ -24,4 +24,5 @@ public class MatchModel {
     private String bookAt;
     private int slotId;
     private int bookingId;
+    private String bookingStatus;
 }

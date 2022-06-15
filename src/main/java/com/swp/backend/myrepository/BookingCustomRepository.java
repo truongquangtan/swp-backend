@@ -87,19 +87,22 @@ public class BookingCustomRepository {
             Query query = null;
 
             String nativeQuery = "SELECT * FROM booking WHERE account_id=?1 ORDER BY book_at DESC";
-            query = entityManager.createNativeQuery(nativeQuery);
+            query = entityManager.createNativeQuery(nativeQuery, BookingEntity.class);
             query.setParameter(1, userId);
             query.setFirstResult(startIndex);
             query.setMaxResults(endIndex - startIndex + 1);
             List<?> queriedList = query.getResultList();
-            List<BookingEntity> result = queriedList.stream().map(queriedObject -> {
+            List<BookingEntity> result = queriedList.stream().map(queriedObject ->  {
                 return (BookingEntity) queriedObject;
             }).collect(Collectors.toList());
 
             return result;
         } catch (Exception ex)
         {
-            return null;
+            throw ex;
+            //return null;
         }
     }
+
+
 }

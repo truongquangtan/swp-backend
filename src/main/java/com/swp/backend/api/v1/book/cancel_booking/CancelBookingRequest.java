@@ -11,6 +11,7 @@ public class CancelBookingRequest {
     private String reason;
     private String subYardId;
     private String yardId;
+    private int slotId;
 
     public boolean isValid()
     {

@@ -155,4 +155,13 @@ public class YardService {
     public void updateYard(YardEntity yard) throws DataAccessException {
         yardRepository.save(yard);
     }
+
+    public String getYardFullAddress(String yardId)
+    {
+        YardEntity yard = getYardById(yardId);
+        DistrictEntity districtEntity = districtRepository.findById(yard.getDistrictId());
+        String district = districtEntity.getDistrictName();
+        String province = provinceRepository.findDistinctById(districtEntity.getProvinceId()).getProvinceName();
+        return yard.getAddress() + ", " + district + ", " + province;
+    }
 }

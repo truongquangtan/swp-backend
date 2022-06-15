@@ -63,7 +63,8 @@ public class BookingHistoryApi {
             return ResponseEntity.ok().body(gson.toJson(response));
         } catch (Exception ex)
         {
-            return ResponseEntity.internalServerError().body("Error in server: " + ex.getMessage());
+            throw ex;
+            //return ResponseEntity.internalServerError().body("Error in server: " + ex.getMessage());
         }
     }
 }

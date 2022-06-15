@@ -145,64 +145,6 @@ public class BookingService {
         return result;
     }
 
-    public void cancelBooking(String userId, int bookingId, CancelBookingRequest request)
-    {
-        String yardId = request.getYardId();
-        String subYardId = request.getSubYardId();
-        YardEntity yard = yardRepository.getById(yardId);
-        String ownerId = yard.getOwnerId();
-    }
-    private BookingEntity getBookingEntity(int bookingId)
-    {
-        BookingEntity booking = bookingRepository.getById(bookingId);
-        if(booking == null)
-        {
-            throw new CancelBookingProcessException("Can not get booking entity from bookingId");
-        }
-        return booking;
-    }
-    private void bookingIsOfUserFilter(BookingEntity booking, String userId)
-    {
-        if(!booking.getAccountId().equals(userId))
-        {
-            throw new CancelBookingProcessException("The user is not the author this booking entity.");
-        }
-        return;
-    }
-    private void bookingStatusIsSuccessFilter(BookingEntity booking)
-    {
-        if(booking.getStatus().equals(BookingStatus.SUCCESS))
-        {
-            throw new CancelBookingProcessException("The booking entity of the request is not a success booking.");
-        }
-        return;
-    }
-    private void slotIdIsActiveFilter(int slotId)
-    {
-        if(!slotService.isSlotActive(slotId))
-        {
-            throw new CancelBookingProcessException("Your booking is canceled before because the slot is inactivated by owner. Or slot not found.");
-        }
-        return;
-    }
-    private void subYardIsActiveFilter(String subYardId)
-    {
-        if(!subYardService.isActiveSubYard(subYardId))
-        {
-            throw new CancelBookingProcessException("Your booking is canceled before, the sub-yard is inactivated by the owner. Or subYard not found.");
-        }
-        return;
-    }
-    private void yardIsActiveAndNotDeleted(String yardId)
-    {
-        if(!yardService.isAvailableYard(yardId))
-        {
-            throw new CancelBookingProcessException("Your booking is canceled before, the yard is inactivated or deleted. Or yard is not found.");
-        }
-        return;
-    }
-
-
     public int countAllHistoryBookingsOfUser(String userId)
     {
         return bookingCustomRepository.countAllHistoryBookingsOfUser(userId);
