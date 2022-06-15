@@ -58,12 +58,10 @@ public class MatchService {
                 .build();
     }
 
-    public List<MatchModel> getListMatchModelFromListBookingEntity(List<BookingEntity> bookingEntities)
-    {
+    public List<MatchModel> getListMatchModelFromListBookingEntity(List<BookingEntity> bookingEntities) {
         List<MatchModel> result = new ArrayList<>();
 
-        for(BookingEntity bookingEntity : bookingEntities)
-        {
+        for (BookingEntity bookingEntity : bookingEntities) {
             MatchModel model = getMatchModelFromBookingEntity(bookingEntity);
             result.add(model);
         }
