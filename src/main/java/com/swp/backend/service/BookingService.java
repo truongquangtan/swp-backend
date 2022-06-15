@@ -1,10 +1,14 @@
 package com.swp.backend.service;
 
+import com.swp.backend.api.v1.book.cancel_booking.CancelBookingRequest;
 import com.swp.backend.constance.BookingStatus;
 import com.swp.backend.entity.BookingEntity;
+import com.swp.backend.entity.YardEntity;
+import com.swp.backend.exception.CancelBookingProcessException;
 import com.swp.backend.model.BookingModel;
 import com.swp.backend.myrepository.BookingCustomRepository;
 import com.swp.backend.repository.BookingRepository;
+import com.swp.backend.repository.YardRepository;
 import com.swp.backend.utils.DateHelper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,10 +21,14 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class BookingService {
+    public static final int PREVENT_CANCEL_BOOKING_TIME_IN_MINUTE = 30;
+
     private SlotService slotService;
+    private YardService yardService;
     private SubYardService subYardService;
     private BookingRepository bookingRepository;
     private BookingCustomRepository bookingCustomRepository;
+    private YardRepository yardRepository;
 
     public BookingEntity book(String userId, BookingModel bookingModel) {
         String errorNote = "";
@@ -136,6 +144,65 @@ public class BookingService {
         }
         return result;
     }
+
+    public void cancelBooking(String userId, int bookingId, CancelBookingRequest request)
+    {
+        String yardId = request.getYardId();
+        String subYardId = request.getSubYardId();
+        YardEntity yard = yardRepository.getById(yardId);
+        String ownerId = yard.getOwnerId();
+    }
+    private BookingEntity getBookingEntity(int bookingId)
+    {
+        BookingEntity booking = bookingRepository.getById(bookingId);
+        if(booking == null)
+        {
+            throw new CancelBookingProcessException("Can not get booking entity from bookingId");
+        }
+        return booking;
+    }
+    private void bookingIsOfUserFilter(BookingEntity booking, String userId)
+    {
+        if(!booking.getAccountId().equals(userId))
+        {
+            throw new CancelBookingProcessException("The user is not the author this booking entity.");
+        }
+        return;
+    }
+    private void bookingStatusIsSuccessFilter(BookingEntity booking)
+    {
+        if(booking.getStatus().equals(BookingStatus.SUCCESS))
+        {
+            throw new CancelBookingProcessException("The booking entity of the request is not a success booking.");
+        }
+        return;
+    }
+    private void slotIdIsActiveFilter(int slotId)
+    {
+        if(!slotService.isSlotActive(slotId))
+        {
+            throw new CancelBookingProcessException("Your booking is canceled before because the slot is inactivated by owner. Or slot not found.");
+        }
+        return;
+    }
+    private void subYardIsActiveFilter(String subYardId)
+    {
+        if(!subYardService.isActiveSubYard(subYardId))
+        {
+            throw new CancelBookingProcessException("Your booking is canceled before, the sub-yard is inactivated by the owner. Or subYard not found.");
+        }
+        return;
+    }
+    private void yardIsActiveAndNotDeleted(String yardId)
+    {
+        if(!yardService.isAvailableYard(yardId))
+        {
+            throw new CancelBookingProcessException("Your booking is canceled before, the yard is inactivated or deleted. Or yard is not found.");
+        }
+        return;
+    }
+
+
     public int countAllHistoryBookingsOfUser(String userId)
     {
         return bookingCustomRepository.countAllHistoryBookingsOfUser(userId);

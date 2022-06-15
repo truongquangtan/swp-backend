@@ -13,6 +13,8 @@ public class MatchModel {
     private String startTime;
     private String endTime;
     private String date;
+    private String bigYardId;
+    private String subYardId;
     private String bigYardName;
     private String bigYardAddress;
     private String district;
@@ -20,5 +22,6 @@ public class MatchModel {
     private String subYardName;
     private String type;
     private String bookAt;
+    private int slotId;
     private int bookingId;
 }

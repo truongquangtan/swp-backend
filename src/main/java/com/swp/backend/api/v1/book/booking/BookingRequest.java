@@ -1,4 +1,4 @@
-package com.swp.backend.api.v1.booking;
+package com.swp.backend.api.v1.book.booking;
 
 import com.swp.backend.model.BookingModel;
 import lombok.AllArgsConstructor;
