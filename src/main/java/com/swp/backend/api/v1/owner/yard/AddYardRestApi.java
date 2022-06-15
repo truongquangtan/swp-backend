@@ -1,6 +1,7 @@
 package com.swp.backend.api.v1.owner.yard;
 
 import com.google.gson.Gson;
+import com.swp.backend.model.YardModel;
 import com.swp.backend.service.SecurityContextService;
 import com.swp.backend.service.YardService;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -33,12 +36,13 @@ public class AddYardRestApi {
         }
     }
 
-    @GetMapping(value = "view")
+    @GetMapping(value = "")
     public ResponseEntity<String> showAllYard(){
         try {
             SecurityContext securityContext = SecurityContextHolder.getContext();
             String ownerId = securityContextService.extractUsernameFromContext(securityContext);
-            return ResponseEntity.ok().build();
+            List<YardModel> listYard = yardService.getAllYardByOwnerId(ownerId);
+            return ResponseEntity.ok().body(gson.toJson(listYard));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().body(e.getMessage());

@@ -156,4 +156,19 @@ public class YardService {
     public void updateYard(YardEntity yard) throws DataAccessException {
         yardRepository.save(yard);
     }
+
+    public List<YardModel> getAllYardByOwnerId(String ownerId){
+        List<YardEntity> listYard = yardRepository.findYardEntitiesByOwnerId(ownerId);
+        return listYard.parallelStream().map(yard -> {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+            return YardModel.builder()
+                    .id(yard.getId())
+                    .address(yard.getAddress())
+                    .openAt(yard.getOpenAt().format(formatter))
+                    .closeAt(yard.getCloseAt().format(formatter))
+                    .reference(yard.getReference())
+                    .address(yard.getAddress())
+                    .build();
+        }).collect(Collectors.toList());
+    }
 }
