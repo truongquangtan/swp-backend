@@ -120,18 +120,16 @@ public class BookingService {
 
     public List<BookingEntity> getBookingHistoryOfUser(String userId, int itemsPerPage, int page)
     {
-        List<BookingEntity> bookingEntities = bookingRepository.getBookingEntitiesByAccountIdOrderByBookAtDesc(userId);
         List<BookingEntity> result = new ArrayList<>();
 
         int startIndex = itemsPerPage*(page-1);
-        int maxIndex = bookingEntities.size() - 1;
         int endIndex = startIndex + itemsPerPage - 1;
+        int maxIndex = countAllHistoryBookingsOfUser(userId) - 1;
         endIndex = endIndex <= maxIndex ? endIndex : maxIndex;
+
         if(startIndex > endIndex) return result;
-        for(int i = startIndex; i <= endIndex; ++i)
-        {
-            result.add(bookingEntities.get(i));
-        }
+        result = bookingCustomRepository.getOrderedBookingEntitiesOfUserByPage(userId, startIndex, endIndex);
+
         if(result == null)
         {
             return new ArrayList<>();
