@@ -25,7 +25,7 @@ public class GetSubYardApi {
 
     @GetMapping(value = "{yardId}")
     public ResponseEntity<String> getSubYardByBigYard(@PathVariable String yardId) {
-        if (!yardService.isAvailableYard(yardId)) {
+        if (yardService.isAvailableYard(yardId)) {
             return ResponseEntity.ok().body(gson.toJson(new SubYardResponse("The yard is not active or deleted.", null)));
         }
 

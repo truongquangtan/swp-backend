@@ -1,7 +1,7 @@
 package com.swp.backend.service;
 
-import com.swp.backend.api.v1.owner.add_yard.SubYardRequest;
-import com.swp.backend.api.v1.owner.add_yard.YardRequest;
+import com.swp.backend.api.v1.owner.yard.SubYardRequest;
+import com.swp.backend.api.v1.owner.yard.YardRequest;
 import com.swp.backend.api.v1.yard.search.YardResponse;
 import com.swp.backend.entity.*;
 import com.swp.backend.model.YardModel;
@@ -85,7 +85,7 @@ public class YardService {
         int ofSetValue = (ofSet == null || ofSet < 1) ? 6 : ofSet;
 
         int maxResult = yardCustomRepository.getMaxResultFindYardByFilter(provinceId, districtId);
-        if ((pageValue * ofSetValue) > maxResult) {
+        if (((pageValue - 1) * ofSetValue) >= maxResult) {
             pageValue = 1;
         }
         List<?> listResult = yardCustomRepository.findYardByFilter(provinceId, districtId, ofSetValue, pageValue);
@@ -120,7 +120,7 @@ public class YardService {
 
     public boolean isAvailableYard(String yardId) {
         YardEntity yard = yardRepository.findYardEntityByIdAndActiveAndDeleted(yardId, true, false);
-        return yard != null;
+        return yard == null;
     }
 
     public YardModel getYardModelFromYardId(String yardId) {
@@ -129,11 +129,14 @@ public class YardService {
             return null;
         } else {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+            int provinceId = districtRepository.findById(yard.getDistrictId()).getProvinceId();
+            String provinceName = provinceRepository.findDistinctById(provinceId).getProvinceName();
             YardModel yardModel = YardModel.builder()
                     .id(yard.getId())
                     .name(yard.getName())
                     .address(yard.getAddress())
                     .districtName(districtRepository.findById(yard.getDistrictId()).getDistrictName())
+                    .province(provinceName)
                     .openAt(yard.getOpenAt().format(formatter))
                     .closeAt(yard.getCloseAt().format(formatter))
                     .build();

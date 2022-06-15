@@ -6,7 +6,6 @@ import com.swp.backend.entity.BookingEntity;
 import com.swp.backend.model.BookingModel;
 import com.swp.backend.service.BookingService;
 import com.swp.backend.service.SecurityContextService;
-import com.swp.backend.service.SlotService;
 import com.swp.backend.service.YardService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +22,6 @@ import java.util.List;
 public class BookingApi {
     private SecurityContextService securityContextService;
     private YardService yardService;
-    private SlotService slotService;
     private Gson gson;
     private BookingService bookingService;
 
@@ -48,7 +46,7 @@ public class BookingApi {
         }
 
         //BigYard not available filter
-        if (!yardService.isAvailableYard(yardId)) {
+        if (yardService.isAvailableYard(yardId)) {
             response = new BookingResponse("The Yard entity of this slots is not active or deleted.", true, null);
             return ResponseEntity.badRequest().body(gson.toJson(response));
         }

@@ -55,23 +55,23 @@ public class SubYardCustomRepository {
         }
     }
 
-    public List<SubYardEntity> findAllRelativeSubYardBySubYardId(String subYardId){
+    public List<SubYardEntity> findAllRelativeSubYardBySubYardId(String subYardId) {
         List<SubYardEntity> subYardEntityList = null;
         try {
             String nativeQuery = "SELECT sub_yards.* FROM sub_yards WHERE sub_yards.parent_yard IN (SELECT parent_yard FROM sub_yards WHERE id LIKE ?)";
             Query query = entityManager.createNativeQuery(nativeQuery, SubYardEntity.class);
             query.setParameter(1, subYardId);
             List<?> result = query.getResultList();
-            if(result != null){
+            if (result != null) {
                 subYardEntityList = result.stream().map(subYard -> {
-                    if(subYard instanceof SubYardEntity){
+                    if (subYard instanceof SubYardEntity) {
                         return (SubYardEntity) subYard;
                     }
                     return null;
                 }).collect(Collectors.toList());
             }
             return subYardEntityList;
-        }catch (DataAccessException dataAccessException){
+        } catch (DataAccessException dataAccessException) {
             dataAccessException.printStackTrace();
             return null;
         }

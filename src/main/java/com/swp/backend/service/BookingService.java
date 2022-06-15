@@ -3,12 +3,16 @@ package com.swp.backend.service;
 import com.swp.backend.constance.BookingStatus;
 import com.swp.backend.entity.BookingEntity;
 import com.swp.backend.model.BookingModel;
+import com.swp.backend.myrepository.BookingCustomRepository;
 import com.swp.backend.repository.BookingRepository;
 import com.swp.backend.utils.DateHelper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -16,6 +20,7 @@ public class BookingService {
     private SlotService slotService;
     private SubYardService subYardService;
     private BookingRepository bookingRepository;
+    private BookingCustomRepository bookingCustomRepository;
 
     public BookingEntity book(String userId, BookingModel bookingModel) {
         String errorNote = "";
@@ -70,5 +75,73 @@ public class BookingService {
         bookingRepository.save(bookingEntity);
 
         return bookingEntity;
+    }
+
+    public List<BookingEntity> getIncomingMatchesOfUser(String userId, int itemsPerPage, int page)
+    {
+        List<BookingEntity> incomingMatches = getIncomingMatches(userId);
+        List<BookingEntity> result = new ArrayList<>();
+
+        int startIndex = itemsPerPage*(page-1);
+        int maxIndex = incomingMatches.size() - 1;
+        int endIndex = startIndex + itemsPerPage - 1;
+        endIndex = endIndex <= maxIndex ? endIndex : maxIndex;
+
+        if(startIndex > endIndex) return result;
+
+        for(int i = startIndex; i <= endIndex; ++i)
+        {
+            result.add(incomingMatches.get(i));
+        }
+        return result;
+    }
+
+    private List<BookingEntity> getIncomingMatches(String userId)
+    {
+        List<?> queriedListToday = bookingCustomRepository.getAllOrderedIncomingBookingEntitiesOfUserToday(userId);
+        List<?> queriedListFutureDate = bookingCustomRepository.getAllOrderedIncomingBookingEntitiesOfUserFutureDate(userId);
+        List<BookingEntity> bookingEntities = getBookingEntitiesFromQueriedList(queriedListToday);
+        List<BookingEntity> bookingEntitiesFutureDate = getBookingEntitiesFromQueriedList(queriedListFutureDate);
+        bookingEntities.addAll(bookingEntitiesFutureDate);
+        return bookingEntities;
+    }
+    private List<BookingEntity> getBookingEntitiesFromQueriedList(List<?> queriedList)
+    {
+        List<BookingEntity> result = new ArrayList<>();
+        if(queriedList != null)
+        {
+            result = queriedList.stream().map(queriedBooking -> {
+                BookingEntity bookingEntity = (BookingEntity) queriedBooking;
+                return bookingEntity;
+            }).collect(Collectors.toList());
+        }
+        return result;
+    }
+
+    public List<BookingEntity> getBookingHistoryOfUser(String userId, int itemsPerPage, int page)
+    {
+        List<BookingEntity> result = new ArrayList<>();
+
+        int startIndex = itemsPerPage*(page-1);
+        int endIndex = startIndex + itemsPerPage - 1;
+        int maxIndex = countAllHistoryBookingsOfUser(userId) - 1;
+        endIndex = endIndex <= maxIndex ? endIndex : maxIndex;
+
+        if(startIndex > endIndex) return result;
+        result = bookingCustomRepository.getOrderedBookingEntitiesOfUserByPage(userId, startIndex, endIndex);
+
+        if(result == null)
+        {
+            return new ArrayList<>();
+        }
+        return result;
+    }
+    public int countAllHistoryBookingsOfUser(String userId)
+    {
+        return bookingCustomRepository.countAllHistoryBookingsOfUser(userId);
+    }
+    public int countAllIncomingMatchesOfUser(String userId)
+    {
+        return getIncomingMatches(userId).size();
     }
 }

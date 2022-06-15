@@ -44,6 +44,8 @@ public class ApiEndpointProperties {
     };
 
     public static String[] userOnlyEndpoint = {
-            "/api/v1/yards/{yardId}/booking"
+            "/api/v1/yards/{yardId}/booking",
+            "/api/v1/me/incoming-matches",
+            "/api/v1/me/history-booking"
     };
 }

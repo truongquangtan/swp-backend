@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "api/v1/admin")
 @AllArgsConstructor
 public class InviteOwnerApi {
-    Gson gson;
-    AccountService accountService;
+    private Gson gson;
+    private AccountService accountService;
 
     @PostMapping("owner-register")
     @ApiResponses(
