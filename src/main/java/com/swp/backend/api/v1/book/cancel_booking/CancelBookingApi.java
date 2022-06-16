@@ -48,9 +48,8 @@ public class CancelBookingApi {
         }
         catch (Exception exception)
         {
-            throw exception;
-            //response = new CancelBookingResponse(false, "Error when save in database");
-            //return ResponseEntity.ok(gson.toJson(response));
+            response = new CancelBookingResponse(false, "Error when save in database");
+            return ResponseEntity.ok(gson.toJson(response));
         }
     }
 }

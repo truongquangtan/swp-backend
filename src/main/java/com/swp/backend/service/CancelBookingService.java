@@ -37,7 +37,7 @@ public class CancelBookingService {
         SubYardEntity subYard = subYardIsActiveFilter(request.getSubYardId());
         SlotEntity slot = slotIdIsActiveFilter(request.getSlotId());
         bookingStatusIsSuccessFilter(booking);
-        slotTimeStartIsNotOverPreventTimeForCancel(booking, slot);
+        //slotTimeStartIsNotOverPreventTimeForCancel(booking, slot);
 
         cancelBookingProcess(userId, slot, subYard, booking, request);
     }
@@ -113,15 +113,15 @@ public class CancelBookingService {
         String ownerId = yard.getOwnerId();
 
         BookingEntity modifiedBooking = saveBookingCanceledInformation(booking, request.getReason());
-        sendMailToOwner(userId, ownerId, request.getYardId(), subYard, modifiedBooking, slot, request.getReason());
+        //sendMailToOwner(userId, ownerId, request.getYardId(), subYard, modifiedBooking, slot, request.getReason());
     }
 
     private BookingEntity saveBookingCanceledInformation(BookingEntity booking, String reason)
     {
         Timestamp now = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
         booking.setStatus(BookingStatus.CANCELED);
-        booking.setBookAt(now);
-        booking.setNote(reason);
+        //booking.setBookAt(now);
+        booking.setNote("Booking canceled at: " + new SimpleDateFormat("dd/MM/yyyy hh:mm:ss").format(now) + " - Reason: " + reason);
         bookingRepository.save(booking);
         return booking;
     }
