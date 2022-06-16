@@ -1,4 +1,4 @@
-package com.swp.backend.api.v1.yard.add;
+package com.swp.backend.api.v1.owner.yard;
 
 import lombok.Data;
 
@@ -11,6 +11,6 @@ public class YardRequest {
     private Integer districtId;
     private String openAt;
     private String closeAt;
-    private int slotDuration;
+    private String slotDuration;
     private List<SubYardRequest> subYards;
 }

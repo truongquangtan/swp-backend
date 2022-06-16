@@ -1,7 +1,7 @@
 package com.swp.backend.service;
 
-import com.swp.backend.api.v1.yard.add.SubYardRequest;
-import com.swp.backend.api.v1.yard.add.YardRequest;
+import com.swp.backend.api.v1.owner.yard.SubYardRequest;
+import com.swp.backend.api.v1.owner.yard.YardRequest;
 import com.swp.backend.api.v1.yard.search.YardResponse;
 import com.swp.backend.entity.*;
 import com.swp.backend.model.YardModel;
@@ -44,7 +44,7 @@ public class YardService {
                 .createAt(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE))
                 .openAt(LocalTime.parse(yardRequest.getOpenAt()))
                 .closeAt(LocalTime.parse(yardRequest.getCloseAt()))
-                .slotDuration(yardRequest.getSlotDuration())
+                .slotDuration(Integer.parseInt(yardRequest.getSlotDuration()))
                 .build();
         //Save parent yard
         yardRepository.save(parentYard);

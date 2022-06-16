@@ -1,4 +1,4 @@
-package com.swp.backend.api.v1.yard.add;
+package com.swp.backend.api.v1.owner.yard;
 
 import com.google.gson.Gson;
 import com.swp.backend.service.SecurityContextService;
@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping(value = "api/v1/yard")
-public class AddYardRestApi {
+@RequestMapping(value = "/api/v1/owner")
+public class YardRestApi {
     YardService yardService;
     SecurityContextService securityContextService;
     Gson gson;
