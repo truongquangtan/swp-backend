@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -28,6 +29,11 @@ public class SlotService {
     public List<Slot> getAllSlotInSubYardByDate(String subYardId, String date) {
         try {
             LocalDate queryDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("d/M/yyyy"));
+            LocalDate now = LocalDate.now(ZoneId.of(DateHelper.VIETNAM_ZONE));
+            if(queryDate.compareTo(now) < 0)
+            {
+                return new ArrayList<>();
+            }
 
             List<Slot> allSlots = getAllSlotsInSubYardByDate(subYardId, queryDate);
             List<Slot> bookedSlots = getBookedSlotsInSubYardByDate(subYardId, queryDate);
