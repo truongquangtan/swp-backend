@@ -87,7 +87,7 @@ public class BookingCustomRepository {
             Query query = null;
 
             String nativeQuery = "SELECT * FROM booking WHERE account_id=?1 ORDER BY book_at DESC";
-            query = entityManager.createNativeQuery(nativeQuery);
+            query = entityManager.createNativeQuery(nativeQuery, BookingEntity.class);
             query.setParameter(1, userId);
             query.setFirstResult(startIndex);
             query.setMaxResults(endIndex - startIndex + 1);

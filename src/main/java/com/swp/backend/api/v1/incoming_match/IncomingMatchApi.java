@@ -73,8 +73,8 @@ public class IncomingMatchApi {
 
             return ResponseEntity.ok().body(gson.toJson(response));
         } catch (Exception ex) {
-            throw ex;
-            //return ResponseEntity.internalServerError().body("Error in server: " + ex.getMessage());
+
+            return ResponseEntity.internalServerError().body("Error in server: " + ex.getMessage());
         }
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -26,18 +27,34 @@ public class CancelBookingService {
     private YardRepository yardRepository;
     private EmailService emailService;
     private AccountRepository accountRepository;
+    public static final int PREVENT_CANCEL_BOOKING_IN_MINUTE = 30;
 
     public void cancelBooking(String userId, int bookingId, CancelBookingRequest request)
     {
         BookingEntity booking = getBookingEntity(bookingId);
         bookingIsOfUserFilter(booking, userId);
-        bookingStatusIsSuccessFilter(booking);
         yardIsActiveAndNotDeleted(request.getYardId());
         SubYardEntity subYard = subYardIsActiveFilter(request.getSubYardId());
         SlotEntity slot = slotIdIsActiveFilter(request.getSlotId());
+        bookingStatusIsSuccessFilter(booking);
+        slotTimeStartIsNotOverPreventTimeForCancel(booking, slot);
 
         cancelBookingProcess(userId, slot, subYard, booking, request);
     }
+
+    private void slotTimeStartIsNotOverPreventTimeForCancel(BookingEntity booking, SlotEntity slot) {
+        if(DateHelper.isToday(booking.getDate()))
+        {
+            LocalTime slotStartTime = slot.getStartTime();
+            LocalTime now = LocalTime.now(ZoneId.of(DateHelper.VIETNAM_ZONE));
+            now = now.plusMinutes(PREVENT_CANCEL_BOOKING_IN_MINUTE);
+            if(now.isAfter(slotStartTime))
+            {
+                throw new CancelBookingProcessException("The match will be start after " + PREVENT_CANCEL_BOOKING_IN_MINUTE + "minute. You cannot cancel that.");
+            }
+        }
+    }
+
     private BookingEntity getBookingEntity(int bookingId)
     {
         BookingEntity booking = bookingRepository.getBookingEntityById(bookingId);
