@@ -158,7 +158,7 @@ public class YardService {
     }
 
     public List<YardModel> getAllYardByOwnerId(String ownerId){
-        List<YardEntity> listYard = yardRepository.findYardEntitiesByOwnerId(ownerId);
+        List<YardEntity> listYard = yardRepository.findAllByOwnerId(ownerId);
         return listYard.parallelStream().map(yard -> {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
             return YardModel.builder()

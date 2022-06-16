@@ -15,6 +15,7 @@ public interface YardRepository extends JpaRepository<YardEntity, String> {
 
     public YardEntity findYardEntitiesById(String yardId);
 
-    @Query("SELECT yard.id FROM YardEntity yard WHERE yard.id = ?1")
+    @Query("SELECT yard.id FROM YardEntity yard WHERE yard.ownerId = ?1")
     public List<String> getAllYardIdByOwnerId(String ownerId);
+    public List<YardEntity> findAllByOwnerId(String ownerId);
 }

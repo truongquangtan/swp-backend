@@ -9,6 +9,7 @@ import com.swp.backend.model.MatchModel;
 import com.swp.backend.myrepository.BookingCustomRepository;
 import com.swp.backend.repository.BookingRepository;
 import com.swp.backend.repository.SlotRepository;
+import com.swp.backend.repository.SubYardRepository;
 import com.swp.backend.repository.YardRepository;
 import com.swp.backend.utils.DateHelper;
 import lombok.AllArgsConstructor;
@@ -29,6 +30,7 @@ public class BookingService {
     private BookingCustomRepository bookingCustomRepository;
     private YardRepository yardRepository;
     private SlotRepository slotRepository;
+    private SubYardRepository subYardRepository;
 
     public BookingEntity book(String userId, BookingModel bookingModel) {
         String errorNote = "";
@@ -148,8 +150,9 @@ public class BookingService {
 
     public List<BookingEntity> getAllIncomeSlotByOwnerId(String ownerId){
         List<String> listYardId = yardRepository.getAllYardIdByOwnerId(ownerId);
-        List<String> listSlotId = slotRepository.getAllSlotIdByListSubYardId(listYardId);
-        List<String> listSlotBooking = bookingRepository.getListSlotIdExitsBookingReference(listSlotId);
-        List<SlotEntity> listSlotHasBookingReference = bookingRepository.
+        List<String> listSubYardId = subYardRepository.getAllSubYardIdByListBigYardId(listYardId);
+        List<SlotEntity> listSlot = slotRepository.getAllSlotsByListSubYardId(listSubYardId);
+        List<Integer> listSlotId = listSlot.parallelStream().map(SlotEntity::getId).collect(Collectors.toList());
+        return bookingRepository.getListSlotExitsBookingReference(listSlotId);
     }
 }
