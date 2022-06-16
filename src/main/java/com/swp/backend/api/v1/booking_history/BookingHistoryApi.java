@@ -1,6 +1,8 @@
 package com.swp.backend.api.v1.booking_history;
 
+import com.fasterxml.jackson.databind.deser.DataFormatReaders;
 import com.google.gson.Gson;
+import com.swp.backend.api.v1.incoming_match.IncomingResponse;
 import com.swp.backend.entity.BookingEntity;
 import com.swp.backend.model.MatchModel;
 import com.swp.backend.service.BookingService;
@@ -29,15 +31,18 @@ public class BookingHistoryApi {
     private static final int PAGE_DEFAULT = 1;
 
     @PostMapping(value = "history-booking")
-    public ResponseEntity<String> getBookingHistory(@RequestBody(required = false) BookingHistoryRequest request) {
+    public ResponseEntity<String> getBookingHistory(@RequestBody(required = false) BookingHistoryRequest request)
+    {
         BookingHistoryResponse response;
         int itemsPerPage = ITEMS_PER_PAGE_DEFAULT;
         int page = PAGE_DEFAULT;
-        if (request != null) {
+        if(request != null)
+        {
             page = request.getPage() > 0 ? request.getPage() : page;
             itemsPerPage = request.getItemsPerPage() > 0 ? request.getItemsPerPage() : itemsPerPage;
         }
-        try {
+        try
+        {
             String userId;
             SecurityContext context = SecurityContextHolder.getContext();
             userId = securityContextService.extractUsernameFromContext(context);
@@ -47,7 +52,8 @@ public class BookingHistoryApi {
 
             int countAllItems = bookingService.countAllHistoryBookingsOfUser(userId);
 
-            if (countAllItems <= 0) {
+            if(countAllItems <= 0)
+            {
                 response = new BookingHistoryResponse("There was no items in data.", 0, 0, data);
                 return ResponseEntity.ok().body(gson.toJson(response));
             }
@@ -55,7 +61,8 @@ public class BookingHistoryApi {
             response = new BookingHistoryResponse("Get history booking successfully", page, countAllItems, data);
 
             return ResponseEntity.ok().body(gson.toJson(response));
-        } catch (Exception ex) {
+        } catch (Exception ex)
+        {
             return ResponseEntity.internalServerError().body("Error in server: " + ex.getMessage());
         }
     }

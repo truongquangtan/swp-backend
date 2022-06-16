@@ -14,4 +14,5 @@ public interface BookingRepository extends JpaRepository<BookingEntity, Integer>
     List<BookingEntity> getBookingEntitiesByAccountIdAndDateIsGreaterThanEqualAndStatusOrderByDateAsc(String userId, Timestamp date, String status);
 
     List<BookingEntity> getBookingEntitiesByAccountIdOrderByBookAtDesc(String userId);
+    BookingEntity getBookingEntityById(int id);
 }

@@ -1,4 +1,4 @@
-package com.swp.backend.api.v1.booking;
+package com.swp.backend.api.v1.book.booking;
 
 import com.google.gson.Gson;
 import com.swp.backend.constance.BookingStatus;

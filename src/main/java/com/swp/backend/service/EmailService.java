@@ -61,10 +61,11 @@ public class EmailService {
     public void sendHtmlTemplateMessage(String to, String subject, String htmlText) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
-            message.setFrom(new InternetAddress(senderEmail, "Playground Basketball"));
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "utf-8");
 
-            message.setContent(htmlText, "text/html");
+            message.setFrom(new InternetAddress(senderEmail, "Playground Basketball"));
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            message.setContent(htmlText, "text/html;charset=UTF-8");
             helper.setTo(to);
             helper.setSubject(subject);
 
