@@ -24,22 +24,21 @@ public class CancelBookingService {
     private SubYardRepository subYardRepository;
     private SlotRepository slotRepository;
     private BookingRepository bookingRepository;
-    private YardRepository yardRepository;
     private EmailService emailService;
     private AccountRepository accountRepository;
-    public static final int PREVENT_CANCEL_BOOKING_IN_MINUTE = 30;
+    public static final int PREVENT_CANCEL_BOOKING_IN_MINUTE = 0;
 
     public void cancelBooking(String userId, int bookingId, CancelBookingRequest request)
     {
         BookingEntity booking = getBookingEntity(bookingId);
         bookingIsOfUserFilter(booking, userId);
         yardIsActiveAndNotDeleted(request.getYardId());
-        SubYardEntity subYard = subYardIsActiveFilter(request.getSubYardId());
+        subYardIsActiveFilter(request.getSubYardId());
         SlotEntity slot = slotIdIsActiveFilter(request.getSlotId());
         bookingStatusIsSuccessFilter(booking);
-        //slotTimeStartIsNotOverPreventTimeForCancel(booking, slot);
+        slotTimeStartIsNotOverPreventTimeForCancel(booking, slot);
 
-        cancelBookingProcess(userId, slot, subYard, booking, request);
+        cancelBookingProcess(booking, request);
     }
 
     private void slotTimeStartIsNotOverPreventTimeForCancel(BookingEntity booking, SlotEntity slot) {
@@ -50,7 +49,7 @@ public class CancelBookingService {
             now = now.plusMinutes(PREVENT_CANCEL_BOOKING_IN_MINUTE);
             if(now.isAfter(slotStartTime))
             {
-                throw new CancelBookingProcessException("The match will be start after " + PREVENT_CANCEL_BOOKING_IN_MINUTE + "minute. You cannot cancel that.");
+                throw new CancelBookingProcessException("The match is started or will be start now. You cannot cancel that.");
             }
         }
     }
@@ -93,7 +92,7 @@ public class CancelBookingService {
         SubYardEntity subYard = subYardRepository.getSubYardEntityByIdAndActive(subYardId, true);
         if(subYard == null)
         {
-            throw new CancelBookingProcessException("Your booking is canceled before, the sub-yard is inactivated by the owner. Or subYard not found.");
+            throw new CancelBookingProcessException("Your booking is canceled before, the sub-yard is inactivated by the owner. Or sub-yard not found.");
         }
         return subYard;
     }
@@ -107,20 +106,15 @@ public class CancelBookingService {
         return slot;
     }
 
-    private void cancelBookingProcess(String userId, SlotEntity slot, SubYardEntity subYard, BookingEntity booking, CancelBookingRequest request)
+    private void cancelBookingProcess(BookingEntity booking, CancelBookingRequest request)
     {
-        YardEntity yard = yardRepository.findYardEntitiesById(request.getYardId());
-        String ownerId = yard.getOwnerId();
-
-        BookingEntity modifiedBooking = saveBookingCanceledInformation(booking, request.getReason());
-        //sendMailToOwner(userId, ownerId, request.getYardId(), subYard, modifiedBooking, slot, request.getReason());
+        saveBookingCanceledInformation(booking, request.getReason());
     }
 
     private BookingEntity saveBookingCanceledInformation(BookingEntity booking, String reason)
     {
         Timestamp now = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
         booking.setStatus(BookingStatus.CANCELED);
-        //booking.setBookAt(now);
         booking.setNote("Booking canceled at: " + new SimpleDateFormat("dd/MM/yyyy hh:mm:ss").format(now) + " - Reason: " + reason);
         bookingRepository.save(booking);
         return booking;
