@@ -13,15 +13,15 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping(value = "api/v1/me")
+@RequestMapping(value = "api/v1/me/bookings")
 public class CancelBookingApi {
     private SecurityContextService securityContextService;
     private BookingService bookingService;
     private CancelBookingService cancelBookingService;
     private Gson gson;
 
-    @PutMapping(value = "cancel-booking/{bookingId}")
-    public ResponseEntity<String> cancelBooking(@RequestBody(required = false) CancelBookingRequest request, @PathVariable int bookingId)
+    @DeleteMapping(value = "{bookingId}")
+    public ResponseEntity<String> cancelBooking(@RequestBody(required = false) CancelBookingRequest request, @PathVariable String bookingId)
     {
         CancelBookingResponse response;
 
