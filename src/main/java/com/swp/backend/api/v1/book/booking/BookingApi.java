@@ -7,12 +7,16 @@ import com.swp.backend.model.BookingModel;
 import com.swp.backend.service.BookingService;
 import com.swp.backend.service.SecurityContextService;
 import com.swp.backend.service.YardService;
+import com.swp.backend.utils.DateHelper;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,7 +74,8 @@ public class BookingApi {
             response = new BookingResponse(isError ? "There were some booking slot error." : "Booking all slot successfully", isError, bookingEntities);
             return ResponseEntity.ok().body(gson.toJson(response));
         } catch (Exception ex) {
-            return ResponseEntity.internalServerError().body("Error when save in database: " + ex.getMessage());
+            throw ex;
+            //return ResponseEntity.internalServerError().body("Error when save in database: " + ex.getMessage());
         }
     }
 }

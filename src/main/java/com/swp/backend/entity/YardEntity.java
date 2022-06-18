@@ -41,7 +41,7 @@ public class YardEntity {
     private int score;
     @Column(name = "number_of_vote")
     private int numberOfVote;
-    @Column(name = "reference")
+    @Column(name = "reference", insertable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int reference;
 }
