@@ -1,5 +1,6 @@
 package com.swp.backend.service;
 
+import com.swp.backend.api.v1.book.booking.BookingResponse;
 import com.swp.backend.constance.BookingStatus;
 import com.swp.backend.entity.BookingEntity;
 import com.swp.backend.model.BookingModel;
@@ -7,11 +8,16 @@ import com.swp.backend.myrepository.BookingCustomRepository;
 import com.swp.backend.repository.BookingRepository;
 import com.swp.backend.utils.DateHelper;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,6 +31,15 @@ public class BookingService {
     public BookingEntity book(String userId, BookingModel bookingModel) {
         String errorNote = "";
         int slotId = bookingModel.getSlotId();
+
+        //Booking date in past filter
+        LocalDate bookingDate = LocalDate.parse(bookingModel.getDate(), DateTimeFormatter.ofPattern("d/M/yyyy"));
+        LocalDate now = LocalDate.now(ZoneId.of(DateHelper.VIETNAM_ZONE));
+        if(bookingDate.compareTo(now) < 0)
+        {
+            errorNote = "The date of booking is in the past";
+            return processBooking(userId, bookingModel, errorNote, BookingStatus.FAILED);
+        }
 
         //SubYard filter
         String subYardId = bookingModel.getRefSubYard();
@@ -62,7 +77,10 @@ public class BookingService {
         Timestamp timestamp = DateHelper.parseFromStringToTimestamp(bookingModel.getDate());
         Timestamp now = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
 
+        String id = UUID.randomUUID().toString();
+
         BookingEntity bookingEntity = BookingEntity.builder()
+                .id(id)
                 .accountId(userId)
                 .slotId(bookingModel.getSlotId())
                 .date(timestamp)
