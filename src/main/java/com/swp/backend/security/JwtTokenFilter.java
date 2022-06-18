@@ -47,6 +47,16 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         // Get jwt token and validate
         final String token = header.split(" ")[1].trim();
         try {
+            if(request.getRequestURI().equals("/api/v1/logout")){
+                accountLoginService.logoutByToken(token);
+                response.setStatus(200);
+                PrintWriter out = response.getWriter();
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                out.print("{\"message\":\"Logout success\"}");
+                out.flush();
+                return;
+            }
             Claims claims = jwtTokenUtils.deCodeToken(token);
             AccountLoginEntity login = accountLoginService.findLogin(claims.getSubject());
             if (login == null) {

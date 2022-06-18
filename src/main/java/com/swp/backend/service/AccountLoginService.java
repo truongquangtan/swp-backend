@@ -43,4 +43,19 @@ public class AccountLoginService {
             accountLoginRepository.deleteById(login.getId());
         }
     }
+
+    public void logoutByToken(String token){
+        new Thread(() -> {
+            try {
+                AccountLoginEntity login = accountLoginRepository.findAccountLoginEntityByAccessToken(token);
+                if(login != null){
+                    login.setLogout(true);
+                    accountLoginRepository.save(login);
+                }
+
+            }catch (Exception exception){
+                exception.printStackTrace();
+            }
+        }).start();
+    }
 }

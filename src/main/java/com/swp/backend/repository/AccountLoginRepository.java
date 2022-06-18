@@ -6,5 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AccountLoginRepository extends JpaRepository<AccountLoginEntity, Integer> {
-    AccountLoginEntity findLoginStateByUserId(String userId);
+    public AccountLoginEntity findLoginStateByUserId(String userId);
+    public AccountLoginEntity findAccountLoginEntityByAccessToken(String accessToken);
 }
