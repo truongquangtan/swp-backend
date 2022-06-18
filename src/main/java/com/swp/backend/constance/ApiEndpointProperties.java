@@ -14,9 +14,11 @@ public class ApiEndpointProperties {
             "^/api/v1/yards{1}",
             "^/api/v1/yards/{1}[^/]*",
             "^/api/v1/slots/get-by-date{1}",
-            "^/api/v1/sub-yards{1}.*"
+            "^/api/v1/sub-yards{1}.*",
+            "^/api/v1/admin/filter-account{1}"
     };
     public static String[] publicEndpoint = {
+            "/api/v1/admin/filter-account",
             "/api/v1/login",
             "/api/v1/register",
             "/v3/api-docs/**",
@@ -33,7 +35,7 @@ public class ApiEndpointProperties {
             "/api/v1/sub-yards/**"
     };
     public static String[] ownerOnlyEndpoint = {
-        "/api/v1/owner/**"
+            "/api/v1/owner/**"
     };
 
     public static String[] adminOnlyEndpoint = {

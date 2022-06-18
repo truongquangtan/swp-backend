@@ -5,6 +5,7 @@ import com.swp.backend.entity.AccountEntity;
 import com.swp.backend.entity.AccountOtpEntity;
 import com.swp.backend.entity.RoleEntity;
 import com.swp.backend.model.AccountModel;
+import com.swp.backend.myrepository.AccountCustomRepository;
 import com.swp.backend.repository.AccountRepository;
 import com.swp.backend.repository.RoleRepository;
 import com.swp.backend.utils.RegexHelper;
@@ -13,6 +14,8 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +31,8 @@ public class AccountService {
     private final EmailService emailService;
     private final AccountLoginService accountLoginService;
     private final RoleRepository roleRepository;
+
+    private final AccountCustomRepository accountCustomRepository;
 
     public AccountEntity updatePassword(String username, String password) throws DataAccessException {
         AccountEntity account = findAccountByUsername(username);
@@ -140,32 +145,34 @@ public class AccountService {
         accountRepository.save(accountEntity);
     }
 
-    public List<AccountModel> getAllUserHasRoleUser() {
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public List<AccountModel> getAllAccountHasRoleUser() {
         List<RoleEntity> roleEntities = roleService.getAllRole();
         if (roleEntities == null || roleEntities.size() == 0) {
             return null;
         }
         HashMap<Integer, String> roleMap = new HashMap<>();
-        roleEntities.forEach(role -> {
-            roleMap.put(role.getId(), role.getRoleName());
-        });
+        roleEntities.forEach(role -> roleMap.put(role.getId(), role.getRoleName()));
 
         List<AccountEntity> accounts = accountRepository.findAccountEntitiesByRoleIdOrRoleId(1, 3);
         if (accounts == null || accounts.size() == 0) {
             return null;
         }
-        return accounts.stream().map(account -> {
-            return AccountModel.builder()
-                    .userId(account.getUserId())
-                    .fullName(account.getFullName())
-                    .email(account.getEmail())
-                    .phone(account.getPhone())
-                    .isActive(account.isActive())
-                    .isConfirmed(account.isConfirmed())
-                    .avatar(account.getAvatar())
-                    .role(roleMap.get(account.getRoleId()))
-                    .build();
-        }).collect(Collectors.toList());
+        return accounts.stream().map(account -> AccountModel.builder()
+                .userId(account.getUserId())
+                .fullName(account.getFullName())
+                .email(account.getEmail())
+                .phone(account.getPhone())
+                .isActive(account.isActive())
+                .isConfirmed(account.isConfirmed())
+                .avatar(account.getAvatar())
+                .role(roleMap.get(account.getRoleId()))
+                .build()).collect(Collectors.toList());
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public int countAllAccountHasRoleUser() {
+        return accountRepository.countAccountEntitiesByRoleIdOrRoleId(1, 3);
     }
 
     public boolean deactivateAccount(String userId) throws DataAccessException {
@@ -199,5 +206,9 @@ public class AccountService {
         AccountEntity accountEntity = accountRepository.findUserEntityByUserId(userId);
         int roleId = accountEntity.getRoleId();
         return roleRepository.findRoleEntityById(roleId).getRoleName();
+    }
+
+    public List<?> searchAccount(Integer itemsPerPage, Integer page, Integer role, String keyword, String status, List<String> sortBy, String sort){
+        return accountCustomRepository.searchAccount(itemsPerPage, page, role, keyword, status, sortBy, sort);
     }
 }

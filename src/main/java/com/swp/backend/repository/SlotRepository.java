@@ -13,11 +13,16 @@ import java.util.List;
 @Repository
 public interface SlotRepository extends JpaRepository<SlotEntity, String> {
     public List<SlotEntity> findSlotEntitiesByRefYardAndActiveIsTrue(String refYard);
+
     public List<SlotEntity> findSlotEntitiesByStartTimeGreaterThanAndRefYardAndActiveIsTrue(LocalTime startTime, String refYard);
+
     public SlotEntity findSlotEntityByIdAndStartTimeGreaterThanAndActive(int slotId, LocalTime startTime, boolean isActive);
+
     public SlotEntity findSlotEntityByIdAndActive(int slotId, boolean isActive);
+
     @Query("SELECT slot FROM SlotEntity slot WHERE slot.refYard IN :listSubYardId")
-    public List<SlotEntity> getAllSlotsByListSubYardId(@Param("listSubYardId")Collection<String> listSubYardId);
+    public List<SlotEntity> getAllSlotsByListSubYardId(@Param("listSubYardId") Collection<String> listSubYardId);
+
     @Query("SELECT slot FROM SlotEntity slot WHERE slot.id IN :listSlotId")
     public List<SlotEntity> getAllSlotEntityByListSlotId(@Param("listSlotId") Collection<String> listSlotId);
 }

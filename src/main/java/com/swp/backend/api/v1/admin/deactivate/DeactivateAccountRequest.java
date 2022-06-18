@@ -1,4 +1,4 @@
-package com.swp.backend.api.v1.admin.deactivate_account;
+package com.swp.backend.api.v1.admin.deactivate;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

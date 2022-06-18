@@ -22,6 +22,7 @@ public class BookingManagementRestAPI {
     private Gson gson;
     private BookingService bookingService;
     private SecurityContextService securityContextService;
+
     @GetMapping(value = "booking")
     public ResponseEntity<String> showAllBooking() {
         SecurityContext securityContext = SecurityContextHolder.getContext();

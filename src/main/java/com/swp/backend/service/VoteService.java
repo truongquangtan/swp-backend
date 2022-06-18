@@ -44,7 +44,7 @@ public class VoteService {
     public boolean editVote(String userId, String votedId, int score, String comment) {
         try {
             VoteEntity vote = voteRepository.findVoteEntityById(votedId);
-            if(!userId.equals(vote.getUserId())){
+            if (!userId.equals(vote.getUserId())) {
                 return false;
             }
             boolean recalculateScore = false;
@@ -64,28 +64,28 @@ public class VoteService {
         }
     }
 
-    public boolean deleteVote(String userId, String votedId){
+    public boolean deleteVote(String userId, String votedId) {
         try {
             VoteEntity vote = voteRepository.findVoteEntityById(votedId);
-            if(!userId.equals(vote.getUserId())){
+            if (!userId.equals(vote.getUserId())) {
                 return false;
             }
             vote.setDeleted(true);
             voteRepository.save(vote);
             reUpdateAverageScoreVote(vote.getSubYardId());
             return true;
-        }catch (Exception exception){
+        } catch (Exception exception) {
             return false;
         }
     }
 
-    private void reUpdateAverageScoreVote(String subYardId){
+    private void reUpdateAverageScoreVote(String subYardId) {
         new Thread(() -> {
             try {
                 String parentYardId = subYardService.getBigYardIdFromSubYard(subYardId);
                 YardEntity bigYard = yardService.getYardById(parentYardId);
                 List<SubYardEntity> listRelativeSubYard = subYardCustomRepository.getAllSubYardByBigYard(parentYardId);
-                if(listRelativeSubYard == null){
+                if (listRelativeSubYard == null) {
                     return;
                 }
 

@@ -1,4 +1,4 @@
-package com.swp.backend.api.v1.admin.invite_owner;
+package com.swp.backend.api.v1.admin.invite;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

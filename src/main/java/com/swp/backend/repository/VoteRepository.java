@@ -9,6 +9,7 @@ import java.util.List;
 @Repository
 public interface VoteRepository extends JpaRepository<VoteEntity, String> {
     public VoteEntity findVoteEntityById(String voteId);
+
     public List<VoteEntity> findBySubYardIdInAndDeletedIsFalse(List<String> subYardId);
 
 }

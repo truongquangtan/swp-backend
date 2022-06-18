@@ -37,7 +37,7 @@ public class YardRestApi {
     }
 
     @GetMapping(value = "")
-    public ResponseEntity<String> showAllYard(){
+    public ResponseEntity<String> showAllYard() {
         try {
             SecurityContext securityContext = SecurityContextHolder.getContext();
             String ownerId = securityContextService.extractUsernameFromContext(securityContext);

@@ -3,9 +3,7 @@ package com.swp.backend.service;
 import com.swp.backend.constance.BookingStatus;
 import com.swp.backend.entity.BookingEntity;
 import com.swp.backend.entity.SlotEntity;
-import com.swp.backend.entity.YardEntity;
 import com.swp.backend.model.BookingModel;
-import com.swp.backend.model.MatchModel;
 import com.swp.backend.myrepository.BookingCustomRepository;
 import com.swp.backend.repository.BookingRepository;
 import com.swp.backend.repository.SlotRepository;
@@ -13,7 +11,6 @@ import com.swp.backend.repository.SubYardRepository;
 import com.swp.backend.repository.YardRepository;
 import com.swp.backend.utils.DateHelper;
 import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -148,7 +145,7 @@ public class BookingService {
         return getIncomingMatches(userId).size();
     }
 
-    public List<BookingEntity> getAllIncomeSlotByOwnerId(String ownerId){
+    public List<BookingEntity> getAllIncomeSlotByOwnerId(String ownerId) {
         List<String> listYardId = yardRepository.getAllYardIdByOwnerId(ownerId);
         List<String> listSubYardId = subYardRepository.getAllSubYardIdByListBigYardId(listYardId);
         List<SlotEntity> listSlot = slotRepository.getAllSlotsByListSubYardId(listSubYardId);
