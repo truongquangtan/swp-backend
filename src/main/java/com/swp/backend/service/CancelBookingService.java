@@ -28,7 +28,7 @@ public class CancelBookingService {
     private AccountRepository accountRepository;
     public static final int PREVENT_CANCEL_BOOKING_IN_MINUTE = 0;
 
-    public void cancelBooking(String userId, int bookingId, CancelBookingRequest request)
+    public void cancelBooking(String userId, String bookingId, CancelBookingRequest request)
     {
         BookingEntity booking = getBookingEntity(bookingId);
         bookingIsOfUserFilter(booking, userId);
@@ -54,7 +54,7 @@ public class CancelBookingService {
         }
     }
 
-    private BookingEntity getBookingEntity(int bookingId)
+    private BookingEntity getBookingEntity(String bookingId)
     {
         BookingEntity booking = bookingRepository.getBookingEntityById(bookingId);
         if(booking == null)
@@ -115,7 +115,7 @@ public class CancelBookingService {
     {
         Timestamp now = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
         booking.setStatus(BookingStatus.CANCELED);
-        booking.setNote("Booking canceled at: " + new SimpleDateFormat("dd/MM/yyyy hh:mm:ss").format(now) + " - Reason: " + reason);
+        booking.setNote("Booking canceled at: " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(now) + " - Reason: " + reason);
         bookingRepository.save(booking);
         return booking;
     }

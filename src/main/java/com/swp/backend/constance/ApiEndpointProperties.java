@@ -47,6 +47,6 @@ public class ApiEndpointProperties {
             "/api/v1/yards/{yardId}/booking",
             "/api/v1/me/incoming-matches",
             "/api/v1/me/history-booking",
-            "/api/v1/me/cancel-booking/{bookingId}"
+            "/api/v1/me/bookings/{bookingId}"
     };
 }
