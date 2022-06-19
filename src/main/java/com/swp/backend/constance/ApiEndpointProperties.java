@@ -45,7 +45,8 @@ public class ApiEndpointProperties {
             "/api/v1/admin/view-all-user",
             "/api/v1/admin/all-accounts",
             "/api/v1/admin/filter/all-accounts",
-            "/api/v1/filter-accounts"
+            "/api/v1/filter-accounts",
+            "/api/v1/admin/accounts/{accountId}"
     };
 
     public static String[] userOnlyEndpoint = {
