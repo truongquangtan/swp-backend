@@ -35,7 +35,7 @@ public class ApiEndpointProperties {
             "/api/v1/sub-yards/**"
     };
     public static String[] ownerOnlyEndpoint = {
-            "/api/v1/owner/**"
+            "/api/v1/owners/**"
     };
 
     public static String[] adminOnlyEndpoint = {

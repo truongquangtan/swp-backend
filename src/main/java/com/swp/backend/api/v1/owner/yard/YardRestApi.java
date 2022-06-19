@@ -1,7 +1,6 @@
 package com.swp.backend.api.v1.owner.yard;
 
 import com.google.gson.Gson;
-import com.swp.backend.model.YardModel;
 import com.swp.backend.service.SecurityContextService;
 import com.swp.backend.service.YardService;
 import lombok.AllArgsConstructor;
@@ -10,17 +9,15 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @AllArgsConstructor
-@RequestMapping(value = "/api/v1/owner")
+@RequestMapping(value = "/api/v1/owners")
 public class YardRestApi {
-    YardService yardService;
-    SecurityContextService securityContextService;
-    Gson gson;
+    private YardService yardService;
+    private SecurityContextService securityContextService;
+    private Gson gson;
 
-    @PostMapping(value = "add-yard")
+    @PostMapping(value = "me/yards")
     public ResponseEntity<String> createYard(@RequestBody(required = false) YardRequest yardRequest) {
         if (yardRequest == null) {
             return ResponseEntity.badRequest().body("Missing body");
@@ -36,13 +33,16 @@ public class YardRestApi {
         }
     }
 
-    @GetMapping(value = "")
-    public ResponseEntity<String> showAllYard() {
+    @PostMapping(value = "{ownerId}/yards/search")
+    public ResponseEntity<String> showAllYard(@RequestBody(required = false) GetYardRequest getYardRequest, @PathVariable String ownerId) {
         try {
-            SecurityContext securityContext = SecurityContextHolder.getContext();
-            String ownerId = securityContextService.extractUsernameFromContext(securityContext);
-            List<YardModel> listYard = yardService.getAllYardByOwnerId(ownerId);
-            return ResponseEntity.ok().body(gson.toJson(listYard));
+            GetYardResponse response;
+            if(getYardRequest == null){
+                response = yardService.findAllYardByOwnerId(ownerId, null, null);
+            }else {
+                response = yardService.findAllYardByOwnerId(ownerId, getYardRequest.getItemsPerPage(), getYardRequest.getPage());
+            }
+            return ResponseEntity.ok().body(gson.toJson(response));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().body(e.getMessage());

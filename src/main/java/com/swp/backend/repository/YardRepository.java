@@ -1,6 +1,7 @@
 package com.swp.backend.repository;
 
 import com.swp.backend.entity.YardEntity;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -18,5 +19,6 @@ public interface YardRepository extends JpaRepository<YardEntity, String> {
     @Query("SELECT yard.id FROM YardEntity yard WHERE yard.ownerId = ?1")
     public List<String> getAllYardIdByOwnerId(String ownerId);
 
-    public List<YardEntity> findAllByOwnerId(String ownerId);
+    public List<YardEntity> findAllByOwnerId(String ownerId, Pageable pageable);
+    public int countAllByOwnerId(String ownerId);
 }

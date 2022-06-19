@@ -7,6 +7,6 @@ import java.util.List;
 @Data
 public class SubYardRequest {
     private String name;
-    private String type;
+    private Integer type;
     private List<SlotRequest> slots;
 }
