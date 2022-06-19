@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import com.swp.backend.api.v1.owner.yard.request.GetYardRequest;
 import com.swp.backend.api.v1.owner.yard.request.YardRequest;
+import com.swp.backend.api.v1.owner.yard.response.CreateYardSuccessResponse;
 import com.swp.backend.api.v1.owner.yard.response.GetYardResponse;
 import com.swp.backend.service.SecurityContextService;
 import com.swp.backend.service.YardService;
@@ -39,7 +40,8 @@ public class YardRestApi {
             SecurityContext context = SecurityContextHolder.getContext();
             String userId = securityContextService.extractUsernameFromContext(context);
             yardService.createNewYard(userId, yardRequest, images);
-            return ResponseEntity.ok("Create yard success!");
+            CreateYardSuccessResponse successResponse = CreateYardSuccessResponse.builder().message("Create yard success!").build();
+            return ResponseEntity.ok(gson.toJson(successResponse));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().body(e.getMessage());
