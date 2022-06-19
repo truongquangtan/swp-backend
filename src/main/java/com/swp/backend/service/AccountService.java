@@ -208,7 +208,7 @@ public class AccountService {
         return roleRepository.findRoleEntityById(roleId).getRoleName();
     }
 
-    public List<?> searchAccount(Integer itemsPerPage, Integer page, Integer role, String keyword, String status, List<String> sortBy, String sort){
+    public List<?> searchAccount(Integer itemsPerPage, Integer page, Integer role, String keyword, String status, List<String> sortBy, String sort) {
         return accountCustomRepository.searchAccount(itemsPerPage, page, role, keyword, status, sortBy, sort);
     }
 }

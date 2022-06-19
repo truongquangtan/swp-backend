@@ -37,9 +37,9 @@ public class YardRestApi {
     public ResponseEntity<String> showAllYard(@RequestBody(required = false) GetYardRequest getYardRequest, @PathVariable String ownerId) {
         try {
             GetYardResponse response;
-            if(getYardRequest == null){
+            if (getYardRequest == null) {
                 response = yardService.findAllYardByOwnerId(ownerId, null, null);
-            }else {
+            } else {
                 response = yardService.findAllYardByOwnerId(ownerId, getYardRequest.getItemsPerPage(), getYardRequest.getPage());
             }
             return ResponseEntity.ok().body(gson.toJson(response));

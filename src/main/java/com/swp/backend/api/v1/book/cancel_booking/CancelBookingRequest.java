@@ -13,8 +13,7 @@ public class CancelBookingRequest {
     private String yardId;
     private int slotId;
 
-    public boolean isValid()
-    {
+    public boolean isValid() {
         return reason != null && subYardId != null && yardId != null
                 && !reason.trim().isEmpty() && !subYardId.trim().isEmpty() && !yardId.trim().isEmpty();
     }

@@ -1,7 +1,6 @@
 package com.swp.backend.service;
 
 import com.swp.backend.api.v1.owner.yard.GetYardResponse;
-
 import com.swp.backend.api.v1.owner.yard.SubYardRequest;
 import com.swp.backend.api.v1.owner.yard.YardRequest;
 import com.swp.backend.api.v1.yard.search.YardResponse;
@@ -19,7 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -161,8 +162,7 @@ public class YardService {
     }
 
 
-    public String getYardFullAddress(String yardId)
-    {
+    public String getYardFullAddress(String yardId) {
         YardEntity yard = getYardById(yardId);
         DistrictEntity districtEntity = districtRepository.findById(yard.getDistrictId());
         String district = districtEntity.getDistrictName();
@@ -171,7 +171,7 @@ public class YardService {
     }
 
 
-    public GetYardResponse findAllYardByOwnerId(String ownerId, Integer ofSet, Integer page) throws DataAccessException{
+    public GetYardResponse findAllYardByOwnerId(String ownerId, Integer ofSet, Integer page) throws DataAccessException {
         int maxResult = yardRepository.countAllByOwnerId(ownerId);
 
         int ofSetValue = (ofSet != null && ofSet > 0) ? ofSet : 10;
@@ -180,7 +180,7 @@ public class YardService {
         Pageable pagination = PageRequest.of(pageValue - 1, ofSetValue);
         List<YardEntity> result = yardRepository.findAllByOwnerId(ownerId, pagination);
 
-        List<YardModel>  listYard = result.parallelStream().map(yard -> {
+        List<YardModel> listYard = result.parallelStream().map(yard -> {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
             return YardModel.builder()
                     .id(yard.getId())

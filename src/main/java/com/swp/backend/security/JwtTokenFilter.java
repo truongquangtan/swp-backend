@@ -47,7 +47,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         // Get jwt token and validate
         final String token = header.split(" ")[1].trim();
         try {
-            if(request.getRequestURI().equals("/api/v1/logout")){
+            if (request.getRequestURI().equals("/api/v1/logout")) {
                 accountLoginService.logoutByToken(token);
                 response.setStatus(200);
                 PrintWriter out = response.getWriter();

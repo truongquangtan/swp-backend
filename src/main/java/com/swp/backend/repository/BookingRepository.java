@@ -15,7 +15,9 @@ public interface BookingRepository extends JpaRepository<BookingEntity, Integer>
     public BookingEntity getBookingEntityBySlotIdAndStatusAndDateIsGreaterThanEqualAndDateIsLessThanEqual(int slotId, String status, Timestamp startTime, Timestamp endTime);
 
     public List<BookingEntity> getBookingEntitiesByAccountIdAndDateIsGreaterThanEqualAndStatusOrderByDateAsc(String userId, Timestamp date, String status);
+
     public List<BookingEntity> getBookingEntitiesByAccountIdOrderByBookAtDesc(String userId);
+
     public BookingEntity getBookingEntityById(String id);
 
     @Query("SELECT booking FROM BookingEntity booking WHERE booking.slotId IN :listSlotId")

@@ -30,8 +30,7 @@ public class SlotService {
         try {
             LocalDate queryDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("d/M/yyyy"));
             LocalDate now = LocalDate.now(ZoneId.of(DateHelper.VIETNAM_ZONE));
-            if(queryDate.compareTo(now) < 0)
-            {
+            if (queryDate.compareTo(now) < 0) {
                 return new ArrayList<>();
             }
 

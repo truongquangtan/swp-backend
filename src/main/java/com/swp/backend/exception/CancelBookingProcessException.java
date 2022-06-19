@@ -1,14 +1,14 @@
 package com.swp.backend.exception;
 
-public class CancelBookingProcessException extends RuntimeException{
+public class CancelBookingProcessException extends RuntimeException {
     private String filterMessage;
-    public CancelBookingProcessException(String message)
-    {
+
+    public CancelBookingProcessException(String message) {
         super();
         this.filterMessage = message;
     }
-    public String getFilterMessage()
-    {
+
+    public String getFilterMessage() {
         return filterMessage;
     }
 }

@@ -20,5 +20,6 @@ public interface YardRepository extends JpaRepository<YardEntity, String> {
     public List<String> getAllYardIdByOwnerId(String ownerId);
 
     public List<YardEntity> findAllByOwnerId(String ownerId, Pageable pageable);
+
     public int countAllByOwnerId(String ownerId);
 }

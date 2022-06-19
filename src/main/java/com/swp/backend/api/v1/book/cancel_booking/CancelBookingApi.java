@@ -21,33 +21,26 @@ public class CancelBookingApi {
     private Gson gson;
 
     @DeleteMapping(value = "{bookingId}")
-    public ResponseEntity<String> cancelBooking(@RequestBody(required = false) CancelBookingRequest request, @PathVariable String bookingId)
-    {
+    public ResponseEntity<String> cancelBooking(@RequestBody(required = false) CancelBookingRequest request, @PathVariable String bookingId) {
         CancelBookingResponse response;
 
         String userId;
         SecurityContext context = SecurityContextHolder.getContext();
         userId = securityContextService.extractUsernameFromContext(context);
 
-        if(request == null || !request.isValid())
-        {
+        if (request == null || !request.isValid()) {
             response = new CancelBookingResponse(false, "Can not parse request");
             return ResponseEntity.ok(gson.toJson(response));
         }
 
-        try
-        {
+        try {
             cancelBookingService.cancelBooking(userId, bookingId, request);
             response = new CancelBookingResponse(true, "Cancel booking successfully");
             return ResponseEntity.ok(gson.toJson(response));
-        }
-        catch (CancelBookingProcessException cancelBookingProcessException)
-        {
+        } catch (CancelBookingProcessException cancelBookingProcessException) {
             response = new CancelBookingResponse(false, cancelBookingProcessException.getFilterMessage());
             return ResponseEntity.ok(gson.toJson(response));
-        }
-        catch (Exception exception)
-        {
+        } catch (Exception exception) {
             response = new CancelBookingResponse(false, "Error when save in database");
             return ResponseEntity.ok(gson.toJson(response));
         }
