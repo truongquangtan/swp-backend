@@ -42,7 +42,10 @@ public class ApiEndpointProperties {
             "/api/v1/admin/reactivate-account",
             "/api/v1/admin/deactivate-account",
             "/api/v1/admin/owner-register",
-            "/api/v1/admin/view-all-user"
+            "/api/v1/admin/view-all-user",
+            "/api/v1/admin/all-accounts",
+            "/api/v1/admin/filter/all-accounts",
+            "/api/v1/filter-accounts"
     };
 
     public static String[] userOnlyEndpoint = {

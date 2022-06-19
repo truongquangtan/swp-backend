@@ -8,6 +8,7 @@ import com.swp.backend.model.AccountModel;
 import com.swp.backend.myrepository.AccountCustomRepository;
 import com.swp.backend.repository.AccountRepository;
 import com.swp.backend.repository.RoleRepository;
+import com.swp.backend.utils.DateHelper;
 import com.swp.backend.utils.RegexHelper;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataAccessException;
@@ -17,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -65,6 +68,7 @@ public class AccountService {
     public AccountEntity createAccount(String email, String fullName, String password, String phone, String roleName) throws DataAccessException {
         String uuid = UUID.randomUUID().toString();
         RoleEntity roleEntity = roleService.getRoleByRoleName(roleName);
+        Timestamp now = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
         AccountEntity accountEntity = AccountEntity.builder()
                 .userId(uuid)
                 .email(email)
@@ -72,6 +76,7 @@ public class AccountService {
                 .phone(phone)
                 .password(passwordEncoder.encode(password))
                 .roleId(roleEntity.getId())
+                .createAt(now)
                 .build();
         try {
             accountRepository.save(accountEntity);
@@ -174,6 +179,7 @@ public class AccountService {
                 .isConfirmed(account.isConfirmed())
                 .avatar(account.getAvatar())
                 .role(roleMap.get(account.getRoleId()))
+                .createAt(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(account.getCreateAt()))
                 .build()).collect(Collectors.toList());
     }
 

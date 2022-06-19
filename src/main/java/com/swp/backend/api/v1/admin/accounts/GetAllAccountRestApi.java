@@ -28,7 +28,7 @@ public class GetAllAccountRestApi {
     private Gson gson;
     private RoleService roleService;
 
-    @GetMapping("all-account")
+    @PostMapping("all-accounts")
     public ResponseEntity<String> getAllUserHasRoleUserOrOwner(@RequestBody (required = false) GetAllAccountRequest request) {
         int page = PAGE_DEFAULT;
         int itemsPerPage = ITEMS_PER_PAGE_DEFAULT;
@@ -40,22 +40,6 @@ public class GetAllAccountRestApi {
         }
 
         try {
-//            Future<List<AccountModel>> accounts;
-//            Future<Integer> maxResult;
-//            ExecutorService executorService = Executors.newCachedThreadPool();
-//            accounts = executorService.submit(() -> accountService.getAllAccountHasRoleUserByPage(page, itemsPerPage));
-//            maxResult = executorService.submit(() -> accountService.countAllAccountHasRoleUser());
-//            executorService.shutdown();
-//            boolean finished = executorService.awaitTermination(2, TimeUnit.MINUTES);
-//            if (finished) {
-//                GetAllAccountResponse response = GetAllAccountResponse.builder()
-//                        .accounts(accounts.get())
-//                        .maxResult(maxResult.get())
-//                        .build();
-//                return ResponseEntity.ok().body(gson.toJson(response));
-//        } else {
-//            return ResponseEntity.internalServerError().build();
-//        }
             GetAllAccountResponse response = GetAllAccountResponse.builder()
                     .accounts(accountService.getAllAccountHasRoleUserByPage(page, itemsPerPage))
                     .maxResult(accountService.countAllAccountHasRoleUser())
@@ -64,14 +48,13 @@ public class GetAllAccountRestApi {
 
             return  ResponseEntity.ok().body(gson.toJson(response));
 
-
         } catch (Exception exception) {
             exception.printStackTrace();
-            return ResponseEntity.internalServerError().build();
+            return ResponseEntity.internalServerError().body("Error in server");
         }
     }
 
-    @PostMapping("all-account")
+    @PostMapping("/filter/all-accounts")
     public ResponseEntity<String> getAllAccountHasRoleUserOrOwnerByFilter(@RequestBody(required = false) GetAllAccountRequest request) {
         if(request == null){
             List<?> resulSearch = accountService.searchAccount(null, null, null, null, null, null, null);

@@ -20,7 +20,7 @@ public class AccountCustomRepository {
         Query query = null;
         try
         {
-            String nativeQuery = "SELECT * FROM accounts WHERE role_id = 1 OR role_id = 3";
+            String nativeQuery = "SELECT * FROM accounts WHERE role_id = 1 OR role_id = 3 ORDER BY create_at DESC";
 
             query = entityManager.createNativeQuery(nativeQuery, AccountEntity.class);
             query.setFirstResult(startIndex);
