@@ -24,11 +24,9 @@ public class LogoutRestApi {
     public ResponseEntity<String> logout() {
         try {
             //Get current user from spring security context container
-            Object user = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            if (user instanceof UserDetails) {
-                String userId = ((UserDetails) user).getUsername();
-                System.out.println(userId);
-                accountLoginService.expireLogin(userId);
+            Object rawToken = SecurityContextHolder.getContext().getAuthentication().getDetails();
+            if (rawToken instanceof String) {
+                accountLoginService.logoutByToken((String) rawToken);
             }
             return ResponseEntity.ok("Logout success!");
         } catch (Exception exception) {

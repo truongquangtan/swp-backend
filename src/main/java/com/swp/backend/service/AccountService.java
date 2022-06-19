@@ -45,7 +45,7 @@ public class AccountService {
         }
         account.setPassword(passwordEncoder.encode(password));
         accountRepository.save(account);
-        accountLoginService.deleteLogin(username);
+        accountLoginService.deleteAllLogin(username);
         return account;
     }
 
@@ -197,7 +197,7 @@ public class AccountService {
         accountRepository.save(account);
         new Thread(() -> {
             try {
-                accountLoginService.deleteLogin(userId);
+                accountLoginService.deleteAllLogin(userId);
             } catch (Exception exception) {
                 exception.printStackTrace();
             }
