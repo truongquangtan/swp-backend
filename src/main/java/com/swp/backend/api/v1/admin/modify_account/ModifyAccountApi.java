@@ -46,7 +46,6 @@ public class ModifyAccountApi {
                 ErrorResponse errorResponse = ErrorResponse.builder().message("Can't disable account itself.").build();
                 return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
             }
-
             accountService.modifyUserInformation(accountId, request.getFullName(), request.getPhone(), request.getIsActive());
             ModifyAccountResponse response = new ModifyAccountResponse("Update user information successfully.");
             return ResponseEntity.ok(gson.toJson(response));

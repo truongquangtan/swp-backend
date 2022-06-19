@@ -149,7 +149,7 @@ public class AccountService {
         emailService.sendHtmlTemplateMessage(email, emailSubject, htmlBody);
     }
 
-    public void modifyUserInformation(String userId, String fullName, String phone, boolean isActive)
+    public void modifyUserInformation(String userId, String fullName, String phone, Boolean isActive)
     {
         AccountEntity account = accountRepository.findUserEntityByUserId(userId);
         if(account == null)
@@ -158,6 +158,11 @@ public class AccountService {
         }
         if(fullName != null) account.setFullName(fullName);
         if(phone != null) account.setPhone(phone);
+        if(isActive == null)
+        {
+            accountRepository.save(account);
+            return;
+        }
         if(isActive && !account.isActive())
         {
             account.setActive(true);
