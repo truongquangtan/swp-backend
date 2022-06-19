@@ -6,6 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.sql.Timestamp;
 
 @Getter
 @Setter
@@ -43,4 +44,7 @@ public class AccountEntity {
 
     @Column(name = "role_id")
     private int roleId;
+
+    @Column(name = "create_at")
+    private Timestamp createAt;
 }
