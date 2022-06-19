@@ -1,0 +1,59 @@
+package com.swp.backend.api.v1.admin.modify_account;
+
+import com.google.gson.Gson;
+import com.swp.backend.constance.RoleProperties;
+import com.swp.backend.entity.AccountEntity;
+import com.swp.backend.entity.AccountOtpEntity;
+import com.swp.backend.exception.ErrorResponse;
+import com.swp.backend.service.AccountService;
+import lombok.AllArgsConstructor;
+import lombok.Value;
+import org.springframework.dao.DataAccessException;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@AllArgsConstructor
+@RequestMapping(value = "api/v1/admin/accounts")
+public class ModifyAccountApi {
+    private Gson gson;
+    private AccountService accountService;
+
+
+    @PutMapping(value = "{accountId}")
+    public ResponseEntity<String> modifyAccount(@RequestBody (required = false)ModifyAccountRequest request, @PathVariable String accountId)
+    {
+        try {
+            //Case request empty body
+            if (request == null) {
+                ErrorResponse errorResponse = ErrorResponse.builder().message("Missing body.").build();
+                return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
+            }
+            //Case request body missing required username, password, email.
+            if (!request.isValid()) {
+                ErrorResponse errorResponse = ErrorResponse.builder().message("Request body incorrect format").build();
+                return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
+            }
+
+            //Call user-service's create new user method
+            accountService.modifyUserInformation(accountId, request.getFullName(), request.getPhone());
+            ModifyAccountResponse response = new ModifyAccountResponse("Update user information successfully.");
+            return ResponseEntity.ok(gson.toJson(response));
+        } catch (DataAccessException dataAccessException) {
+            if(dataAccessException.getMessage().contains("accounts_phone_key"))
+            {
+                ErrorResponse errorResponse = ErrorResponse.builder().message("Update failed. The phone is already used.").build();
+                return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
+            }
+            ErrorResponse errorResponse = ErrorResponse.builder().message(dataAccessException.getMessage()).build();
+            return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
+        } catch (RuntimeException exception) {
+            ErrorResponse errorResponse = ErrorResponse.builder().message(exception.getMessage()).build();
+            return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
+        }
+        catch (Exception exception) {
+            exception.printStackTrace();
+            return ResponseEntity.internalServerError().body("Server temp error.");
+        }
+    }
+}

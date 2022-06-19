@@ -147,6 +147,18 @@ public class AccountService {
         emailService.sendHtmlTemplateMessage(email, emailSubject, htmlBody);
     }
 
+    public void modifyUserInformation(String userId, String fullName, String phone)
+    {
+        AccountEntity account = accountRepository.findUserEntityByUserId(userId);
+        if(account == null)
+        {
+            throw new RuntimeException("Can not find account.");
+        }
+        if(fullName != null) account.setFullName(fullName);
+        if(phone != null) account.setPhone(phone);
+        accountRepository.save(account);
+    }
+
     public void updateUser(AccountEntity accountEntity) throws DataAccessException {
         accountRepository.save(accountEntity);
     }
