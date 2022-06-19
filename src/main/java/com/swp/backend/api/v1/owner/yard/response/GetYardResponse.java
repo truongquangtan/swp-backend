@@ -1,4 +1,4 @@
-package com.swp.backend.api.v1.owner.yard;
+package com.swp.backend.api.v1.owner.yard.response;
 
 import com.swp.backend.model.YardModel;
 import lombok.AllArgsConstructor;
