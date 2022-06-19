@@ -12,6 +12,7 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
 @NoArgsConstructor
 @Data
 public class ModifyAccountRequest {
+    public static final String PHONE_REGEX = "\\d{10}";
     private String fullName;
     private String phone;
 
@@ -20,7 +21,7 @@ public class ModifyAccountRequest {
 
     public boolean isValid()
     {
-        if((fullName != null && fullName.trim().equals("")) || (phone != null && phone.length() > 10))
+        if((fullName != null && fullName.trim().equals("")) || (phone != null && !phone.trim().equals("") && !phone.matches(PHONE_REGEX)))
         {
             return false;
         }

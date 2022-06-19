@@ -157,7 +157,11 @@ public class AccountService {
             throw new RuntimeException("Can not find account.");
         }
         if(fullName != null) account.setFullName(fullName);
-        if(phone != null) account.setPhone(phone);
+        if(phone != null)
+        {
+            if(phone.equals("")) phone = null;
+            account.setPhone(phone);
+        }
         if(isActive == null)
         {
             accountRepository.save(account);
