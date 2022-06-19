@@ -98,4 +98,20 @@ public class SlotCustomRepository {
             return null;
         }
     }
+
+    public String findOwnerIdFromSlotId(int slotId) {
+        try {
+            Query query = null;
+
+            String nativeQuery = "SELECT y.owner_id FROM yards y INNER JOIN sub_yards sub ON y.id = sub.parent_yard " +
+                                                                "INNER JOIN slots ON slots.ref_yard = sub.id " +
+                                                                "WHERE slots.id = ?1";
+
+            query = entityManager.createNativeQuery(nativeQuery);
+            query.setParameter(1, slotId);
+            return (String) query.getSingleResult();
+        } catch (NoResultException noResultException) {
+            return null;
+        }
+    }
 }

@@ -2,6 +2,7 @@ package com.swp.backend.service;
 
 import com.swp.backend.constance.BookingStatus;
 import com.swp.backend.entity.SlotEntity;
+import com.swp.backend.exception.InactivateProcessException;
 import com.swp.backend.model.Slot;
 import com.swp.backend.model.model_builder.ListSlotBuilder;
 import com.swp.backend.myrepository.SlotCustomRepository;
@@ -83,6 +84,19 @@ public class SlotService {
             }
         });
         return allSlots;
+    }
+
+    public void inactivateSlot(String ownerId, int slotId)
+    {
+        if(!slotCustomRepository.findOwnerIdFromSlotId(slotId).equals(ownerId))
+        {
+            throw new InactivateProcessException("The owner is not author of this slot.");
+        }
+
+        if(slotRepository.findSlotEntityByIdAndActive(slotId, false) != null)
+        {
+            throw new InactivateProcessException("The slot is already inactive.");
+        }
     }
 
     public boolean isSlotAvailableFromBooking(int slotId, Timestamp timestamp) {
