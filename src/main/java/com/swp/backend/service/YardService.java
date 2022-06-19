@@ -199,13 +199,13 @@ public class YardService {
 
 
     public GetYardResponse findAllYardByOwnerId(String ownerId, Integer ofSet, Integer page) throws DataAccessException {
-        int maxResult = yardRepository.countAllByOwnerId(ownerId);
+        int maxResult = yardRepository.countAllByOwnerIdAndDeleted(ownerId, false);
 
         int ofSetValue = (ofSet != null && ofSet > 0) ? ofSet : 10;
         int pageValue = (page != null && page >= 1) ? page : 1;
 
         Pageable pagination = PageRequest.of(pageValue - 1, ofSetValue);
-        List<YardEntity> result = yardRepository.findAllByOwnerId(ownerId, pagination);
+        List<YardEntity> result = yardRepository.findAllByOwnerIdAndDeleted(ownerId, false, pagination);
 
         List<YardModel> listYard = result.stream().map(yard -> {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
@@ -218,6 +218,7 @@ public class YardService {
                     .reference(yard.getReference())
                     .createdAt(yard.getCreateAt())
                     .address(yard.getAddress())
+                    .isActive(yard.isActive())
                     .build();
         }).collect(Collectors.toList());
 
