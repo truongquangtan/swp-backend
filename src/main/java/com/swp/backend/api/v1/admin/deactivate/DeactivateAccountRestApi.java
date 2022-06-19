@@ -24,6 +24,8 @@ public class DeactivateAccountRestApi {
     @PutMapping(value = "deactivate-account")
     public ResponseEntity<String> reactiveAccount(@RequestBody(required = false) DeactivateAccountRequest deactivateAccount) {
         try {
+            DeactivateAccountResponse response;
+
             if (deactivateAccount == null) {
                 ErrorResponse errorResponse = ErrorResponse.builder().message("Missing body").build();
                 return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
@@ -36,7 +38,8 @@ public class DeactivateAccountRestApi {
                 return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
             }
             if (accountService.deactivateAccount(deactivateAccount.getUserId())) {
-                return ResponseEntity.ok().body("Disable account success!");
+                response = new DeactivateAccountResponse("Disable account success!");
+                return ResponseEntity.ok().body(gson.toJson(response));
             } else {
                 ErrorResponse errorResponse = ErrorResponse.builder().message("Server busy disable account failed.").build();
                 return ResponseEntity.badRequest().body(gson.toJson(errorResponse));

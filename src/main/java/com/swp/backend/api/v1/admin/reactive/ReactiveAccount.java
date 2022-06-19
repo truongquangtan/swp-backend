@@ -26,9 +26,10 @@ public class ReactiveAccount {
                 return ResponseEntity.ok().body(gson.toJson(errorResponse));
             }
             if (accountService.reactivateAccount(reactiveAccount.getUserId())) {
-                return ResponseEntity.ok().body("Reactivate account success!");
+                ReactiveAccountResponse response = new ReactiveAccountResponse("Reactivate Account Successfully!");
+                return ResponseEntity.ok().body(gson.toJson(response));
             } else {
-                ErrorResponse errorResponse = ErrorResponse.builder().message("Reactive success.").build();
+                ErrorResponse errorResponse = ErrorResponse.builder().message("Cannot reactive account").build();
                 return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
             }
         } catch (DataAccessException dataAccessException) {
