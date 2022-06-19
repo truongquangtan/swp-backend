@@ -20,11 +20,6 @@ public class ModifyAccountRequest {
 
     public boolean isValid()
     {
-        if(fullName == null && phone == null)
-        {
-            return false;
-        }
-
         if((fullName != null && fullName.trim().equals("")) || (phone != null && phone.length() > 10))
         {
             return false;
