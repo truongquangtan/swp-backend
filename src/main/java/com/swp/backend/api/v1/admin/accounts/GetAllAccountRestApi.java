@@ -51,6 +51,10 @@ public class GetAllAccountRestApi {
 
     @PostMapping("all-account")
     public ResponseEntity<String> getAllAccountHasRoleUserOrOwnerByFilter(@RequestBody(required = false) GetAllAccountRequest request) {
+        if(request == null){
+            List<?> resulSearch = accountService.searchAccount(null, null, null, null, null, null, null);
+            return ResponseEntity.ok().body(gson.toJson(resulSearch));
+        }
         List<?> resulSearch = accountService.searchAccount(request.getItemsPerPage(), request.getPage(), request.getRole(), request.getKeyword(), request.getStatus(), request.getSortBy(), request.getSort());
         return ResponseEntity.ok().body(gson.toJson(resulSearch));
     }

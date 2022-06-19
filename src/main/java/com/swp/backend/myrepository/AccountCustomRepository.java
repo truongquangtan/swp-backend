@@ -28,15 +28,15 @@ public class AccountCustomRepository {
             String sortValue = (sort != null && sort.equalsIgnoreCase("DESC")) ? "DESC" : "ASC";
             return String.format(" ORDER BY (%s) %s", String.join(", "), sortValue);
         }
-        return null;
+        return "";
     }
 
     private String buildWhereClauseQuery(Integer role, String keyword, String status) {
-        String query = null;
+        String query = "";
         if (role != null || keyword != null || status != null) {
             query = "".concat(" WHERE");
         } else {
-            return null;
+            return "";
         }
 
         if (keyword != null && keyword.trim().length() > 0) {
