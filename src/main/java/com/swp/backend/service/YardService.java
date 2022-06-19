@@ -222,4 +222,14 @@ public class YardService {
         return GetYardResponse.builder().page(pageValue).maxResult(maxResult).listYard(listYard).build();
     }
 
+    @Transactional
+    public int inactiveAllYardsOfOwner(String ownerId)
+    {
+        return yardCustomRepository.inactivateAllYardsOfOwner(ownerId);
+    }
+    @Transactional
+    public int reactiveAllYardsOfOwner(String ownerId)
+    {
+        return yardCustomRepository.reactivateAllYardsOfOwner(ownerId);
+    }
 }

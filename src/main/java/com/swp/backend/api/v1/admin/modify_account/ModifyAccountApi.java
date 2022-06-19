@@ -6,10 +6,13 @@ import com.swp.backend.entity.AccountEntity;
 import com.swp.backend.entity.AccountOtpEntity;
 import com.swp.backend.exception.ErrorResponse;
 import com.swp.backend.service.AccountService;
+import com.swp.backend.service.SecurityContextService;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 public class ModifyAccountApi {
     private Gson gson;
     private AccountService accountService;
+    private SecurityContextService securityContextService;
 
 
     @PutMapping(value = "{accountId}")
@@ -35,8 +39,15 @@ public class ModifyAccountApi {
                 return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
             }
 
-            //Call user-service's create new user method
-            accountService.modifyUserInformation(accountId, request.getFullName(), request.getPhone());
+            SecurityContext context = SecurityContextHolder.getContext();
+            String adminId = securityContextService.extractUsernameFromContext(context);
+
+            if (adminId.equals(accountId) && request.getIsActive() == false) {
+                ErrorResponse errorResponse = ErrorResponse.builder().message("Can't disable account itself.").build();
+                return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
+            }
+
+            accountService.modifyUserInformation(accountId, request.getFullName(), request.getPhone(), request.getIsActive());
             ModifyAccountResponse response = new ModifyAccountResponse("Update user information successfully.");
             return ResponseEntity.ok(gson.toJson(response));
         } catch (DataAccessException dataAccessException) {

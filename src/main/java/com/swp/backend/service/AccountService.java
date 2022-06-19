@@ -35,6 +35,7 @@ public class AccountService {
     private final EmailService emailService;
     private final AccountLoginService accountLoginService;
     private final RoleRepository roleRepository;
+    private final YardService yardService;
 
     private final AccountCustomRepository accountCustomRepository;
 
@@ -112,6 +113,7 @@ public class AccountService {
                     .phone(phone)
                     .password(passwordEncoder.encode(password))
                     .roleId(roleEntity.getId())
+                    .createAt(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE))
                     .isConfirmed(true)
                     .isActive(true)
                     .build();
@@ -147,7 +149,7 @@ public class AccountService {
         emailService.sendHtmlTemplateMessage(email, emailSubject, htmlBody);
     }
 
-    public void modifyUserInformation(String userId, String fullName, String phone)
+    public void modifyUserInformation(String userId, String fullName, String phone, boolean isActive)
     {
         AccountEntity account = accountRepository.findUserEntityByUserId(userId);
         if(account == null)
@@ -156,6 +158,29 @@ public class AccountService {
         }
         if(fullName != null) account.setFullName(fullName);
         if(phone != null) account.setPhone(phone);
+        if(isActive && !account.isActive())
+        {
+            account.setActive(true);
+            new Thread(() -> {
+                try {
+                    yardService.reactiveAllYardsOfOwner(userId);
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                }
+            }).start();
+        }
+        else if(!isActive && account.isActive())
+        {
+            account.setActive(false);
+            new Thread(() -> {
+                try {
+                    accountLoginService.deleteAllLogin(userId);
+                    yardService.inactiveAllYardsOfOwner(userId);
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                }
+            }).start();
+        }
         accountRepository.save(account);
     }
 
