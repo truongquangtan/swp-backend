@@ -1,4 +1,4 @@
-package com.swp.backend.api.v1.admin.reactive_account;
+package com.swp.backend.api.v1.admin.reactive;
 
 import com.google.gson.Gson;
 import com.swp.backend.exception.ErrorResponse;

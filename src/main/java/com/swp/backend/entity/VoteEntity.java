@@ -31,5 +31,7 @@ public class VoteEntity {
     private Timestamp date = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
     @Column(name = "is_deleted")
     @Builder.Default
-    private boolean isDeleted = false;
+    private boolean deleted = false;
+    @Column(name = "user_id")
+    private String userId;
 }

@@ -1,4 +1,4 @@
-package com.swp.backend.api.v1.admin.reactive_account;
+package com.swp.backend.api.v1.admin.reactive;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

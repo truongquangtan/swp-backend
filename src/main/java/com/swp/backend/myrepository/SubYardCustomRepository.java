@@ -1,6 +1,7 @@
 package com.swp.backend.myrepository;
 
 import com.swp.backend.entity.SubYardEntity;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -8,35 +9,38 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 public class SubYardCustomRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public List<?> getAllSubYardByBigYard(String bigYardId) {
-        Query query = null;
-
+    public List<SubYardEntity> getAllSubYardByBigYard(String bigYardId) {
         String nativeQuery = "SELECT s.*" +
                 " FROM sub_yards s INNER JOIN yards y ON s.parent_yard = y.id" +
                 " WHERE s.parent_yard = ?1" +
                 " AND s.is_active = true" +
                 " AND y.is_active = true" +
                 " AND y.is_deleted = false";
+        try {
 
-        query = entityManager.createNativeQuery(nativeQuery, SubYardEntity.class);
-        query.setParameter(1, bigYardId);
-
-        if (query != null) {
-            return query.getResultList();
-        } else {
+            Query query = entityManager.createNativeQuery(nativeQuery, SubYardEntity.class);
+            query.setParameter(1, bigYardId);
+            List<?> result = query.getResultList();
+            if (result == null) {
+                return null;
+            }
+            return result.stream().map(subYard -> (subYard instanceof SubYardEntity) ? (SubYardEntity) subYard : null).collect(Collectors.toList());
+        } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
     }
 
     public String getBigYardIdFromSubYard(String subYardId) {
         try {
-            Query query = null;
+            Query query;
 
             String nativeQuery = "SELECT s.parent_yard" +
                     " FROM sub_yards s" +
@@ -44,11 +48,7 @@ public class SubYardCustomRepository {
 
             query = entityManager.createNativeQuery(nativeQuery);
             query.setParameter(1, subYardId);
-
-            if (query != null) {
-                return (String) query.getSingleResult();
-            }
-            return null;
+            return (String) query.getSingleResult();
         } catch (NoResultException noResultException) {
             return null;
         }
@@ -66,6 +66,28 @@ public class SubYardCustomRepository {
             query.setParameter(1, subYardId);
             return (String) query.getSingleResult();
         } catch (NoResultException noResultException) {
+            return null;
+        }
+    }
+
+    public List<SubYardEntity> findAllRelativeSubYardBySubYardId(String subYardId) {
+        List<SubYardEntity> subYardEntityList = null;
+        try {
+            String nativeQuery = "SELECT sub_yards.* FROM sub_yards WHERE sub_yards.parent_yard IN (SELECT parent_yard FROM sub_yards WHERE id LIKE ?)";
+            Query query = entityManager.createNativeQuery(nativeQuery, SubYardEntity.class);
+            query.setParameter(1, subYardId);
+            List<?> result = query.getResultList();
+            if (result != null) {
+                subYardEntityList = result.stream().map(subYard -> {
+                    if (subYard instanceof SubYardEntity) {
+                        return (SubYardEntity) subYard;
+                    }
+                    return null;
+                }).collect(Collectors.toList());
+            }
+            return subYardEntityList;
+        } catch (DataAccessException dataAccessException) {
+            dataAccessException.printStackTrace();
             return null;
         }
     }

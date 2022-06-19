@@ -16,7 +16,7 @@ public class BookingRequest {
 
     public boolean isValid() {
         for (BookingModel bookingModel : bookingList) {
-            if (bookingModel.isValid() == false) {
+            if (!bookingModel.isValid()) {
                 return false;
             }
         }

@@ -1,5 +1,7 @@
 package com.swp.backend.service;
 
+import com.swp.backend.api.v1.owner.yard.GetYardResponse;
+
 import com.swp.backend.api.v1.owner.yard.SubYardRequest;
 import com.swp.backend.api.v1.owner.yard.YardRequest;
 import com.swp.backend.api.v1.yard.search.YardResponse;
@@ -10,14 +12,14 @@ import com.swp.backend.repository.*;
 import com.swp.backend.utils.DateHelper;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,28 +30,29 @@ public class YardService {
     private SubYardRepository subYardRepository;
     private DistrictRepository districtRepository;
     private ProvinceRepository provinceRepository;
-
     private YardPictureRepository yardPictureRepository;
     private YardCustomRepository yardCustomRepository;
 
     @Transactional(rollbackFor = DataAccessException.class)
-    public void createNewYard(String userId, YardRequest yardRequest) throws DataAccessException {
+    public void createNewYard(String userId, YardRequest createYardModel) throws DataAccessException {
         YardEntity parentYard = YardEntity.builder()
                 .id(UUID.randomUUID().toString())
                 .ownerId(userId)
-                .name(yardRequest.getName())
-                .address(yardRequest.getAddress())
+                .name(createYardModel.getName())
+                .address(createYardModel.getAddress())
                 .active(true)
-                .districtId(yardRequest.getDistrictId())
+                .districtId(createYardModel.getDistrictId())
                 .createAt(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE))
-                .openAt(LocalTime.parse(yardRequest.getOpenAt()))
-                .closeAt(LocalTime.parse(yardRequest.getCloseAt()))
-                .slotDuration(Integer.parseInt(yardRequest.getSlotDuration()))
+                .openAt(LocalTime.parse(createYardModel.getOpenAt()))
+                .closeAt(LocalTime.parse(createYardModel.getCloseAt()))
+                .slotDuration(Integer.parseInt(createYardModel.getSlotDuration()))
                 .build();
         //Save parent yard
         yardRepository.save(parentYard);
+
         //Save sub-yard
-        List<SubYardRequest> subYardList = yardRequest.getSubYards();
+        List<SubYardRequest> subYardList = createYardModel.getSubYards();
+
         if (subYardList != null && subYardList.size() > 0) {
             List<SubYardEntity> subYardEntityList = new ArrayList<>();
             List<SlotEntity> slotEntityList = new ArrayList<>();
@@ -59,7 +62,7 @@ public class YardService {
                         .id(subYardId)
                         .name(subYard.getName())
                         .parentYard(parentYard.getId())
-                        .typeYard(Integer.parseInt(subYard.getType()))
+                        .typeYard(subYard.getType())
                         .active(true)
                         .createAt(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE))
                         .build();
@@ -121,7 +124,7 @@ public class YardService {
 
     public boolean isAvailableYard(String yardId) {
         YardEntity yard = yardRepository.findYardEntityByIdAndActiveAndDeleted(yardId, true, false);
-        return yard != null;
+        return yard == null;
     }
 
     public YardModel getYardModelFromYardId(String yardId) {
@@ -157,6 +160,7 @@ public class YardService {
         yardRepository.save(yard);
     }
 
+
     public String getYardFullAddress(String yardId)
     {
         YardEntity yard = getYardById(yardId);
@@ -165,4 +169,30 @@ public class YardService {
         String province = provinceRepository.findDistinctById(districtEntity.getProvinceId()).getProvinceName();
         return yard.getAddress() + ", " + district + ", " + province;
     }
+
+
+    public GetYardResponse findAllYardByOwnerId(String ownerId, Integer ofSet, Integer page) throws DataAccessException{
+        int maxResult = yardRepository.countAllByOwnerId(ownerId);
+
+        int ofSetValue = (ofSet != null && ofSet > 0) ? ofSet : 10;
+        int pageValue = (page != null && page >= 1) ? page : 1;
+
+        Pageable pagination = PageRequest.of(pageValue - 1, ofSetValue);
+        List<YardEntity> result = yardRepository.findAllByOwnerId(ownerId, pagination);
+
+        List<YardModel>  listYard = result.parallelStream().map(yard -> {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+            return YardModel.builder()
+                    .id(yard.getId())
+                    .address(yard.getAddress())
+                    .openAt(yard.getOpenAt().format(formatter))
+                    .closeAt(yard.getCloseAt().format(formatter))
+                    .reference(yard.getReference())
+                    .address(yard.getAddress())
+                    .build();
+        }).collect(Collectors.toList());
+
+        return GetYardResponse.builder().page(pageValue).maxResult(maxResult).listYard(listYard).build();
+    }
+
 }

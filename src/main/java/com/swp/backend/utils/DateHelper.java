@@ -75,8 +75,7 @@ public class DateHelper {
         Date date = new Date(timestamp.getTime());
         SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
         String formattedLocalTime = format.format(date);
-        LocalTime localTime = LocalTime.parse(formattedLocalTime);
-        return localTime;
+        return LocalTime.parse(formattedLocalTime);
     }
 
     public static Timestamp parseTimestampAtZone(String dateInput, String zone) {

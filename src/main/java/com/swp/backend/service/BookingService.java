@@ -3,9 +3,13 @@ package com.swp.backend.service;
 import com.swp.backend.api.v1.book.booking.BookingResponse;
 import com.swp.backend.constance.BookingStatus;
 import com.swp.backend.entity.BookingEntity;
+import com.swp.backend.entity.SlotEntity;
 import com.swp.backend.model.BookingModel;
 import com.swp.backend.myrepository.BookingCustomRepository;
 import com.swp.backend.repository.BookingRepository;
+import com.swp.backend.repository.SlotRepository;
+import com.swp.backend.repository.SubYardRepository;
+import com.swp.backend.repository.YardRepository;
 import com.swp.backend.utils.DateHelper;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +31,9 @@ public class BookingService {
     private SubYardService subYardService;
     private BookingRepository bookingRepository;
     private BookingCustomRepository bookingCustomRepository;
+    private YardRepository yardRepository;
+    private SlotRepository slotRepository;
+    private SubYardRepository subYardRepository;
 
     public BookingEntity book(String userId, BookingModel bookingModel) {
         String errorNote = "";
@@ -103,7 +110,7 @@ public class BookingService {
         int startIndex = itemsPerPage*(page-1);
         int maxIndex = incomingMatches.size() - 1;
         int endIndex = startIndex + itemsPerPage - 1;
-        endIndex = endIndex <= maxIndex ? endIndex : maxIndex;
+        endIndex = Math.min(endIndex, maxIndex);
 
         if(startIndex > endIndex) return result;
 
@@ -129,8 +136,7 @@ public class BookingService {
         if(queriedList != null)
         {
             result = queriedList.stream().map(queriedBooking -> {
-                BookingEntity bookingEntity = (BookingEntity) queriedBooking;
-                return bookingEntity;
+                return (BookingEntity) queriedBooking;
             }).collect(Collectors.toList());
         }
         return result;
@@ -143,7 +149,7 @@ public class BookingService {
         int startIndex = itemsPerPage*(page-1);
         int endIndex = startIndex + itemsPerPage - 1;
         int maxIndex = countAllHistoryBookingsOfUser(userId) - 1;
-        endIndex = endIndex <= maxIndex ? endIndex : maxIndex;
+        endIndex = Math.min(endIndex, maxIndex);
 
         if(startIndex > endIndex) return result;
         result = bookingCustomRepository.getOrderedBookingEntitiesOfUserByPage(userId, startIndex, endIndex);
@@ -161,5 +167,13 @@ public class BookingService {
     public int countAllIncomingMatchesOfUser(String userId)
     {
         return getIncomingMatches(userId).size();
+    }
+
+    public List<BookingEntity> getAllIncomeSlotByOwnerId(String ownerId) {
+        List<String> listYardId = yardRepository.getAllYardIdByOwnerId(ownerId);
+        List<String> listSubYardId = subYardRepository.getAllSubYardIdByListBigYardId(listYardId);
+        List<SlotEntity> listSlot = slotRepository.getAllSlotsByListSubYardId(listSubYardId);
+        List<Integer> listSlotId = listSlot.parallelStream().map(SlotEntity::getId).collect(Collectors.toList());
+        return bookingRepository.getListSlotExitsBookingReference(listSlotId);
     }
 }

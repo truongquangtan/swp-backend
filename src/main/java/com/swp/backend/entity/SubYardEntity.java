@@ -28,5 +28,6 @@ public class SubYardEntity {
     @Column(name = "create_at")
     private Timestamp createAt;
     @Column(name = "is_active")
-    private boolean active;
+    @Builder.Default
+    private boolean active = true;
 }

@@ -10,7 +10,7 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 public class RoleService {
-    RoleRepository roleRepository;
+    private RoleRepository roleRepository;
 
     public RoleEntity getRoleById(int id) {
         return roleRepository.findRoleEntityById(id);
@@ -22,5 +22,9 @@ public class RoleService {
 
     public List<RoleEntity> getAllRole() {
         return roleRepository.findAll();
+    }
+
+    public List<RoleEntity> getRoleByListRoleName(List<String> roleNames) {
+        return roleRepository.findRoleEntitiesByRoleNameIn(roleNames);
     }
 }

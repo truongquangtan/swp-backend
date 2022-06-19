@@ -39,7 +39,7 @@ public class GetSlotApi {
 
             //BigYard not available filter
             String bigYardId = subYardService.getBigYardIdFromSubYard(subYardId);
-            if (!yardService.isAvailableYard(bigYardId)) {
+            if (yardService.isAvailableYard(bigYardId)) {
                 response = new SlotResponse("The Yard entity of this sub yard is not active or deleted.", null);
                 return ResponseEntity.badRequest().body(gson.toJson(response));
             }

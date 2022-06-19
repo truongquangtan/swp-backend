@@ -5,7 +5,8 @@ import lombok.Data;
 
 @Data
 @Builder
-public class PostVoteRequest {
+public class VoteRequest {
+    private String postId;
     private String subYarId;
     private int score;
     private String comment;

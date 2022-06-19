@@ -1,4 +1,4 @@
-package com.swp.backend.api.v1.admin.invite_owner;
+package com.swp.backend.api.v1.admin.invite;
 
 import com.google.gson.Gson;
 import com.swp.backend.entity.AccountEntity;
@@ -49,7 +49,8 @@ public class InviteOwnerApi {
             InviteOwnerResponse response = InviteOwnerResponse.builder()
                     .message("Invite admin success")
                     .email(accountEntity.getEmail())
-                    .password(password)
+                    .phone(accountEntity.getPhone())
+                    .fullName(accountEntity.getFullName())
                     .build();
 
             return ResponseEntity.ok().body(gson.toJson(response));

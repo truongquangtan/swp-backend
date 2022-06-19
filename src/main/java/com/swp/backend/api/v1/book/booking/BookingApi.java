@@ -50,7 +50,7 @@ public class BookingApi {
         }
 
         //BigYard not available filter
-        if (!yardService.isAvailableYard(yardId)) {
+        if (yardService.isAvailableYard(yardId)) {
             response = new BookingResponse("The Yard entity of this slots is not active or deleted.", true, null);
             return ResponseEntity.badRequest().body(gson.toJson(response));
         }

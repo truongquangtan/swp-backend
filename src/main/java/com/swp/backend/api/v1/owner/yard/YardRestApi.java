@@ -7,20 +7,17 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping(value = "/api/v1/owner")
+@RequestMapping(value = "/api/v1/owners")
 public class YardRestApi {
-    YardService yardService;
-    SecurityContextService securityContextService;
-    Gson gson;
+    private YardService yardService;
+    private SecurityContextService securityContextService;
+    private Gson gson;
 
-    @PostMapping(value = "add-yard")
+    @PostMapping(value = "me/yards")
     public ResponseEntity<String> createYard(@RequestBody(required = false) YardRequest yardRequest) {
         if (yardRequest == null) {
             return ResponseEntity.badRequest().body("Missing body");
@@ -34,6 +31,22 @@ public class YardRestApi {
             e.printStackTrace();
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
-
     }
+
+    @PostMapping(value = "{ownerId}/yards/search")
+    public ResponseEntity<String> showAllYard(@RequestBody(required = false) GetYardRequest getYardRequest, @PathVariable String ownerId) {
+        try {
+            GetYardResponse response;
+            if(getYardRequest == null){
+                response = yardService.findAllYardByOwnerId(ownerId, null, null);
+            }else {
+                response = yardService.findAllYardByOwnerId(ownerId, getYardRequest.getItemsPerPage(), getYardRequest.getPage());
+            }
+            return ResponseEntity.ok().body(gson.toJson(response));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+
 }
