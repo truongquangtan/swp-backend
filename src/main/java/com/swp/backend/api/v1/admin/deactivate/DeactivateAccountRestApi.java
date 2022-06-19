@@ -38,7 +38,7 @@ public class DeactivateAccountRestApi {
                 return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
             }
             if (accountService.deactivateAccount(deactivateAccount.getUserId())) {
-                response = new DeactivateAccountResponse("Disable account success!");
+                response = new DeactivateAccountResponse("Disable account successfully.");
                 return ResponseEntity.ok().body(gson.toJson(response));
             } else {
                 ErrorResponse errorResponse = ErrorResponse.builder().message("Server busy disable account failed.").build();
