@@ -17,13 +17,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping(value = "/api/v1/owners")
+@RequestMapping(value = "/api/v1/owners/me")
 public class YardRestApi {
     private YardService yardService;
     private SecurityContextService securityContextService;
     private Gson gson;
 
-    @PostMapping(value = "me/yards")
+    @PostMapping(value = "yards")
     public ResponseEntity<String> createYard(@RequestParam(name = "yard") String yard, @RequestParam(name = "images") MultipartFile[] images) {
         YardRequest yardRequest;
         try {
@@ -48,10 +48,12 @@ public class YardRestApi {
         }
     }
 
-    @PostMapping(value = "{ownerId}/yards/search")
-    public ResponseEntity<String> showAllYard(@RequestBody(required = false) GetYardRequest getYardRequest, @PathVariable String ownerId) {
+    @PostMapping(value = "yards/search")
+    public ResponseEntity<String> showAllYard(@RequestBody(required = false) GetYardRequest getYardRequest) {
         try {
             GetYardResponse response;
+            SecurityContext securityContext = SecurityContextHolder.getContext();
+            String ownerId = securityContextService.extractUsernameFromContext(securityContext);
             if (getYardRequest == null) {
                 response = yardService.findAllYardByOwnerId(ownerId, null, null);
             } else {
