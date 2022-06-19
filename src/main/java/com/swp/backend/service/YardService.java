@@ -1,8 +1,9 @@
 package com.swp.backend.service;
 
-import com.swp.backend.api.v1.owner.yard.GetYardResponse;
-import com.swp.backend.api.v1.owner.yard.SubYardRequest;
-import com.swp.backend.api.v1.owner.yard.YardRequest;
+import com.google.gson.Gson;
+import com.swp.backend.api.v1.owner.yard.request.SubYardRequest;
+import com.swp.backend.api.v1.owner.yard.request.YardRequest;
+import com.swp.backend.api.v1.owner.yard.response.GetYardResponse;
 import com.swp.backend.api.v1.yard.search.YardResponse;
 import com.swp.backend.entity.*;
 import com.swp.backend.model.YardModel;
@@ -15,12 +16,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,11 +33,14 @@ public class YardService {
     private ProvinceRepository provinceRepository;
     private YardPictureRepository yardPictureRepository;
     private YardCustomRepository yardCustomRepository;
+    private FirebaseStoreService firebaseStoreService;
+    private TypeYardRepository typeYardRepository;
 
     @Transactional(rollbackFor = DataAccessException.class)
-    public void createNewYard(String userId, YardRequest createYardModel) throws DataAccessException {
+    public void createNewYard(String userId, YardRequest createYardModel, MultipartFile[] images) throws DataAccessException {
+        final String parentYardId = UUID.randomUUID().toString();
         YardEntity parentYard = YardEntity.builder()
-                .id(UUID.randomUUID().toString())
+                .id(parentYardId)
                 .ownerId(userId)
                 .name(createYardModel.getName())
                 .address(createYardModel.getAddress())
@@ -57,16 +60,23 @@ public class YardService {
         if (subYardList != null && subYardList.size() > 0) {
             List<SubYardEntity> subYardEntityList = new ArrayList<>();
             List<SlotEntity> slotEntityList = new ArrayList<>();
+            List<TypeYard> typeList = typeYardRepository.findAll();
+            HashMap<String, Integer> typeMapper = new HashMap<>();
+            typeList.forEach(typeYard -> {
+                typeMapper.put(typeYard.getTypeName().toUpperCase(), typeYard.getId());
+            });
             subYardList.forEach(subYard -> {
                 String subYardId = UUID.randomUUID().toString();
+                int type = typeMapper.get(subYard.getType() == 3 ? "3 VS 3" : "5 VS 5");
                 SubYardEntity subYardEntity = SubYardEntity.builder()
                         .id(subYardId)
                         .name(subYard.getName())
                         .parentYard(parentYard.getId())
-                        .typeYard(subYard.getType())
+                        .typeYard(type)
                         .active(true)
                         .createAt(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE))
                         .build();
+
                 subYardEntityList.add(subYardEntity);
                 subYard.getSlots().forEach(slot -> {
                     SlotEntity slotEntity = SlotEntity.builder()
@@ -81,6 +91,22 @@ public class YardService {
             });
             subYardRepository.saveAll(subYardEntityList);
             slotRepository.saveAll(slotEntityList);
+        }
+        if (images != null && images.length > 0) {
+            List<YardPictureEntity> listImage  = Arrays.stream(images).parallel().map(image -> {
+                String url = null;
+                try {
+                    url = firebaseStoreService.uploadFile(image);
+                }catch (Exception exception){
+                    exception.printStackTrace();
+                }
+               return YardPictureEntity.builder().image(url).refId(parentYardId).build();
+            }).collect(Collectors.toList());
+            if (listImage.size() > 0) {
+                new Thread(() -> {
+                    yardPictureRepository.saveAll(listImage);
+                }).start();
+            }
         }
     }
 
@@ -180,7 +206,7 @@ public class YardService {
         Pageable pagination = PageRequest.of(pageValue - 1, ofSetValue);
         List<YardEntity> result = yardRepository.findAllByOwnerId(ownerId, pagination);
 
-        List<YardModel> listYard = result.parallelStream().map(yard -> {
+        List<YardModel> listYard = result.stream().map(yard -> {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
             return YardModel.builder()
                     .id(yard.getId())
@@ -188,6 +214,7 @@ public class YardService {
                     .openAt(yard.getOpenAt().format(formatter))
                     .closeAt(yard.getCloseAt().format(formatter))
                     .reference(yard.getReference())
+                    .createdAt(yard.getCreateAt())
                     .address(yard.getAddress())
                     .build();
         }).collect(Collectors.toList());

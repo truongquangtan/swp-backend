@@ -1,4 +1,4 @@
-package com.swp.backend.api.v1.owner.yard;
+package com.swp.backend.api.v1.owner.yard.request;
 
 
 import lombok.Data;
