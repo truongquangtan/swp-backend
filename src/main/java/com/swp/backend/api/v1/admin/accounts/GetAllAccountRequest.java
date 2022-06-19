@@ -10,12 +10,15 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GetAllAccountRequest {
-    private Integer itemsPerPage;
-    private Integer page;
-    private Integer role;
+    public static final String NAME_ASC = "+name";
+    public static final String NAME_DESC = "-name";
+
+    private int itemsPerPage;
+    private int page;
+    private int role;
     private String keyword;
     private String status;
     private String date;
-    private List<String> sortBy;
+    private String sortBy;
     private String sort;
 }

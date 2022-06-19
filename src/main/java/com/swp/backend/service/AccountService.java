@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -145,8 +146,7 @@ public class AccountService {
         accountRepository.save(accountEntity);
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
-    public List<AccountModel> getAllAccountHasRoleUser() {
+    public List<AccountModel> getAllAccountHasRoleUserByPage(int page, int itemsPerPage) {
         List<RoleEntity> roleEntities = roleService.getAllRole();
         if (roleEntities == null || roleEntities.size() == 0) {
             return null;
@@ -154,9 +154,16 @@ public class AccountService {
         HashMap<Integer, String> roleMap = new HashMap<>();
         roleEntities.forEach(role -> roleMap.put(role.getId(), role.getRoleName()));
 
-        List<AccountEntity> accounts = accountRepository.findAccountEntitiesByRoleIdOrRoleId(1, 3);
+        int startIndex = itemsPerPage * (page - 1);
+        int endIndex = startIndex + itemsPerPage - 1;
+        int maxIndex = accountCustomRepository.countAllUserOrOwnerAccounts() - 1;
+        endIndex = Math.min(endIndex, maxIndex);
+
+        if (startIndex > endIndex) return new ArrayList<>();
+
+        List<AccountEntity> accounts = accountCustomRepository.getAllUserOrOwnerAccountsByPage(startIndex, endIndex);
         if (accounts == null || accounts.size() == 0) {
-            return null;
+            return new ArrayList<>();
         }
         return accounts.stream().map(account -> AccountModel.builder()
                 .userId(account.getUserId())

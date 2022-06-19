@@ -6,13 +6,67 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import java.math.BigInteger;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 public class AccountCustomRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
+    public List<AccountEntity> getAllUserOrOwnerAccountsByPage(int startIndex, int endIndex)
+    {
+        Query query = null;
+        try
+        {
+            String nativeQuery = "SELECT * FROM accounts WHERE role_id = 1 OR role_id = 3";
+
+            query = entityManager.createNativeQuery(nativeQuery, AccountEntity.class);
+            query.setFirstResult(startIndex);
+            query.setMaxResults(endIndex - startIndex + 1);
+
+            List<?> queriedList = query.getResultList();
+
+            if(queriedList == null)
+            {
+                return null;
+            }
+
+            List<AccountEntity> result = queriedList.stream().map(queriedObject -> {
+                return (AccountEntity) queriedObject;
+            }).collect(Collectors.toList());
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            return null;
+        }
+    }
+
+    public int countAllUserOrOwnerAccounts()
+    {
+        Query query = null;
+
+        try
+        {
+            String nativeQuery = "SELECT count(*) FROM accounts WHERE role_id = 1 OR role_id = 3";
+
+            query = entityManager.createNativeQuery(nativeQuery);
+
+            Object result = query.getSingleResult();
+            if(result == null)
+            {
+                return 0;
+            }
+            return ((BigInteger) result).intValue();
+        }
+        catch (Exception ex)
+        {
+            return 0;
+        }
+    }
 
     public List<?> searchAccount(Integer itemsPerPage, Integer page, Integer role, String keyword, String status, List<String> sortBy, String sort) {
         String queryString = "SELECT * FROM accounts";

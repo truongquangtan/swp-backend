@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -20,29 +21,50 @@ import java.util.stream.Collectors;
 @RequestMapping(value = "api/v1/admin")
 @AllArgsConstructor
 public class GetAllAccountRestApi {
+    public static final int PAGE_DEFAULT = 1;
+    public static final int ITEMS_PER_PAGE_DEFAULT = 8;
+
     private AccountService accountService;
     private Gson gson;
     private RoleService roleService;
 
     @GetMapping("all-account")
-    public ResponseEntity<String> getAllUserHasRoleUserOrOwner() {
+    public ResponseEntity<String> getAllUserHasRoleUserOrOwner(@RequestBody (required = false) GetAllAccountRequest request) {
+        int page = PAGE_DEFAULT;
+        int itemsPerPage = ITEMS_PER_PAGE_DEFAULT;
+
+        if(request != null)
+        {
+            page = request.getPage() != 0 ? request.getPage() : PAGE_DEFAULT;
+            itemsPerPage = request.getItemsPerPage() != 0 ? request.getItemsPerPage() : ITEMS_PER_PAGE_DEFAULT;
+        }
+
         try {
-            Future<List<AccountModel>> accounts;
-            Future<Integer> maxResult;
-            ExecutorService executorService = Executors.newCachedThreadPool();
-            accounts = executorService.submit(() -> accountService.getAllAccountHasRoleUser());
-            maxResult = executorService.submit(() -> accountService.countAllAccountHasRoleUser());
-            executorService.shutdown();
-            boolean finished = executorService.awaitTermination(2, TimeUnit.MINUTES);
-            if (finished) {
-                GetAllAccountResponse response = GetAllAccountResponse.builder()
-                        .accounts(accounts.get())
-                        .maxResult(maxResult.get())
-                        .build();
-                return ResponseEntity.ok().body(gson.toJson(response));
-            } else {
-                return ResponseEntity.internalServerError().build();
-            }
+//            Future<List<AccountModel>> accounts;
+//            Future<Integer> maxResult;
+//            ExecutorService executorService = Executors.newCachedThreadPool();
+//            accounts = executorService.submit(() -> accountService.getAllAccountHasRoleUserByPage(page, itemsPerPage));
+//            maxResult = executorService.submit(() -> accountService.countAllAccountHasRoleUser());
+//            executorService.shutdown();
+//            boolean finished = executorService.awaitTermination(2, TimeUnit.MINUTES);
+//            if (finished) {
+//                GetAllAccountResponse response = GetAllAccountResponse.builder()
+//                        .accounts(accounts.get())
+//                        .maxResult(maxResult.get())
+//                        .build();
+//                return ResponseEntity.ok().body(gson.toJson(response));
+//        } else {
+//            return ResponseEntity.internalServerError().build();
+//        }
+            GetAllAccountResponse response = GetAllAccountResponse.builder()
+                    .accounts(accountService.getAllAccountHasRoleUserByPage(page, itemsPerPage))
+                    .maxResult(accountService.countAllAccountHasRoleUser())
+                    .page(page)
+                    .build();
+
+            return  ResponseEntity.ok().body(gson.toJson(response));
+
+
         } catch (Exception exception) {
             exception.printStackTrace();
             return ResponseEntity.internalServerError().build();
@@ -55,7 +77,7 @@ public class GetAllAccountRestApi {
             List<?> resulSearch = accountService.searchAccount(null, null, null, null, null, null, null);
             return ResponseEntity.ok().body(gson.toJson(resulSearch));
         }
-        List<?> resulSearch = accountService.searchAccount(request.getItemsPerPage(), request.getPage(), request.getRole(), request.getKeyword(), request.getStatus(), request.getSortBy(), request.getSort());
+        List<?> resulSearch = accountService.searchAccount(request.getItemsPerPage(), request.getPage(), request.getRole(), request.getKeyword(), request.getStatus(), new ArrayList<>(), request.getSort());
         return ResponseEntity.ok().body(gson.toJson(resulSearch));
     }
 
