@@ -2,7 +2,6 @@ package com.swp.backend.api.v1.admin.accounts;
 
 import com.google.gson.Gson;
 import com.swp.backend.entity.RoleEntity;
-import com.swp.backend.model.AccountModel;
 import com.swp.backend.service.AccountService;
 import com.swp.backend.service.RoleService;
 import lombok.AllArgsConstructor;
@@ -29,12 +28,11 @@ public class GetAllAccountRestApi {
     private RoleService roleService;
 
     @PostMapping("all-accounts")
-    public ResponseEntity<String> getAllUserHasRoleUserOrOwner(@RequestBody (required = false) GetAllAccountRequest request) {
+    public ResponseEntity<String> getAllUserHasRoleUserOrOwner(@RequestBody(required = false) GetAllAccountRequest request) {
         int page = PAGE_DEFAULT;
         int itemsPerPage = ITEMS_PER_PAGE_DEFAULT;
 
-        if(request != null)
-        {
+        if (request != null) {
             page = request.getPage() != 0 ? request.getPage() : PAGE_DEFAULT;
             itemsPerPage = request.getItemsPerPage() != 0 ? request.getItemsPerPage() : ITEMS_PER_PAGE_DEFAULT;
         }
@@ -46,7 +44,7 @@ public class GetAllAccountRestApi {
                     .page(page)
                     .build();
 
-            return  ResponseEntity.ok().body(gson.toJson(response));
+            return ResponseEntity.ok().body(gson.toJson(response));
 
         } catch (Exception exception) {
             exception.printStackTrace();
@@ -56,7 +54,7 @@ public class GetAllAccountRestApi {
 
     @PostMapping("/filter/all-accounts")
     public ResponseEntity<String> getAllAccountHasRoleUserOrOwnerByFilter(@RequestBody(required = false) GetAllAccountRequest request) {
-        if(request == null){
+        if (request == null) {
             List<?> resulSearch = accountService.searchAccount(null, null, null, null, null, null, null);
             return ResponseEntity.ok().body(gson.toJson(resulSearch));
         }

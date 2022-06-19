@@ -27,7 +27,7 @@ public class YardRestApi {
         YardRequest yardRequest;
         try {
             yardRequest = gson.fromJson(yard, YardRequest.class);
-        }catch (JsonParseException exception){
+        } catch (JsonParseException exception) {
             exception.printStackTrace();
             yardRequest = null;
         }

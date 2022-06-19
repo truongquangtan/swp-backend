@@ -15,11 +15,9 @@ public class AccountCustomRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public List<AccountEntity> getAllUserOrOwnerAccountsByPage(int startIndex, int endIndex)
-    {
+    public List<AccountEntity> getAllUserOrOwnerAccountsByPage(int startIndex, int endIndex) {
         Query query = null;
-        try
-        {
+        try {
             String nativeQuery = "SELECT * FROM accounts WHERE role_id = 1 OR role_id = 3 ORDER BY create_at DESC";
 
             query = entityManager.createNativeQuery(nativeQuery, AccountEntity.class);
@@ -28,8 +26,7 @@ public class AccountCustomRepository {
 
             List<?> queriedList = query.getResultList();
 
-            if(queriedList == null)
-            {
+            if (queriedList == null) {
                 return null;
             }
 
@@ -38,32 +35,25 @@ public class AccountCustomRepository {
             }).collect(Collectors.toList());
 
             return result;
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             return null;
         }
     }
 
-    public int countAllUserOrOwnerAccounts()
-    {
+    public int countAllUserOrOwnerAccounts() {
         Query query = null;
 
-        try
-        {
+        try {
             String nativeQuery = "SELECT count(*) FROM accounts WHERE role_id = 1 OR role_id = 3";
 
             query = entityManager.createNativeQuery(nativeQuery);
 
             Object result = query.getSingleResult();
-            if(result == null)
-            {
+            if (result == null) {
                 return 0;
             }
             return ((BigInteger) result).intValue();
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             return 0;
         }
     }

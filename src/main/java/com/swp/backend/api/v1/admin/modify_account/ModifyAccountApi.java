@@ -1,14 +1,10 @@
 package com.swp.backend.api.v1.admin.modify_account;
 
 import com.google.gson.Gson;
-import com.swp.backend.constance.RoleProperties;
-import com.swp.backend.entity.AccountEntity;
-import com.swp.backend.entity.AccountOtpEntity;
 import com.swp.backend.exception.ErrorResponse;
 import com.swp.backend.service.AccountService;
 import com.swp.backend.service.SecurityContextService;
 import lombok.AllArgsConstructor;
-import lombok.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContext;
@@ -25,8 +21,7 @@ public class ModifyAccountApi {
 
 
     @PutMapping(value = "{accountId}")
-    public ResponseEntity<String> modifyAccount(@RequestBody (required = false)ModifyAccountRequest request, @PathVariable String accountId)
-    {
+    public ResponseEntity<String> modifyAccount(@RequestBody(required = false) ModifyAccountRequest request, @PathVariable String accountId) {
         try {
             //Case request empty body
             if (request == null) {
@@ -50,8 +45,7 @@ public class ModifyAccountApi {
             ModifyAccountResponse response = new ModifyAccountResponse("Update user information successfully.");
             return ResponseEntity.ok(gson.toJson(response));
         } catch (DataAccessException dataAccessException) {
-            if(dataAccessException.getMessage().contains("accounts_phone_key"))
-            {
+            if (dataAccessException.getMessage().contains("accounts_phone_key")) {
                 ErrorResponse errorResponse = ErrorResponse.builder().message("Update failed. The phone is already used.").build();
                 return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
             }
@@ -60,8 +54,7 @@ public class ModifyAccountApi {
         } catch (RuntimeException exception) {
             ErrorResponse errorResponse = ErrorResponse.builder().message(exception.getMessage()).build();
             return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
-        }
-        catch (Exception exception) {
+        } catch (Exception exception) {
             exception.printStackTrace();
             return ResponseEntity.internalServerError().body("Server temp error.");
         }

@@ -149,26 +149,21 @@ public class AccountService {
         emailService.sendHtmlTemplateMessage(email, emailSubject, htmlBody);
     }
 
-    public void modifyUserInformation(String userId, String fullName, String phone, Boolean isActive)
-    {
+    public void modifyUserInformation(String userId, String fullName, String phone, Boolean isActive) {
         AccountEntity account = accountRepository.findUserEntityByUserId(userId);
-        if(account == null)
-        {
+        if (account == null) {
             throw new RuntimeException("Can not find account.");
         }
-        if(fullName != null) account.setFullName(fullName);
-        if(phone != null)
-        {
-            if(phone.equals("")) phone = null;
+        if (fullName != null) account.setFullName(fullName);
+        if (phone != null) {
+            if (phone.equals("")) phone = null;
             account.setPhone(phone);
         }
-        if(isActive == null)
-        {
+        if (isActive == null) {
             accountRepository.save(account);
             return;
         }
-        if(isActive && !account.isActive())
-        {
+        if (isActive && !account.isActive()) {
             account.setActive(true);
             new Thread(() -> {
                 try {
@@ -177,9 +172,7 @@ public class AccountService {
                     exception.printStackTrace();
                 }
             }).start();
-        }
-        else if(!isActive && account.isActive())
-        {
+        } else if (!isActive && account.isActive()) {
             account.setActive(false);
             new Thread(() -> {
                 try {

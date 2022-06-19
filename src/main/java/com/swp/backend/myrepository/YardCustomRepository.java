@@ -78,12 +78,10 @@ public class YardCustomRepository {
         }
     }
 
-    public int inactivateAllYardsOfOwner(String ownerId)
-    {
+    public int inactivateAllYardsOfOwner(String ownerId) {
         Query query = null;
 
-        try
-        {
+        try {
             String nativeQuery = "UPDATE yards SET is_active = false WHERE owner_id = ?1";
 
             query = entityManager.createNativeQuery(nativeQuery);
@@ -91,19 +89,15 @@ public class YardCustomRepository {
             int rowAffected = query.executeUpdate();
 
             return rowAffected;
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             throw ex;
         }
     }
 
-    public int reactivateAllYardsOfOwner(String ownerId)
-    {
+    public int reactivateAllYardsOfOwner(String ownerId) {
         Query query = null;
 
-        try
-        {
+        try {
             String nativeQuery = "UPDATE yards SET is_active = true WHERE owner_id = ?1";
 
             query = entityManager.createNativeQuery(nativeQuery);
@@ -111,9 +105,7 @@ public class YardCustomRepository {
             int rowAffected = query.executeUpdate();
 
             return rowAffected;
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             throw ex;
         }
     }

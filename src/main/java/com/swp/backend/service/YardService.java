@@ -1,6 +1,5 @@
 package com.swp.backend.service;
 
-import com.google.gson.Gson;
 import com.swp.backend.api.v1.owner.yard.request.SubYardRequest;
 import com.swp.backend.api.v1.owner.yard.request.YardRequest;
 import com.swp.backend.api.v1.owner.yard.response.GetYardResponse;
@@ -10,6 +9,7 @@ import com.swp.backend.model.YardModel;
 import com.swp.backend.myrepository.YardCustomRepository;
 import com.swp.backend.repository.*;
 import com.swp.backend.utils.DateHelper;
+import com.swp.backend.utils.TimeMappingHelper;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.PageRequest;
@@ -35,6 +35,7 @@ public class YardService {
     private YardCustomRepository yardCustomRepository;
     private FirebaseStoreService firebaseStoreService;
     private TypeYardRepository typeYardRepository;
+    private TimeMappingHelper timeMappingHelper;
 
     @Transactional(rollbackFor = DataAccessException.class)
     public void createNewYard(String userId, YardRequest createYardModel, MultipartFile[] images) throws DataAccessException {
@@ -49,7 +50,7 @@ public class YardService {
                 .createAt(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE))
                 .openAt(LocalTime.parse(createYardModel.getOpenAt()))
                 .closeAt(LocalTime.parse(createYardModel.getCloseAt()))
-                .slotDuration(Integer.parseInt(createYardModel.getSlotDuration()))
+                .slotDuration(timeMappingHelper.getTimeMapping().get(createYardModel.getSlotDuration()))
                 .build();
         //Save parent yard
         yardRepository.save(parentYard);
@@ -93,14 +94,14 @@ public class YardService {
             slotRepository.saveAll(slotEntityList);
         }
         if (images != null && images.length > 0) {
-            List<YardPictureEntity> listImage  = Arrays.stream(images).parallel().map(image -> {
+            List<YardPictureEntity> listImage = Arrays.stream(images).parallel().map(image -> {
                 String url = null;
                 try {
                     url = firebaseStoreService.uploadFile(image);
-                }catch (Exception exception){
+                } catch (Exception exception) {
                     exception.printStackTrace();
                 }
-               return YardPictureEntity.builder().image(url).refId(parentYardId).build();
+                return YardPictureEntity.builder().image(url).refId(parentYardId).build();
             }).collect(Collectors.toList());
             if (listImage.size() > 0) {
                 new Thread(() -> {
@@ -223,13 +224,12 @@ public class YardService {
     }
 
     @Transactional
-    public int inactiveAllYardsOfOwner(String ownerId)
-    {
+    public int inactiveAllYardsOfOwner(String ownerId) {
         return yardCustomRepository.inactivateAllYardsOfOwner(ownerId);
     }
+
     @Transactional
-    public int reactiveAllYardsOfOwner(String ownerId)
-    {
+    public int reactiveAllYardsOfOwner(String ownerId) {
         return yardCustomRepository.reactivateAllYardsOfOwner(ownerId);
     }
 }
