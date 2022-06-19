@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.swp.backend.constance.ApiEndpointProperties;
 import com.swp.backend.entity.AccountLoginEntity;
 import com.swp.backend.exception.ErrorResponse;
+import com.swp.backend.exception.NotLatestTokenResponse;
 import com.swp.backend.service.AccountLoginService;
 import com.swp.backend.utils.JwtTokenUtils;
 import io.jsonwebtoken.*;
@@ -65,7 +66,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             }
 
             if (!login.getAccessToken().matches(token)) {
-                sendErrorResponse(response, 400, "Token does not match the latest token.");
+                sendTokenLatest(response, 400, login.getAccessToken());
                 return;
             }
 
@@ -103,6 +104,16 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         out.print(gson.toJson(errorResponse));
+        out.flush();
+    }
+
+    private void sendTokenLatest(HttpServletResponse response, int status, String token) throws IOException {
+        response.setStatus(status);
+        NotLatestTokenResponse notLatestTokenResponse = NotLatestTokenResponse.builder().token(token).build();
+        PrintWriter out = response.getWriter();
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        out.print(gson.toJson(notLatestTokenResponse));
         out.flush();
     }
 }
