@@ -212,6 +212,7 @@ public class YardService {
             return YardModel.builder()
                     .id(yard.getId())
                     .address(yard.getAddress())
+                    .name(yard.getName())
                     .openAt(yard.getOpenAt().format(formatter))
                     .closeAt(yard.getCloseAt().format(formatter))
                     .reference(yard.getReference())
