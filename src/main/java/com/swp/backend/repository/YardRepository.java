@@ -22,4 +22,6 @@ public interface YardRepository extends JpaRepository<YardEntity, String> {
     public List<YardEntity> findAllByOwnerIdAndDeleted(String ownerId, boolean deleted, Pageable pageable);
 
     public int countAllByOwnerIdAndDeleted(String ownerId, boolean deleted);
+
+    public YardEntity findYardEntityByIdAndDeleted(String yardId, boolean isDeleted);
 }

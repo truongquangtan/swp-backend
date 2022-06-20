@@ -35,6 +35,7 @@ public class SubYardService {
                         .typeYard(typeYard)
                         .parentYard(subYardEntity.getParentYard())
                         .createAt(subYardEntity.getCreateAt())
+                        .isActive(true)
                         .build();
 
             } else {

@@ -5,7 +5,11 @@ import com.google.gson.JsonParseException;
 import com.swp.backend.api.v1.owner.yard.request.GetYardRequest;
 import com.swp.backend.api.v1.owner.yard.request.YardRequest;
 import com.swp.backend.api.v1.owner.yard.response.CreateYardSuccessResponse;
+import com.swp.backend.api.v1.owner.yard.response.GetYardDetailResponse;
 import com.swp.backend.api.v1.owner.yard.response.GetYardResponse;
+import com.swp.backend.entity.YardEntity;
+import com.swp.backend.exception.ErrorResponse;
+import com.swp.backend.repository.YardRepository;
 import com.swp.backend.service.SecurityContextService;
 import com.swp.backend.service.YardService;
 import lombok.AllArgsConstructor;
@@ -15,11 +19,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.EntityManager;
+
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/api/v1/owners/me")
 public class YardRestApi {
     private YardService yardService;
+    private YardRepository yardRepository;
     private SecurityContextService securityContextService;
     private Gson gson;
 
@@ -66,4 +73,31 @@ public class YardRestApi {
         }
     }
 
+    @GetMapping(value = "yards/search/{yardId}")
+    public ResponseEntity<String> showAllYard(@PathVariable String yardId) {
+        try {
+            GetYardDetailResponse response;
+            SecurityContext securityContext = SecurityContextHolder.getContext();
+            String ownerId = securityContextService.extractUsernameFromContext(securityContext);
+
+            YardEntity yardEntity = yardService.getYardByIdAndNotDeleted(yardId);
+
+            if(yardEntity == null)
+            {
+                ErrorResponse error = ErrorResponse.builder().message("The yard is deleted or not existed.").build();
+                return ResponseEntity.badRequest().body(gson.toJson(error));
+            }
+
+            if(!yardEntity.getOwnerId().equals(ownerId))
+            {
+                ErrorResponse error = ErrorResponse.builder().message("The owner is not author of this yard.").build();
+                return ResponseEntity.badRequest().body(gson.toJson(error));
+            }
+
+            return ResponseEntity.ok().body(gson.toJson(response));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
 }

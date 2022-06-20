@@ -2,6 +2,7 @@ package com.swp.backend.service;
 
 import com.swp.backend.api.v1.owner.yard.request.SubYardRequest;
 import com.swp.backend.api.v1.owner.yard.request.YardRequest;
+import com.swp.backend.api.v1.owner.yard.response.GetYardDetailResponse;
 import com.swp.backend.api.v1.owner.yard.response.GetYardResponse;
 import com.swp.backend.api.v1.yard.search.YardResponse;
 import com.swp.backend.entity.*;
@@ -184,6 +185,11 @@ public class YardService {
         return yardRepository.findYardEntitiesById(yardId);
     }
 
+    public YardEntity getYardByIdAndNotDeleted(String yardId)
+    {
+        return yardRepository.findYardEntityByIdAndDeleted(yardId, false);
+    }
+
     public void updateYard(YardEntity yard) throws DataAccessException {
         yardRepository.save(yard);
     }
@@ -233,5 +239,30 @@ public class YardService {
     @Transactional
     public int reactiveAllYardsOfOwner(String ownerId) {
         return yardCustomRepository.reactivateAllYardsOfOwner(ownerId);
+    }
+
+    public GetYardDetailResponse getYardDetailResponseFromYardId(String yardId)
+    {
+        YardEntity yardEntity = getYardByIdAndNotDeleted(yardId);
+        if(yardEntity == null)
+        {
+            throw new RuntimeException("Can not get yard from " + yardId);
+        }
+
+
+        return GetYardDetailResponse.builder()
+                .id(yardEntity.getId())
+                .name(yardEntity.getName())
+                .address(yardEntity.getAddress())
+                .districtId(yardEntity.getDistrictId())
+                .districtName()
+                .provinceId()
+                .provinceName()
+                .openTime()
+                .closeTime()
+                .duration()
+                .images()
+                .subYards()
+
     }
 }
