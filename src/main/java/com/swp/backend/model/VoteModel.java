@@ -13,6 +13,7 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class VoteModel {
+    private String bookingId;
     private String voteId;
     private String yardName;
     private String typeName;

@@ -190,7 +190,7 @@ public class BookingService {
         return bookingRepository.getListSlotExitsBookingReference(listSlotId);
     }
 
-    public BookingEntity getBookingById(int id){
+    public BookingEntity getBookingById(String  id){
         return bookingRepository.getById(id);
     }
 }

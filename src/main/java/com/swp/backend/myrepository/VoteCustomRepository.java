@@ -23,12 +23,12 @@ public class VoteCustomRepository {
     private EntityManager entityManager;
 
     public List<VoteModel> getAllVoteByUserId(String userId){
-        String nativeQuery = "SELECT votes.id, votes.score, votes.comment, yards.name, type_yards.type_name, yards.address, booking.date, slots.start_time, slots.end_time FROM booking" +
-                " INNER JOIN slots ON slots.id = booking.slot_id\n" +
-                " INNER JOIN sub_yards ON slots.ref_yard = sub_yards.id\n" +
-                " INNER JOIN yards ON sub_yards.parent_yard = yards.id\n" +
-                " LEFT JOIN votes ON votes.booking_id = booking.id\n" +
-                " INNER JOIN type_yards ON type_yards.id = sub_yards.type_yard\n" +
+        String nativeQuery = "SELECT votes.id as vote_id, votes.score, votes.comment, yards.name, type_yards.type_name, yards.address, booking.date, slots.start_time, slots.end_time, booking.id as book_id FROM booking" +
+                " INNER JOIN slots ON slots.id = booking.slot_id" +
+                " INNER JOIN sub_yards ON slots.ref_yard = sub_yards.id" +
+                " INNER JOIN yards ON sub_yards.parent_yard = yards.id" +
+                " LEFT JOIN votes ON votes.booking_id = booking.id" +
+                " INNER JOIN type_yards ON type_yards.id = sub_yards.type_yard" +
                 " WHERE (booking.account_id = ?1) AND (booking.status = ?2) AND (booking.date <= ?3)";
         Query query = entityManager.createNativeQuery(nativeQuery);
         query.setParameter(1, userId);
@@ -37,7 +37,7 @@ public class VoteCustomRepository {
         List<?> results = query.getResultList();
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("d/M/y");
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm");
-        List<VoteModel> votes = results.stream().map(result -> {
+        return results.stream().map(result -> {
             Object[] vote = (Object[]) result;
             VoteModel voteModel = VoteModel.builder().build();
             voteModel.setVoteId((String) vote[0]);
@@ -49,8 +49,8 @@ public class VoteCustomRepository {
             voteModel.setDate(((Timestamp) vote[6]).toLocalDateTime().format(dateFormatter));
             voteModel.setStartTime(((Time) vote[7]).toLocalTime().format(timeFormatter));
             voteModel.setEndTime(((Time) vote[8]).toLocalTime().format(timeFormatter));
+            voteModel.setBookingId((String) vote[9]);
             return voteModel;
         }).collect(Collectors.toList());
-        return votes;
     }
 }

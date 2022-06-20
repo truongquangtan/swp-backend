@@ -24,14 +24,11 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class VoteService {
     private final VoteRepository voteRepository;
-    private final SlotRepository slotRepository;
-    private final SubYardService subYardService;
     private final YardService yardService;
     private final BookingRepository bookingRepository;
-    private final SubYardCustomRepository subYardCustomRepository;
     private VoteCustomRepository voteCustomRepository;
 
-    public boolean postVote(String userId, Integer bookingId, Integer score, String comment) throws DataAccessException {
+    public boolean postVote(String userId, String bookingId, Integer score, String comment) throws DataAccessException {
         try {
             VoteEntity voteEntity = VoteEntity.builder()
                     .id(UUID.randomUUID().toString())
@@ -39,7 +36,6 @@ public class VoteService {
                     .score(score)
                     .bookingId(bookingId)
                     .date(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE))
-                    .userId(userId)
                     .build();
             voteRepository.save(voteEntity);
             reUpdateAverageScoreVote(bookingId);
@@ -88,28 +84,26 @@ public class VoteService {
 //        }
 //    }
 //
-    private void reUpdateAverageScoreVote(Integer bookingId) {
+    private void reUpdateAverageScoreVote(String bookingId) {
         new Thread(() -> {
             try {
                 BookingEntity booking = bookingRepository.getById(bookingId);
-                SlotEntity slot = slotRepository.getById(booking.getSlotId());
-                String parentYardId = subYardService.getBigYardIdFromSubYard(slot.getRefYard());
+                YardEntity yard = yardService.getYardById(booking.getBigYardId());
+                List<BookingEntity> bookingListOfBigYard = bookingRepository.findAllByBigYardId(yard.getId());
+                List<String> listBookingId = bookingListOfBigYard.parallelStream().map(bookingEntity -> booking.getId()).collect(Collectors.toList());
 
-                YardEntity bigYard = yardService.getYardById(parentYardId);
-                List<SubYardEntity> listRelativeSubYard = subYardCustomRepository.getAllSubYardByBigYard(parentYardId);
-                if (listRelativeSubYard == null) {
+                List<VoteEntity> votes = voteRepository.findAllByBookingIdInAndDeletedFalse(listBookingId);
+
+                if(votes == null){
                     return;
                 }
-
-                List<String> subYardIds = listRelativeSubYard.stream().map(SubYardEntity::getId).collect(Collectors.toList());
-                List<VoteEntity> votes = voteRepository.findBySubYardIdInAndDeletedIsFalse(subYardIds);
 
                 float sumScore = votes.stream().reduce(0, (preSum, vote) -> preSum + vote.getScore(), Integer::sum);
                 int average = Math.round(sumScore / votes.size());
 
-                bigYard.setScore(average);
-                bigYard.setNumberOfVote(votes.size());
-                yardService.updateYard(bigYard);
+                yard.setScore(average);
+                yard.setNumberOfVote(votes.size());
+                yardService.updateYard(yard);
             } catch (Exception exception) {
                 exception.printStackTrace();
             }

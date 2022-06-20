@@ -45,7 +45,7 @@ public class VoteRestApi {
             String userId = securityContextService.extractUsernameFromContext(context);
             boolean postVote = voteService.postVote(
                     userId,
-                    voteRequest.getSubYarId(),
+                    voteRequest.getBookingId(),
                     voteRequest.getScore(),
                     voteRequest.getComment()
             );
