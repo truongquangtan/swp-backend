@@ -6,6 +6,7 @@ import com.swp.backend.api.v1.owner.yard.response.GetYardDetailResponse;
 import com.swp.backend.api.v1.owner.yard.response.GetYardResponse;
 import com.swp.backend.api.v1.yard.search.YardResponse;
 import com.swp.backend.entity.*;
+import com.swp.backend.model.SubYardModel;
 import com.swp.backend.model.YardModel;
 import com.swp.backend.myrepository.YardCustomRepository;
 import com.swp.backend.repository.*;
@@ -37,6 +38,7 @@ public class YardService {
     private FirebaseStoreService firebaseStoreService;
     private TypeYardRepository typeYardRepository;
     private TimeMappingHelper timeMappingHelper;
+    private SubYardService subYardService;
 
     @Transactional(rollbackFor = DataAccessException.class)
     public void createNewYard(String userId, YardRequest createYardModel, MultipartFile[] images) throws DataAccessException {
@@ -249,20 +251,31 @@ public class YardService {
             throw new RuntimeException("Can not get yard from " + yardId);
         }
 
+        DistrictEntity districtEntity = districtRepository.findById(yardEntity.getDistrictId());
 
+        String districtName = districtEntity.getDistrictName();
+        int provinceId = districtEntity.getProvinceId();
+        String provinceName = provinceRepository.findDistinctById(provinceId).getProvinceName();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        int hour = yardEntity.getSlotDuration() / 60;
+        int minute = yardEntity.getSlotDuration() % 60;
+        String duration = LocalTime.of(hour, minute).format(formatter);
+
+        List<String> images = yardPictureRepository.getAllByRefId(yardId).stream().map(yardPictureEntity -> {return yardPictureEntity.getImage();}).collect(Collectors.toList());
+        List<SubYardModel> subYards = subYardService.getSubYardsByBigYard(yardId);
         return GetYardDetailResponse.builder()
                 .id(yardEntity.getId())
                 .name(yardEntity.getName())
                 .address(yardEntity.getAddress())
                 .districtId(yardEntity.getDistrictId())
-                .districtName()
-                .provinceId()
-                .provinceName()
-                .openTime()
-                .closeTime()
-                .duration()
-                .images()
-                .subYards()
-
+                .districtName(districtName)
+                .provinceId(provinceId)
+                .provinceName(provinceName)
+                .openTime(yardEntity.getOpenAt().format(formatter))
+                .closeTime(yardEntity.getCloseAt().format(formatter))
+                .duration(duration)
+                .images(images)
+                .subYards(subYards).build();
     }
 }

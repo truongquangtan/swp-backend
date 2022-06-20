@@ -94,6 +94,8 @@ public class YardRestApi {
                 return ResponseEntity.badRequest().body(gson.toJson(error));
             }
 
+            response = yardService.getYardDetailResponseFromYardId(yardId);
+
             return ResponseEntity.ok().body(gson.toJson(response));
         } catch (Exception e) {
             e.printStackTrace();
