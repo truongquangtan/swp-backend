@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -46,7 +47,7 @@ public class BookingApi {
         }
 
         //BigYard not available filter
-        if (yardService.isAvailableYard(yardId)) {
+        if (!yardService.isAvailableYard(yardId)) {
             response = new BookingResponse("The Yard entity of this slots is not active or deleted.", true, null);
             return ResponseEntity.badRequest().body(gson.toJson(response));
         }
@@ -55,7 +56,7 @@ public class BookingApi {
         try {
             boolean isError = false, isAllError = true;
             for (BookingModel bookingModel : request.getBookingList()) {
-                BookingEntity booking = bookingService.book(userId, bookingModel);
+                BookingEntity booking = bookingService.book(userId, yardId, bookingModel);
                 bookingEntities.add(booking);
                 if (booking.getStatus().equals(BookingStatus.FAILED)) {
                     isError = true;
@@ -70,8 +71,7 @@ public class BookingApi {
             response = new BookingResponse(isError ? "There were some booking slot error." : "Booking all slot successfully", isError, bookingEntities);
             return ResponseEntity.ok().body(gson.toJson(response));
         } catch (Exception ex) {
-            throw ex;
-            //return ResponseEntity.internalServerError().body("Error when save in database: " + ex.getMessage());
+            return ResponseEntity.internalServerError().body("Error when save in database: " + ex.getMessage());
         }
     }
 }

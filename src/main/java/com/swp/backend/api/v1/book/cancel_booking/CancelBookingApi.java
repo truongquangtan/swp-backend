@@ -29,8 +29,8 @@ public class CancelBookingApi {
         userId = securityContextService.extractUsernameFromContext(context);
 
         if (request == null || !request.isValid()) {
-            response = new CancelBookingResponse(false, "Can not parse request");
-            return ResponseEntity.ok(gson.toJson(response));
+            response = new CancelBookingResponse(false, "The reason is required.");
+            return ResponseEntity.badRequest().body(gson.toJson(response));
         }
 
         try {
@@ -41,7 +41,7 @@ public class CancelBookingApi {
             response = new CancelBookingResponse(false, cancelBookingProcessException.getFilterMessage());
             return ResponseEntity.ok(gson.toJson(response));
         } catch (Exception exception) {
-            response = new CancelBookingResponse(false, "Error when save in database");
+            response = new CancelBookingResponse(false, "Error when save in database: " + exception.getMessage());
             return ResponseEntity.ok(gson.toJson(response));
         }
     }

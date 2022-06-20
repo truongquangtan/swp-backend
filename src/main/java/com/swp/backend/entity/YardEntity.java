@@ -44,4 +44,6 @@ public class YardEntity {
     @Column(name = "reference", insertable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int reference;
+    @Column(name = "number_of_bookings")
+    private Integer numberOfBookings;
 }
