@@ -35,6 +35,7 @@ public class BookingService {
     private SlotRepository slotRepository;
     private SubYardRepository subYardRepository;
 
+    @Transactional
     public BookingEntity book(String userId, String yardId, BookingModel bookingModel) {
         String errorNote = "";
         int slotId = bookingModel.getSlotId();
@@ -79,7 +80,8 @@ public class BookingService {
         return processBooking(userId, yardId, bookingModel, errorNote, BookingStatus.SUCCESS);
     }
 
-    protected BookingEntity processBooking(String userId, String yardId, BookingModel bookingModel, String errorNote, String status) {
+    @Transactional
+    public BookingEntity processBooking(String userId, String yardId, BookingModel bookingModel, String errorNote, String status) {
         Timestamp timestamp = DateHelper.parseFromStringToTimestamp(bookingModel.getDate());
         Timestamp now = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
 

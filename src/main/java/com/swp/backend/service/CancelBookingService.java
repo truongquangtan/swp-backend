@@ -2,18 +2,13 @@ package com.swp.backend.service;
 
 import com.swp.backend.api.v1.book.cancel_booking.CancelBookingRequest;
 import com.swp.backend.constance.BookingStatus;
-import com.swp.backend.entity.AccountEntity;
-import com.swp.backend.entity.BookingEntity;
-import com.swp.backend.entity.SlotEntity;
-import com.swp.backend.entity.SubYardEntity;
+import com.swp.backend.entity.*;
 import com.swp.backend.exception.CancelBookingProcessException;
-import com.swp.backend.repository.AccountRepository;
-import com.swp.backend.repository.BookingRepository;
-import com.swp.backend.repository.SlotRepository;
-import com.swp.backend.repository.SubYardRepository;
+import com.swp.backend.repository.*;
 import com.swp.backend.utils.DateHelper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -30,8 +25,10 @@ public class CancelBookingService {
     private BookingRepository bookingRepository;
     private EmailService emailService;
     private AccountRepository accountRepository;
+    private YardRepository yardRepository;
     public static final int PREVENT_CANCEL_BOOKING_IN_MINUTE = 0;
 
+    @Transactional
     public void cancelBooking(String userId, String bookingId, CancelBookingRequest request) {
         BookingEntity booking = getBookingEntity(bookingId);
         bookingIsOfUserFilter(booking, userId);
@@ -100,8 +97,10 @@ public class CancelBookingService {
         return slot;
     }
 
-    private void cancelBookingProcess(BookingEntity booking, CancelBookingRequest request) {
+    @Transactional(rollbackFor = CancelBookingProcessException.class)
+    protected void cancelBookingProcess(BookingEntity booking, CancelBookingRequest request) {
         saveBookingCanceledInformation(booking, request.getReason());
+        decreaseNumberOfBookingsOfYard(request.getYardId());
     }
 
     private BookingEntity saveBookingCanceledInformation(BookingEntity booking, String reason) {
@@ -110,6 +109,21 @@ public class CancelBookingService {
         booking.setNote("Booking canceled at: " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(now) + " - Reason: " + reason);
         bookingRepository.save(booking);
         return booking;
+    }
+
+    private void decreaseNumberOfBookingsOfYard(String yardId)
+    {
+        try
+        {
+            YardEntity yardEntity = yardRepository.findYardEntitiesById(yardId);
+            int currentNumberOfBookings = yardEntity.getNumberOfBookings() == null ? 0 : yardEntity.getNumberOfBookings();
+            yardEntity.setNumberOfBookings(currentNumberOfBookings - 1);
+            yardRepository.save(yardEntity);
+        }
+        catch (Exception ex)
+        {
+            throw new CancelBookingProcessException("Increase number of booking in yard entity failed.");
+        }
     }
 
     private void sendMailToOwner(String userId,

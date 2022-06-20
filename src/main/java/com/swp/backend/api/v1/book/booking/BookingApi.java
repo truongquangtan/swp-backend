@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -46,7 +47,7 @@ public class BookingApi {
         }
 
         //BigYard not available filter
-        if (yardService.isAvailableYard(yardId)) {
+        if (!yardService.isAvailableYard(yardId)) {
             response = new BookingResponse("The Yard entity of this slots is not active or deleted.", true, null);
             return ResponseEntity.badRequest().body(gson.toJson(response));
         }

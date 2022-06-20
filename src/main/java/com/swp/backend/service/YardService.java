@@ -152,7 +152,7 @@ public class YardService {
 
     public boolean isAvailableYard(String yardId) {
         YardEntity yard = yardRepository.findYardEntityByIdAndActiveAndDeleted(yardId, true, false);
-        return yard == null;
+        return yard != null;
     }
 
     public YardModel getYardModelFromYardId(String yardId) {
