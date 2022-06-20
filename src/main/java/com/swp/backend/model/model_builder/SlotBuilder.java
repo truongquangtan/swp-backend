@@ -14,6 +14,7 @@ public class SlotBuilder {
                 .price(slotEntity.getPrice())
                 .startTime(slotEntity.getStartTime().format(formatter))
                 .endTime(slotEntity.getEndTime().format(formatter))
+                .isActive(slotEntity.isActive())
                 .isBooked(true)
                 .build();
         return slot;
@@ -27,6 +28,7 @@ public class SlotBuilder {
                 .price(slotEntity.getPrice())
                 .startTime(slotEntity.getStartTime().format(formatter))
                 .endTime(slotEntity.getEndTime().format(formatter))
+                .isActive(slotEntity.isActive())
                 .isBooked(false)
                 .build();
         return slot;

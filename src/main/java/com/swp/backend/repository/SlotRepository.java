@@ -13,6 +13,7 @@ import java.util.List;
 @Repository
 public interface SlotRepository extends JpaRepository<SlotEntity, String> {
     public List<SlotEntity> findSlotEntitiesByRefYardAndActiveIsTrue(String refYard);
+    public List<SlotEntity> findSlotEntitiesByRefYard(String refYard);
 
     public List<SlotEntity> findSlotEntitiesByStartTimeGreaterThanAndRefYardAndActiveIsTrue(LocalTime startTime, String refYard);
 
