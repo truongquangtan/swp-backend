@@ -74,7 +74,7 @@ public class YardRestApi {
     }
 
     @GetMapping(value = "yards/search/{yardId}")
-    public ResponseEntity<String> showAllYard(@PathVariable String yardId) {
+    public ResponseEntity<String> showYardById(@PathVariable String yardId) {
         try {
             GetYardDetailResponse response;
             SecurityContext securityContext = SecurityContextHolder.getContext();

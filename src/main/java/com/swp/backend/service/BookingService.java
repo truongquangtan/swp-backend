@@ -96,6 +96,8 @@ public class BookingService {
                 .note(errorNote)
                 .price(bookingModel.getPrice())
                 .bookAt(now)
+                .bigYardId(yardId)
+                .subYardId(bookingModel.getRefSubYard())
                 .build();
 
         bookingRepository.save(bookingEntity);
