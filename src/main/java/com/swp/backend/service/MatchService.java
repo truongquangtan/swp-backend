@@ -38,10 +38,10 @@ public class MatchService {
         LocalDate date = LocalDate.ofInstant(bookingDate.toInstant(), ZoneId.of(DateHelper.VIETNAM_ZONE));
 
         int slotId = bookingEntity.getSlotId();
-        String subYardId = slotCustomRepository.findSubYardIdFromSlotId(slotId);
+        String subYardId = bookingEntity.getSubYardId();
         String typeYard = subYardCustomRepository.findTypeYardFromSubYardId(subYardId);
         SubYardEntity subYardEntity = subYardRepository.getSubYardEntityByIdAndActive(subYardId, true);
-        String yardId = slotCustomRepository.findYardIdFromSlotId(slotId);
+        String yardId = bookingEntity.getBigYardId();
         SlotEntity slotEntity = slotRepository.findSlotEntityByIdAndActive(slotId, true);
         YardModel yardModel = yardService.getYardModelFromYardId(yardId);
         return MatchModel.builder().bigYardAddress(yardModel.getAddress())
