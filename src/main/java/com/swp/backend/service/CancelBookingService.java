@@ -4,6 +4,7 @@ import com.swp.backend.api.v1.book.cancel_booking.CancelBookingRequest;
 import com.swp.backend.constance.BookingStatus;
 import com.swp.backend.entity.*;
 import com.swp.backend.exception.CancelBookingProcessException;
+import com.swp.backend.myrepository.SlotCustomRepository;
 import com.swp.backend.repository.*;
 import com.swp.backend.utils.DateHelper;
 import lombok.AllArgsConstructor;
@@ -26,19 +27,19 @@ public class CancelBookingService {
     private EmailService emailService;
     private AccountRepository accountRepository;
     private YardRepository yardRepository;
+    private SlotCustomRepository slotCustomRepository;
     public static final int PREVENT_CANCEL_BOOKING_IN_MINUTE = 0;
 
     @Transactional
     public void cancelBooking(String userId, String bookingId, CancelBookingRequest request) {
         BookingEntity booking = getBookingEntity(bookingId);
+        int slotId = booking.getSlotId();
+        SlotEntity slot = slotIdIsActiveFilter(slotId);
         bookingIsOfUserFilter(booking, userId);
-        yardIsActiveAndNotDeleted(request.getYardId());
-        subYardIsActiveFilter(request.getSubYardId());
-        SlotEntity slot = slotIdIsActiveFilter(request.getSlotId());
         bookingStatusIsSuccessFilter(booking);
         slotTimeStartIsNotOverPreventTimeForCancel(booking, slot);
 
-        cancelBookingProcess(booking, request);
+        cancelBookingProcess(booking, request, slotId);
     }
 
     private void slotTimeStartIsNotOverPreventTimeForCancel(BookingEntity booking, SlotEntity slot) {
@@ -98,9 +99,10 @@ public class CancelBookingService {
     }
 
     @Transactional(rollbackFor = CancelBookingProcessException.class)
-    protected void cancelBookingProcess(BookingEntity booking, CancelBookingRequest request) {
+    protected void cancelBookingProcess(BookingEntity booking, CancelBookingRequest request, int slotId) {
         saveBookingCanceledInformation(booking, request.getReason());
-        decreaseNumberOfBookingsOfYard(request.getYardId());
+        String yardId = slotCustomRepository.findYardIdFromSlotId(slotId);
+        decreaseNumberOfBookingsOfYard(yardId);
     }
 
     private BookingEntity saveBookingCanceledInformation(BookingEntity booking, String reason) {
