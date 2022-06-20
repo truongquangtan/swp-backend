@@ -29,7 +29,7 @@ public class CancelBookingApi {
         userId = securityContextService.extractUsernameFromContext(context);
 
         if (request == null || !request.isValid()) {
-            response = new CancelBookingResponse(false, "Can not parse request");
+            response = new CancelBookingResponse(false, "The reason is required.");
             return ResponseEntity.badRequest().body(gson.toJson(response));
         }
 
