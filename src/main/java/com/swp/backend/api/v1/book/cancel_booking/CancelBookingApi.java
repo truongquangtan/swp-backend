@@ -30,7 +30,7 @@ public class CancelBookingApi {
 
         if (request == null || !request.isValid()) {
             response = new CancelBookingResponse(false, "Can not parse request");
-            return ResponseEntity.ok(gson.toJson(response));
+            return ResponseEntity.badRequest().body(gson.toJson(response));
         }
 
         try {
