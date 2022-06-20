@@ -10,6 +10,6 @@ import java.util.List;
 public interface VoteRepository extends JpaRepository<VoteEntity, String> {
     public VoteEntity findVoteEntityById(String voteId);
 
-    public List<VoteEntity> findBySubYardIdInAndDeletedIsFalse(List<String> subYardId);
+    public List<VoteEntity> findByBookingIdInAndDeletedIsFalse(List<String> subYardId);
 
 }

@@ -11,7 +11,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Repository
-public interface SlotRepository extends JpaRepository<SlotEntity, String> {
+public interface SlotRepository extends JpaRepository<SlotEntity, Integer> {
     public List<SlotEntity> findSlotEntitiesByRefYardAndActiveIsTrue(String refYard);
 
     public List<SlotEntity> findSlotEntitiesByStartTimeGreaterThanAndRefYardAndActiveIsTrue(LocalTime startTime, String refYard);

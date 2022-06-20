@@ -20,8 +20,8 @@ public class VoteEntity {
     @Id
     @Column(name = "id")
     private String id;
-    @Column(name = "ref_yard_id")
-    private String subYardId;
+    @Column(name = "booking_id")
+    private Integer bookingId;
     @Column(name = "score")
     private int score;
     @Column(name = "comment")

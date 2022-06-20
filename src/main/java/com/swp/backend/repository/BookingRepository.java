@@ -22,4 +22,6 @@ public interface BookingRepository extends JpaRepository<BookingEntity, Integer>
 
     @Query("SELECT booking FROM BookingEntity booking WHERE booking.slotId IN :listSlotId")
     public List<BookingEntity> getListSlotExitsBookingReference(@Param("listSlotId") Collection<Integer> listSlotId);
+
+    public List<BookingEntity> findAllByAccountIdAndStatusAndDateBefore(String accountId, String status, Timestamp date);
 }

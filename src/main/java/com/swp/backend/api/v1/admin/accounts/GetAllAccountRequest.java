@@ -11,9 +11,9 @@ public class GetAllAccountRequest {
     public static final String NAME_ASC = "+name";
     public static final String NAME_DESC = "-name";
 
-    private int itemsPerPage;
-    private int page;
-    private int role;
+    private Integer itemsPerPage;
+    private Integer page;
+    private Integer role;
     private String keyword;
     private String status;
     private String date;

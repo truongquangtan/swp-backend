@@ -167,4 +167,8 @@ public class BookingService {
         List<Integer> listSlotId = listSlot.parallelStream().map(SlotEntity::getId).collect(Collectors.toList());
         return bookingRepository.getListSlotExitsBookingReference(listSlotId);
     }
+
+    public BookingEntity getBookingById(int id){
+        return bookingRepository.getById(id);
+    }
 }

@@ -263,4 +263,8 @@ public class AccountService {
     public List<?> searchAccount(Integer itemsPerPage, Integer page, Integer role, String keyword, String status, List<String> sortBy, String sort) {
         return accountCustomRepository.searchAccount(itemsPerPage, page, role, keyword, status, sortBy, sort);
     }
+
+    public int getMaxResultSearch(Integer role, String keyword, String status){
+        return accountCustomRepository.countMaxResultSearchAccount(role, keyword, status);
+    }
 }

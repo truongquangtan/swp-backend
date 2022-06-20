@@ -16,7 +16,7 @@ public class AccountCustomRepository {
     private EntityManager entityManager;
 
     public List<AccountEntity> getAllUserOrOwnerAccountsByPage(int startIndex, int endIndex) {
-        Query query = null;
+        Query query;
         try {
             String nativeQuery = "SELECT * FROM accounts WHERE role_id = 1 OR role_id = 3 ORDER BY create_at DESC";
 
@@ -30,18 +30,14 @@ public class AccountCustomRepository {
                 return null;
             }
 
-            List<AccountEntity> result = queriedList.stream().map(queriedObject -> {
-                return (AccountEntity) queriedObject;
-            }).collect(Collectors.toList());
-
-            return result;
+            return queriedList.stream().map(queriedObject -> (AccountEntity) queriedObject).collect(Collectors.toList());
         } catch (Exception ex) {
             return null;
         }
     }
 
     public int countAllUserOrOwnerAccounts() {
-        Query query = null;
+        Query query;
 
         try {
             String nativeQuery = "SELECT count(*) FROM accounts WHERE role_id = 1 OR role_id = 3";
@@ -67,6 +63,14 @@ public class AccountCustomRepository {
         return query.getResultList();
     }
 
+    public int countMaxResultSearchAccount(Integer role, String keyword, String status){
+        String queryString = "SELECT COUNT(*) FROM accounts";
+        queryString = queryString.concat(buildWhereClauseQuery(role, keyword, status));
+        Query query = entityManager.createNativeQuery(queryString);
+        Object result = query.getSingleResult();
+        return  (result instanceof BigInteger) ?  ((BigInteger) result).intValue() : 0;
+    }
+
     private String buildOrderQuery(List<String> sortBy, String sort) {
         if (sortBy != null && sortBy.size() > 0) {
             String sortValue = (sort != null && sort.equalsIgnoreCase("DESC")) ? "DESC" : "ASC";
@@ -76,7 +80,7 @@ public class AccountCustomRepository {
     }
 
     private String buildWhereClauseQuery(Integer role, String keyword, String status) {
-        String query = "";
+        String query;
         if (role != null || keyword != null || status != null) {
             query = "".concat(" WHERE");
         } else {

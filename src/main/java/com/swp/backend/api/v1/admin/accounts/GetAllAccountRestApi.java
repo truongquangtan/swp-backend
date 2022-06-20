@@ -52,13 +52,17 @@ public class GetAllAccountRestApi {
         }
     }
 
-    @PostMapping("/filter/all-accounts")
+    @PostMapping("/all-accounts/search")
     public ResponseEntity<String> getAllAccountHasRoleUserOrOwnerByFilter(@RequestBody(required = false) GetAllAccountRequest request) {
+        int maxResult;
+        List<?> resulSearch;
         if (request == null) {
-            List<?> resulSearch = accountService.searchAccount(null, null, null, null, null, null, null);
+            resulSearch = accountService.searchAccount(null, null, null, null, null, null, null);
+            maxResult = accountService.getMaxResultSearch(null, null, null);
             return ResponseEntity.ok().body(gson.toJson(resulSearch));
         }
-        List<?> resulSearch = accountService.searchAccount(request.getItemsPerPage(), request.getPage(), request.getRole(), request.getKeyword(), request.getStatus(), new ArrayList<>(), request.getSort());
+        maxResult = accountService.getMaxResultSearch(request.getRole(), request.getKeyword(), request.getStatus());
+        resulSearch = accountService.searchAccount(request.getItemsPerPage(), request.getPage(), request.getRole(), request.getKeyword(), request.getStatus(), new ArrayList<>(), request.getSort());
         return ResponseEntity.ok().body(gson.toJson(resulSearch));
     }
 
