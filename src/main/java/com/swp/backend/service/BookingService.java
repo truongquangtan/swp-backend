@@ -3,6 +3,7 @@ package com.swp.backend.service;
 import com.swp.backend.constance.BookingStatus;
 import com.swp.backend.entity.BookingEntity;
 import com.swp.backend.entity.SlotEntity;
+import com.swp.backend.entity.YardEntity;
 import com.swp.backend.model.BookingModel;
 import com.swp.backend.myrepository.BookingCustomRepository;
 import com.swp.backend.repository.BookingRepository;
@@ -12,6 +13,7 @@ import com.swp.backend.repository.YardRepository;
 import com.swp.backend.utils.DateHelper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -33,7 +35,7 @@ public class BookingService {
     private SlotRepository slotRepository;
     private SubYardRepository subYardRepository;
 
-    public BookingEntity book(String userId, BookingModel bookingModel) {
+    public BookingEntity book(String userId, String yardId, BookingModel bookingModel) {
         String errorNote = "";
         int slotId = bookingModel.getSlotId();
 
@@ -42,42 +44,42 @@ public class BookingService {
         LocalDate now = LocalDate.now(ZoneId.of(DateHelper.VIETNAM_ZONE));
         if (bookingDate.compareTo(now) < 0) {
             errorNote = "The date of booking is in the past";
-            return processBooking(userId, bookingModel, errorNote, BookingStatus.FAILED);
+            return processBooking(userId, yardId, bookingModel, errorNote, BookingStatus.FAILED);
         }
 
         //SubYard filter
         String subYardId = bookingModel.getRefSubYard();
         if (subYardId == null) {
             errorNote = "Cannot find sub yard from slot id " + slotId;
-            return processBooking(userId, bookingModel, errorNote, BookingStatus.FAILED);
+            return processBooking(userId, yardId, bookingModel, errorNote, BookingStatus.FAILED);
         }
         if (!subYardService.isActiveSubYard(subYardId)) {
             errorNote = "SubYard of slot id " + bookingModel.getSlotId() + " is not active";
-            return processBooking(userId, bookingModel, errorNote, BookingStatus.FAILED);
+            return processBooking(userId, yardId, bookingModel, errorNote, BookingStatus.FAILED);
         }
 
         //Slot Not Available Filter
         Timestamp timestamp = DateHelper.parseFromStringToTimestamp(bookingModel.getDate());
         if (!slotService.isSlotActive(slotId)) {
             errorNote = "Slot of slot id " + slotId + " is not active.";
-            return processBooking(userId, bookingModel, errorNote, BookingStatus.FAILED);
+            return processBooking(userId, yardId, bookingModel, errorNote, BookingStatus.FAILED);
         }
         if (!slotService.isSlotAvailableFromBooking(slotId, timestamp)) {
             errorNote = "Slot of slot id " + slotId + " is booked.";
-            return processBooking(userId, bookingModel, errorNote, BookingStatus.FAILED);
+            return processBooking(userId, yardId, bookingModel, errorNote, BookingStatus.FAILED);
         }
 
         //Local Time not exceed Start Time
         Timestamp dateRequest = DateHelper.parseFromStringToTimestamp(bookingModel.getDate());
         if (DateHelper.isToday(dateRequest) && !slotService.isSlotExceedTimeToday(slotId)) {
             errorNote = "Slot of slot id " + slotId + " is started";
-            return processBooking(userId, bookingModel, errorNote, BookingStatus.FAILED);
+            return processBooking(userId, yardId, bookingModel, errorNote, BookingStatus.FAILED);
         }
 
-        return processBooking(userId, bookingModel, errorNote, BookingStatus.SUCCESS);
+        return processBooking(userId, yardId, bookingModel, errorNote, BookingStatus.SUCCESS);
     }
 
-    private BookingEntity processBooking(String userId, BookingModel bookingModel, String errorNote, String status) {
+    protected BookingEntity processBooking(String userId, String yardId, BookingModel bookingModel, String errorNote, String status) {
         Timestamp timestamp = DateHelper.parseFromStringToTimestamp(bookingModel.getDate());
         Timestamp now = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
 
@@ -95,6 +97,22 @@ public class BookingService {
                 .build();
 
         bookingRepository.save(bookingEntity);
+
+        if(status.equals(BookingStatus.SUCCESS))
+        {
+            try
+            {
+                YardEntity yardEntity = yardRepository.findYardEntitiesById(yardId);
+                int currentNumberOfBookings = yardEntity.getNumberOfBookings() == null ? 0 : yardEntity.getNumberOfBookings();
+                yardEntity.setNumberOfBookings(currentNumberOfBookings + 1);
+                yardRepository.save(yardEntity);
+            }
+            catch (Exception ex)
+            {
+                throw new RuntimeException("Increase number of booking in yard entity failed.");
+            }
+
+        }
 
         return bookingEntity;
     }
