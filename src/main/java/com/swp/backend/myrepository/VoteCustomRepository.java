@@ -96,7 +96,7 @@ public class VoteCustomRepository {
             Query query = entityManager.createNativeQuery(nativeQuery);
             query.setParameter(1, bigYardId);
             List<?> results = query.getResultList();
-            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("d/M/y");
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("d/M/y hh:mm:ss");
             return results.stream().map(result -> {
                 Object[] vote = (Object[]) result;
                 VoteModel voteModel = VoteModel.builder().build();
