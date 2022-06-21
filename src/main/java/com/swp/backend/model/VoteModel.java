@@ -10,8 +10,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class VoteModel {
+    private String accountId;
+    private String accountFullName;
+    private String accountAvatar;
     private String bookingId;
     private String voteId;
+    private String postedAt;
     private String yardName;
     private String subYardName;
     private String typeName;

@@ -10,7 +10,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-@RequestMapping("/api/v1/me")
+@RequestMapping("/api/v1")
 @RestController
 @AllArgsConstructor
 public class VoteRestApi {
@@ -19,7 +19,7 @@ public class VoteRestApi {
     private SecurityContextService securityContextService;
     private Gson gson;
 
-    @GetMapping(value = "vote")
+    @GetMapping(value = "me/vote")
     public ResponseEntity<String> getVote() {
         try {
             SecurityContext securityContext = SecurityContextHolder.getContext();
@@ -33,7 +33,18 @@ public class VoteRestApi {
 
     }
 
-    @PostMapping(value = "vote")
+    @GetMapping(value = "vote/yard/{yardId}")
+    public ResponseEntity<String> getVotesOfBigYard(@PathVariable String yardId) {
+        try {
+            return ResponseEntity.ok(gson.toJson(voteService.getAllVoteByBigYardId(yardId)));
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            ErrorResponse errorResponse = ErrorResponse.builder().message("Server busy can't handle this request!").build();
+            return ResponseEntity.internalServerError().body(gson.toJson(errorResponse));
+        }
+    }
+
+    @PostMapping(value = "me/vote")
     public ResponseEntity<String> postVote(@RequestBody(required = false) VoteRequest voteRequest) {
         try {
             if (voteRequest == null) {
@@ -62,7 +73,7 @@ public class VoteRestApi {
         }
     }
 
-    @PutMapping(value = "vote")
+    @PutMapping(value = "me/vote")
     public ResponseEntity<String> editVote(@RequestBody(required = false) VoteRequest voteRequest) {
         try {
             if (voteRequest == null) {
@@ -91,7 +102,7 @@ public class VoteRestApi {
         }
     }
 
-    @DeleteMapping(value = "vote")
+    @DeleteMapping(value = "me/vote")
     public ResponseEntity<String> deleteVote(@RequestBody(required = false) VoteRequest voteRequest) {
         try {
             if (voteRequest == null) {

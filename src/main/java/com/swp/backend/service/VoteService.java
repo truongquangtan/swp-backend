@@ -119,4 +119,8 @@ public class VoteService {
     public List<VoteModel> getAllNonVote(String userId) {
         return voteCustomRepository.getAllNonVoteByUserId(userId);
     }
+
+    public List<VoteModel> getAllVoteByBigYardId(String bigYardId){
+        return voteCustomRepository.getAllVoteByBigYard(bigYardId);
+    }
 }
