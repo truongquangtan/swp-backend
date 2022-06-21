@@ -2,6 +2,7 @@ package com.swp.backend.model.model_builder;
 
 import com.swp.backend.entity.BookingEntity;
 import com.swp.backend.entity.BookingHistoryEntity;
+import com.swp.backend.utils.DateHelper;
 
 import java.util.UUID;
 
@@ -12,7 +13,7 @@ public class BookingHistoryEntityBuilder {
         BookingHistoryEntity bookingHistoryEntity = BookingHistoryEntity.builder()
                 .bookingId(bookingEntity.getId())
                 .createdBy(bookingEntity.getAccountId())
-                .createdAt(bookingEntity.getBookAt())
+                .createdAt(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE))
                 .bookingStatus(bookingEntity.getStatus())
                 .id(id)
                 .note(reason)
