@@ -183,7 +183,7 @@ public class BookingService {
     }
 
     public int countAllHistoryBookingsOfUser(String userId) {
-        return bookingCustomRepository.countAllHistoryBookingsOfUser(userId);
+        return bookingHistoryRepository.countAllByCreatedBy(userId);
     }
 
     public int countAllIncomingMatchesOfUser(String userId) {
