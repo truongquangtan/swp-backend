@@ -12,4 +12,5 @@ import java.util.List;
 @Repository
 public interface BookingHistoryRepository extends JpaRepository<BookingHistoryEntity, String> {
     List<BookingHistoryEntity> getAllByCreatedByOrderByCreatedAtDesc(String userId, Pageable pageable);
+    int countAllByCreatedBy(String userId);
 }
