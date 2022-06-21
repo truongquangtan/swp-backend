@@ -50,7 +50,7 @@ public class VoteRestApi {
             );
 
             if (postVote) {
-                return ResponseEntity.ok("{message: \"Vote success!\"}");
+                return ResponseEntity.ok("{\"message\": \"Vote success!\"}");
             } else {
                 ErrorResponse errorResponse = ErrorResponse.builder().message("{message: \"Server busy can't handle this request!\"}").build();
                 return ResponseEntity.internalServerError().body(gson.toJson(errorResponse));
@@ -66,7 +66,7 @@ public class VoteRestApi {
     public ResponseEntity<String> editVote(@RequestBody(required = false) VoteRequest voteRequest) {
         try {
             if (voteRequest == null) {
-                ErrorResponse errorResponse = ErrorResponse.builder().message("Missing body.").build();
+                ErrorResponse errorResponse = ErrorResponse.builder().message("{message: \"Request failed!\"}").build();
                 return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
             }
             SecurityContext context = SecurityContextHolder.getContext();
