@@ -51,4 +51,34 @@ public class VoteCustomRepository {
             return voteModel;
         }).collect(Collectors.toList());
     }
+
+    public List<VoteModel> getAllNonVoteByUserId(String userId) {
+        String nativeQuery = "SELECT yards.name, sub_yards.name as sub_yard_name, type_yards.type_name, yards.address, booking.date, slots.start_time, slots.end_time, booking.id as book_id FROM booking" +
+                " INNER JOIN slots ON slots.id = booking.slot_id" +
+                " INNER JOIN sub_yards ON slots.ref_yard = sub_yards.id" +
+                " INNER JOIN yards ON sub_yards.parent_yard = yards.id" +
+                " LEFT JOIN votes ON votes.booking_id = booking.id" +
+                " INNER JOIN type_yards ON type_yards.id = sub_yards.type_yard" +
+                " WHERE (booking.account_id = ?1) AND (booking.status = ?2) AND (booking.date <= ?3) AND (votes.id IS NULL )";
+        Query query = entityManager.createNativeQuery(nativeQuery);
+        query.setParameter(1, userId);
+        query.setParameter(2, BookingStatus.SUCCESS);
+        query.setParameter(3, DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE));
+        List<?> results = query.getResultList();
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("d/M/y");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm");
+        return results.stream().map(result -> {
+            Object[] vote = (Object[]) result;
+            VoteModel voteModel = VoteModel.builder().build();
+            voteModel.setYardName((String) vote[0]);
+            voteModel.setSubYardName((String) vote[1]);
+            voteModel.setTypeName((String) vote[2]);
+            voteModel.setAddress((String) vote[3]);
+            voteModel.setDate(((Timestamp) vote[4]).toLocalDateTime().format(dateFormatter));
+            voteModel.setStartTime(((Time) vote[5]).toLocalTime().format(timeFormatter));
+            voteModel.setEndTime(((Time) vote[6]).toLocalTime().format(timeFormatter));
+            voteModel.setBookingId((String) vote[7]);
+            return voteModel;
+        }).collect(Collectors.toList());
+    }
 }

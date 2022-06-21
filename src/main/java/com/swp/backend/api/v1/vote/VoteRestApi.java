@@ -24,7 +24,7 @@ public class VoteRestApi {
         try {
             SecurityContext securityContext = SecurityContextHolder.getContext();
             String userId = securityContextService.extractUsernameFromContext(securityContext);
-            return ResponseEntity.ok(gson.toJson(voteService.getAllVote(userId)));
+            return ResponseEntity.ok(gson.toJson(voteService.getAllNonVote(userId)));
         } catch (Exception exception) {
             exception.printStackTrace();
             ErrorResponse errorResponse = ErrorResponse.builder().message("Server busy can't handle this request!").build();
