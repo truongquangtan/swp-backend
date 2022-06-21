@@ -23,5 +23,6 @@ public class YardModel {
     private int reference;
     private boolean isActive;
     private Timestamp createdAt;
+    private int score;
     private List<String> images;
 }
