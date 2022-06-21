@@ -127,7 +127,7 @@ public class BookingService {
 
     private void addInformationToBookingHistory(BookingEntity bookingEntity)
     {
-        BookingHistoryEntity bookingHistoryEntity = BookingHistoryEntityBuilder.buildFromBookingEntity(bookingEntity);
+        BookingHistoryEntity bookingHistoryEntity = BookingHistoryEntityBuilder.buildFromBookingEntity(bookingEntity, "");
         bookingHistoryRepository.save(bookingHistoryEntity);
     }
 

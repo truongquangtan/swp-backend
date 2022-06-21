@@ -6,7 +6,7 @@ import com.swp.backend.entity.BookingHistoryEntity;
 import java.util.UUID;
 
 public class BookingHistoryEntityBuilder {
-    public static BookingHistoryEntity buildFromBookingEntity(BookingEntity bookingEntity)
+    public static BookingHistoryEntity buildFromBookingEntity(BookingEntity bookingEntity, String reason)
     {
         String id = UUID.randomUUID().toString();
         BookingHistoryEntity bookingHistoryEntity = BookingHistoryEntity.builder()
@@ -15,7 +15,7 @@ public class BookingHistoryEntityBuilder {
                 .createdAt(bookingEntity.getBookAt())
                 .bookingStatus(bookingEntity.getStatus())
                 .id(id)
-                .note("")
+                .note(reason)
                 .build();
         return bookingHistoryEntity;
     }

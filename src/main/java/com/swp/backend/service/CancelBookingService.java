@@ -4,6 +4,7 @@ import com.swp.backend.api.v1.book.cancel_booking.CancelBookingRequest;
 import com.swp.backend.constance.BookingStatus;
 import com.swp.backend.entity.*;
 import com.swp.backend.exception.CancelBookingProcessException;
+import com.swp.backend.model.model_builder.BookingHistoryEntityBuilder;
 import com.swp.backend.myrepository.SlotCustomRepository;
 import com.swp.backend.repository.*;
 import com.swp.backend.utils.DateHelper;
@@ -28,6 +29,7 @@ public class CancelBookingService {
     private AccountRepository accountRepository;
     private YardRepository yardRepository;
     private SlotCustomRepository slotCustomRepository;
+    private BookingHistoryRepository bookingHistoryRepository;
     public static final int PREVENT_CANCEL_BOOKING_IN_MINUTE = 0;
 
     @Transactional
@@ -100,9 +102,10 @@ public class CancelBookingService {
 
     @Transactional(rollbackFor = CancelBookingProcessException.class)
     protected void cancelBookingProcess(BookingEntity booking, CancelBookingRequest request, int slotId) {
-        saveBookingCanceledInformation(booking, request.getReason());
+        BookingEntity bookingEntity = saveBookingCanceledInformation(booking, request.getReason());
         String yardId = slotCustomRepository.findYardIdFromSlotId(slotId);
         decreaseNumberOfBookingsOfYard(yardId);
+        saveBookingHistory(bookingEntity);
     }
 
     private BookingEntity saveBookingCanceledInformation(BookingEntity booking, String reason) {
@@ -121,6 +124,15 @@ public class CancelBookingService {
             yardRepository.save(yardEntity);
         } catch (Exception ex) {
             throw new CancelBookingProcessException("Increase number of booking in yard entity failed.");
+        }
+    }
+
+    private void saveBookingHistory(BookingEntity bookingEntity)
+    {
+        try {
+            bookingHistoryRepository.save(BookingHistoryEntityBuilder.buildFromBookingEntity(bookingEntity, "Canceled by user with reason: " + bookingEntity.getNote()));
+        } catch (Exception ex) {
+            throw new CancelBookingProcessException("Cancel successfully. However, save to booking history failed due to internal error");
         }
     }
 
