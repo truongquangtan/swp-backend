@@ -13,6 +13,7 @@ public class VoteModel {
     private String bookingId;
     private String voteId;
     private String yardName;
+    private String subYardName;
     private String typeName;
     private String address;
     private String startTime;
