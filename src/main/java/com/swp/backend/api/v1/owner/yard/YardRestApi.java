@@ -19,8 +19,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.EntityManager;
-
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/api/v1/owners/me")
@@ -82,14 +80,12 @@ public class YardRestApi {
 
             YardEntity yardEntity = yardService.getYardByIdAndNotDeleted(yardId);
 
-            if(yardEntity == null)
-            {
+            if (yardEntity == null) {
                 ErrorResponse error = ErrorResponse.builder().message("The yard is deleted or not existed.").build();
                 return ResponseEntity.badRequest().body(gson.toJson(error));
             }
 
-            if(!yardEntity.getOwnerId().equals(ownerId))
-            {
+            if (!yardEntity.getOwnerId().equals(ownerId)) {
                 ErrorResponse error = ErrorResponse.builder().message("The owner is not author of this yard.").build();
                 return ResponseEntity.badRequest().body(gson.toJson(error));
             }

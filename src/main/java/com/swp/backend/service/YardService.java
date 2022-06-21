@@ -187,8 +187,7 @@ public class YardService {
         return yardRepository.findYardEntitiesById(yardId);
     }
 
-    public YardEntity getYardByIdAndNotDeleted(String yardId)
-    {
+    public YardEntity getYardByIdAndNotDeleted(String yardId) {
         return yardRepository.findYardEntityByIdAndDeleted(yardId, false);
     }
 
@@ -243,11 +242,9 @@ public class YardService {
         return yardCustomRepository.reactivateAllYardsOfOwner(ownerId);
     }
 
-    public GetYardDetailResponse getYardDetailResponseFromYardId(String yardId)
-    {
+    public GetYardDetailResponse getYardDetailResponseFromYardId(String yardId) {
         YardEntity yardEntity = getYardByIdAndNotDeleted(yardId);
-        if(yardEntity == null)
-        {
+        if (yardEntity == null) {
             throw new RuntimeException("Can not get yard from " + yardId);
         }
 
@@ -262,7 +259,9 @@ public class YardService {
         int minute = yardEntity.getSlotDuration() % 60;
         String duration = LocalTime.of(hour, minute).format(formatter);
 
-        List<String> images = yardPictureRepository.getAllByRefId(yardId).stream().map(yardPictureEntity -> {return yardPictureEntity.getImage();}).collect(Collectors.toList());
+        List<String> images = yardPictureRepository.getAllByRefId(yardId).stream().map(yardPictureEntity -> {
+            return yardPictureEntity.getImage();
+        }).collect(Collectors.toList());
         List<SubYardModel> subYards = subYardService.getSubYardsByBigYard(yardId);
         return GetYardDetailResponse.builder()
                 .id(yardEntity.getId())

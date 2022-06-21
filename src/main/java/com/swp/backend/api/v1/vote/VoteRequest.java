@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @Builder
 public class VoteRequest {
-    private String postId;
+    private String voteId;
     private String bookingId;
     private Integer score;
     private String comment;

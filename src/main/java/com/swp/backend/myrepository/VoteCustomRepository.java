@@ -1,6 +1,5 @@
 package com.swp.backend.myrepository;
 
-import com.google.gson.Gson;
 import com.swp.backend.constance.BookingStatus;
 import com.swp.backend.model.VoteModel;
 import com.swp.backend.utils.DateHelper;
@@ -9,10 +8,8 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import java.sql.Array;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,7 +19,7 @@ public class VoteCustomRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public List<VoteModel> getAllVoteByUserId(String userId){
+    public List<VoteModel> getAllVoteByUserId(String userId) {
         String nativeQuery = "SELECT votes.id as vote_id, votes.score, votes.comment, yards.name, type_yards.type_name, yards.address, booking.date, slots.start_time, slots.end_time, booking.id as book_id FROM booking" +
                 " INNER JOIN slots ON slots.id = booking.slot_id" +
                 " INNER JOIN sub_yards ON slots.ref_yard = sub_yards.id" +

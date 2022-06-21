@@ -63,12 +63,12 @@ public class AccountCustomRepository {
         return query.getResultList();
     }
 
-    public int countMaxResultSearchAccount(Integer role, String keyword, String status){
+    public int countMaxResultSearchAccount(Integer role, String keyword, String status) {
         String queryString = "SELECT COUNT(*) FROM accounts";
         queryString = queryString.concat(buildWhereClauseQuery(role, keyword, status));
         Query query = entityManager.createNativeQuery(queryString);
         Object result = query.getSingleResult();
-        return  (result instanceof BigInteger) ?  ((BigInteger) result).intValue() : 0;
+        return (result instanceof BigInteger) ? ((BigInteger) result).intValue() : 0;
     }
 
     private String buildOrderQuery(List<String> sortBy, String sort) {

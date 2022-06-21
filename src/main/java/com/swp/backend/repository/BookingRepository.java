@@ -26,4 +26,6 @@ public interface BookingRepository extends JpaRepository<BookingEntity, String> 
     public List<BookingEntity> findAllByAccountIdAndStatusAndDateBefore(String accountId, String status, Timestamp date);
 
     public List<BookingEntity> findAllByBigYardId(String bigYardId);
+
+    public BookingEntity findBookingEntityById(String id);
 }

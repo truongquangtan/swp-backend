@@ -102,17 +102,13 @@ public class BookingService {
 
         bookingRepository.save(bookingEntity);
 
-        if(status.equals(BookingStatus.SUCCESS))
-        {
-            try
-            {
+        if (status.equals(BookingStatus.SUCCESS)) {
+            try {
                 YardEntity yardEntity = yardRepository.findYardEntitiesById(yardId);
                 int currentNumberOfBookings = yardEntity.getNumberOfBookings() == null ? 0 : yardEntity.getNumberOfBookings();
                 yardEntity.setNumberOfBookings(currentNumberOfBookings + 1);
                 yardRepository.save(yardEntity);
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 throw new RuntimeException("Increase number of booking in yard entity failed.");
             }
 
@@ -190,7 +186,7 @@ public class BookingService {
         return bookingRepository.getListSlotExitsBookingReference(listSlotId);
     }
 
-    public BookingEntity getBookingById(String  id){
+    public BookingEntity getBookingById(String id) {
         return bookingRepository.getById(id);
     }
 }

@@ -113,17 +113,13 @@ public class CancelBookingService {
         return booking;
     }
 
-    private void decreaseNumberOfBookingsOfYard(String yardId)
-    {
-        try
-        {
+    private void decreaseNumberOfBookingsOfYard(String yardId) {
+        try {
             YardEntity yardEntity = yardRepository.findYardEntitiesById(yardId);
             int currentNumberOfBookings = yardEntity.getNumberOfBookings() == null ? 0 : yardEntity.getNumberOfBookings();
             yardEntity.setNumberOfBookings(currentNumberOfBookings - 1);
             yardRepository.save(yardEntity);
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             throw new CancelBookingProcessException("Increase number of booking in yard entity failed.");
         }
     }
