@@ -2,14 +2,13 @@ package com.swp.backend.service;
 
 import com.swp.backend.constance.BookingStatus;
 import com.swp.backend.entity.BookingEntity;
+import com.swp.backend.entity.BookingHistoryEntity;
 import com.swp.backend.entity.SlotEntity;
 import com.swp.backend.entity.YardEntity;
 import com.swp.backend.model.BookingModel;
+import com.swp.backend.model.model_builder.BookingHistoryEntityBuilder;
 import com.swp.backend.myrepository.BookingCustomRepository;
-import com.swp.backend.repository.BookingRepository;
-import com.swp.backend.repository.SlotRepository;
-import com.swp.backend.repository.SubYardRepository;
-import com.swp.backend.repository.YardRepository;
+import com.swp.backend.repository.*;
 import com.swp.backend.utils.DateHelper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,6 +33,7 @@ public class BookingService {
     private YardRepository yardRepository;
     private SlotRepository slotRepository;
     private SubYardRepository subYardRepository;
+    private BookingHistoryRepository bookingHistoryRepository;
 
     @Transactional
     public BookingEntity book(String userId, String yardId, BookingModel bookingModel) {
@@ -103,18 +103,32 @@ public class BookingService {
         bookingRepository.save(bookingEntity);
 
         if (status.equals(BookingStatus.SUCCESS)) {
-            try {
-                YardEntity yardEntity = yardRepository.findYardEntitiesById(yardId);
-                int currentNumberOfBookings = yardEntity.getNumberOfBookings() == null ? 0 : yardEntity.getNumberOfBookings();
-                yardEntity.setNumberOfBookings(currentNumberOfBookings + 1);
-                yardRepository.save(yardEntity);
-            } catch (Exception ex) {
-                throw new RuntimeException("Increase number of booking in yard entity failed.");
+            try
+            {
+                increaseNumberOfBookingsOfYard(yardId);
+                addInformationToBookingHistory(bookingEntity);
             }
-
+            catch (Exception ex)
+            {
+                throw new RuntimeException("Error when update history booking or increase booking in yard.");
+            }
         }
 
         return bookingEntity;
+    }
+
+    private void increaseNumberOfBookingsOfYard(String yardId)
+    {
+        YardEntity yardEntity = yardRepository.findYardEntitiesById(yardId);
+        int currentNumberOfBookings = yardEntity.getNumberOfBookings() == null ? 0 : yardEntity.getNumberOfBookings();
+        yardEntity.setNumberOfBookings(currentNumberOfBookings + 1);
+        yardRepository.save(yardEntity);
+    }
+
+    private void addInformationToBookingHistory(BookingEntity bookingEntity)
+    {
+        BookingHistoryEntity bookingHistoryEntity = BookingHistoryEntityBuilder.buildFromBookingEntity(bookingEntity, "");
+        bookingHistoryRepository.save(bookingHistoryEntity);
     }
 
     public List<BookingEntity> getIncomingMatchesOfUser(String userId, int itemsPerPage, int page) {
