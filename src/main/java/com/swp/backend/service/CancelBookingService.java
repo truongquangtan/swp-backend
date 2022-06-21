@@ -105,7 +105,7 @@ public class CancelBookingService {
         BookingEntity bookingEntity = saveBookingCanceledInformation(booking, request.getReason());
         String yardId = slotCustomRepository.findYardIdFromSlotId(slotId);
         decreaseNumberOfBookingsOfYard(yardId);
-        saveBookingHistory(bookingEntity);
+        saveBookingHistory(bookingEntity, request.getReason());
     }
 
     private BookingEntity saveBookingCanceledInformation(BookingEntity booking, String reason) {
@@ -127,10 +127,10 @@ public class CancelBookingService {
         }
     }
 
-    private void saveBookingHistory(BookingEntity bookingEntity)
+    private void saveBookingHistory(BookingEntity bookingEntity, String reason)
     {
         try {
-            bookingHistoryRepository.save(BookingHistoryEntityBuilder.buildFromBookingEntity(bookingEntity, "Canceled by user with reason: " + bookingEntity.getNote()));
+            bookingHistoryRepository.save(BookingHistoryEntityBuilder.buildFromBookingEntity(bookingEntity, "Canceled by user with reason: " + reason));
         } catch (Exception ex) {
             throw new CancelBookingProcessException("Cancel successfully. However, save to booking history failed due to internal error");
         }
