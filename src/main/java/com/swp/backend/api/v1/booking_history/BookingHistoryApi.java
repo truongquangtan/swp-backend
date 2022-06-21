@@ -2,7 +2,10 @@ package com.swp.backend.api.v1.booking_history;
 
 import com.google.gson.Gson;
 import com.swp.backend.entity.BookingEntity;
+import com.swp.backend.entity.BookingHistoryEntity;
+import com.swp.backend.model.BookingHistoryModel;
 import com.swp.backend.model.MatchModel;
+import com.swp.backend.service.AccountService;
 import com.swp.backend.service.BookingService;
 import com.swp.backend.service.MatchService;
 import com.swp.backend.service.SecurityContextService;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @AllArgsConstructor
@@ -23,7 +27,7 @@ import java.util.List;
 public class BookingHistoryApi {
     private SecurityContextService securityContextService;
     private BookingService bookingService;
-    private MatchService matchService;
+    private AccountService accountService;
     private Gson gson;
     private static final int ITEMS_PER_PAGE_DEFAULT = 5;
     private static final int PAGE_DEFAULT = 1;
@@ -42,8 +46,12 @@ public class BookingHistoryApi {
             SecurityContext context = SecurityContextHolder.getContext();
             userId = securityContextService.extractUsernameFromContext(context);
 
-            List<BookingEntity> bookingEntities = bookingService.getBookingHistoryOfUser(userId, itemsPerPage, page);
-            List<MatchModel> data = matchService.getListMatchModelFromListBookingEntity(bookingEntities);
+            List<BookingHistoryEntity> bookingEntities = bookingService.getBookingHistoryOfUser(userId, itemsPerPage, page);
+            List<BookingHistoryModel> data = bookingEntities.stream().map(bookingHistoryEntity -> {
+                String createdBy = bookingHistoryEntity.getCreatedBy();
+                String displayCreatedBy = createdBy.equals(userId) ? "You" : accountService.getRoleFromUserId(createdBy);
+                return BookingHistoryModel.buildFromBookingHistoryEntityAndCreatedBy(bookingHistoryEntity, displayCreatedBy);
+            }).collect(Collectors.toList());
 
             int countAllItems = bookingService.countAllHistoryBookingsOfUser(userId);
 

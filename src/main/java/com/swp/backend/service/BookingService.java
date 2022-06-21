@@ -11,6 +11,8 @@ import com.swp.backend.myrepository.BookingCustomRepository;
 import com.swp.backend.repository.*;
 import com.swp.backend.utils.DateHelper;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -167,16 +169,12 @@ public class BookingService {
         return result;
     }
 
-    public List<BookingEntity> getBookingHistoryOfUser(String userId, int itemsPerPage, int page) {
-        List<BookingEntity> result = new ArrayList<>();
+    public List<BookingHistoryEntity> getBookingHistoryOfUser(String userId, int itemsPerPage, int page) {
+        List<BookingHistoryEntity> result;
 
-        int startIndex = itemsPerPage * (page - 1);
-        int endIndex = startIndex + itemsPerPage - 1;
-        int maxIndex = countAllHistoryBookingsOfUser(userId) - 1;
-        endIndex = Math.min(endIndex, maxIndex);
+        Pageable pagination = PageRequest.of(page - 1, itemsPerPage);
 
-        if (startIndex > endIndex) return result;
-        result = bookingCustomRepository.getOrderedBookingEntitiesOfUserByPage(userId, startIndex, endIndex);
+        result = bookingHistoryRepository.getAllByCreatedByOrderByCreatedAtDesc(userId, pagination);
 
         if (result == null) {
             return new ArrayList<>();
