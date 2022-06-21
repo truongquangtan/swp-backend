@@ -1,9 +1,6 @@
 package com.swp.backend.entity;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,6 +13,8 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class BookingHistoryEntity {
     @Id
     @Column(name = "id")

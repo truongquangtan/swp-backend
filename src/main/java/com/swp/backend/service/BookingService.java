@@ -110,7 +110,7 @@ public class BookingService {
             }
             catch (Exception ex)
             {
-                throw new RuntimeException("Error when update history booking or increasing yards.");
+                throw new RuntimeException("Error when update history booking or increase booking in yard.");
             }
         }
 
