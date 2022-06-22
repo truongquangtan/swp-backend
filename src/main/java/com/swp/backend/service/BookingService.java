@@ -8,6 +8,7 @@ import com.swp.backend.entity.YardEntity;
 import com.swp.backend.model.BookingModel;
 import com.swp.backend.model.model_builder.BookingHistoryEntityBuilder;
 import com.swp.backend.myrepository.BookingCustomRepository;
+import com.swp.backend.myrepository.BookingHistoryCustomRepository;
 import com.swp.backend.repository.*;
 import com.swp.backend.utils.DateHelper;
 import lombok.AllArgsConstructor;
@@ -36,6 +37,7 @@ public class BookingService {
     private SlotRepository slotRepository;
     private SubYardRepository subYardRepository;
     private BookingHistoryRepository bookingHistoryRepository;
+    private BookingHistoryCustomRepository bookingHistoryCustomRepository;
 
     @Transactional
     public BookingEntity book(String userId, String yardId, BookingModel bookingModel) {
@@ -183,6 +185,20 @@ public class BookingService {
         return result;
     }
 
+    public List<BookingHistoryEntity> getBookingHistoryOfOwner(String ownerId, int itemsPerPage, int page)
+    {
+        int startIndex = (page - 1)*itemsPerPage;
+        int endIndex = startIndex + itemsPerPage - 1;
+        int maxIndex = countAllHistoryBookingsOfOwner(ownerId);
+        endIndex = endIndex < maxIndex ? endIndex : maxIndex;
+        if(startIndex > endIndex) return new ArrayList<>();
+
+        return bookingHistoryCustomRepository.getAllBookingHistoryOfOwner(ownerId, startIndex, endIndex);
+    }
+    public int countAllHistoryBookingsOfOwner(String ownerId)
+    {
+        return bookingHistoryCustomRepository.countAllBookingHistoryOfOwner(ownerId);
+    }
     public int countAllHistoryBookingsOfUser(String userId) {
         return bookingHistoryRepository.countAllByCreatedBy(userId);
     }
