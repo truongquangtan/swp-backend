@@ -6,6 +6,8 @@ import com.swp.backend.api.v1.owner.yard.response.GetYardDetailResponse;
 import com.swp.backend.api.v1.owner.yard.response.GetYardResponse;
 import com.swp.backend.api.v1.yard.search.YardResponse;
 import com.swp.backend.entity.*;
+import com.swp.backend.model.SlotModel;
+import com.swp.backend.model.SubYardDetailModel;
 import com.swp.backend.model.SubYardModel;
 import com.swp.backend.model.YardModel;
 import com.swp.backend.myrepository.YardCustomRepository;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -264,6 +267,17 @@ public class YardService {
             return yardPictureEntity.getImage();
         }).collect(Collectors.toList());
         List<SubYardModel> subYards = subYardService.getSubYardsByBigYard(yardId);
+        List<SubYardDetailModel> subYardDetailModels = subYards.stream().map(subYardModel -> {
+            List<SlotModel> slots = slotRepository.findSlotEntitiesByRefYard(subYardModel.getId()).stream().map(slotEntity -> {
+                return SlotModel.buildFromSlotEntity(slotEntity);
+            }).collect(Collectors.toList());
+            return SubYardDetailModel.builder().id(subYardModel.getId())
+                    .name(subYardModel.getName())
+                    .createAt(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(subYardModel.getCreateAt()))
+                    .isActive(subYardModel.isActive())
+                    .typeYard(subYardModel.getTypeYard())
+                    .slots(slots).build();
+        }).collect(Collectors.toList());
         return GetYardDetailResponse.builder()
                 .id(yardEntity.getId())
                 .name(yardEntity.getName())
@@ -276,6 +290,6 @@ public class YardService {
                 .closeTime(yardEntity.getCloseAt().format(formatter))
                 .duration(duration)
                 .images(images)
-                .subYards(subYards).build();
+                .subYards(subYardDetailModels).build();
     }
 }

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.swp.backend.model.SubYardDetailModel;
 
 import java.util.List;
 
@@ -24,5 +25,5 @@ public class GetYardDetailResponse {
     private String closeTime;
     private String duration;
     private List<String> images;
-    private List<SubYardModel> subYards;
+    private List<SubYardDetailModel> subYards;
 }
