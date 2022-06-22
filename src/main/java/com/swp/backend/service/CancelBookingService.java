@@ -130,7 +130,7 @@ public class CancelBookingService {
     private void saveBookingHistory(BookingEntity bookingEntity, String reason)
     {
         try {
-            bookingHistoryRepository.save(BookingHistoryEntityBuilder.buildFromBookingEntity(bookingEntity, "Canceled by user with reason: " + reason));
+            bookingHistoryRepository.save(BookingHistoryEntityBuilder.buildFromBookingEntity(bookingEntity, reason));
         } catch (Exception ex) {
             throw new CancelBookingProcessException("Cancel successfully. However, save to booking history failed due to internal error");
         }

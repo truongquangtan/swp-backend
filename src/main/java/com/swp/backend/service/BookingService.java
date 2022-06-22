@@ -84,6 +84,22 @@ public class BookingService {
 
     @Transactional
     public BookingEntity processBooking(String userId, String yardId, BookingModel bookingModel, String errorNote, String status) {
+        try
+        {
+            BookingEntity bookingEntity = saveBookingEntity(userId, yardId, bookingModel, errorNote, status);
+            addInformationToBookingHistory(bookingEntity);
+            if(status.equals(BookingStatus.SUCCESS))
+            {
+                increaseNumberOfBookingsOfYard(yardId);
+            }
+            return bookingEntity;
+        } catch (Exception ex)
+        {
+            throw new RuntimeException("Error when process booking.");
+        }
+    }
+    private BookingEntity saveBookingEntity(String userId, String yardId, BookingModel bookingModel, String errorNote, String status)
+    {
         Timestamp timestamp = DateHelper.parseFromStringToTimestamp(bookingModel.getDate());
         Timestamp now = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
 
@@ -103,22 +119,8 @@ public class BookingService {
                 .build();
 
         bookingRepository.save(bookingEntity);
-
-        if (status.equals(BookingStatus.SUCCESS)) {
-            try
-            {
-                increaseNumberOfBookingsOfYard(yardId);
-                addInformationToBookingHistory(bookingEntity);
-            }
-            catch (Exception ex)
-            {
-                throw new RuntimeException("Error when update history booking or increase booking in yard.");
-            }
-        }
-
         return bookingEntity;
     }
-
     private void increaseNumberOfBookingsOfYard(String yardId)
     {
         YardEntity yardEntity = yardRepository.findYardEntitiesById(yardId);
