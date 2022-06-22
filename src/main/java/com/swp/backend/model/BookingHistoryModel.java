@@ -13,7 +13,7 @@ import java.text.SimpleDateFormat;
 @Data
 @Builder
 public class BookingHistoryModel {
-    private int reference;
+    private long reference;
     private String bookingId;
     private String createdAt;
     private String createdBy;
@@ -28,7 +28,7 @@ public class BookingHistoryModel {
                 .createdAt(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(bookingHistory.getCreatedAt()))
                 .createdBy(createdBy)
                 .note(bookingHistory.getNote())
-                .reference(bookingHistory.getReference())
+                .reference(bookingHistory.getBookingReference())
                 .build();
     }
 }

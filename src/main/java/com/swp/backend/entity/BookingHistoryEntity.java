@@ -21,8 +21,8 @@ public class BookingHistoryEntity {
     private String id;
     @Column(name = "booking_id")
     private String bookingId;
-    @Column(name = "reference", insertable = false)
-    private int reference;
+    @Column(name = "booking_reference")
+    private long bookingReference;
     @Column(name = "created_by")
     private String createdBy;
     @Column(name = "created_at")
