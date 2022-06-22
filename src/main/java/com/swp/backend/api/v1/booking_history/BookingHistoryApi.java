@@ -46,8 +46,8 @@ public class BookingHistoryApi {
             SecurityContext context = SecurityContextHolder.getContext();
             userId = securityContextService.extractUsernameFromContext(context);
 
-            List<BookingHistoryEntity> bookingEntities = bookingService.getBookingHistoryOfUser(userId, itemsPerPage, page);
-            List<BookingHistoryModel> data = bookingEntities.stream().map(bookingHistoryEntity -> {
+            List<BookingHistoryEntity> bookingHistoryEntities = bookingService.getBookingHistoryOfUser(userId, itemsPerPage, page);
+            List<BookingHistoryModel> data = bookingHistoryEntities.stream().map(bookingHistoryEntity -> {
                 String createdBy = bookingHistoryEntity.getCreatedBy();
                 String displayCreatedBy = createdBy.equals(userId) ? "You" : accountService.getRoleFromUserId(createdBy);
                 return BookingHistoryModel.buildFromBookingHistoryEntityAndCreatedBy(bookingHistoryEntity, displayCreatedBy);
