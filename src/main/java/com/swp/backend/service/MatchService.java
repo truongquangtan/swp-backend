@@ -24,7 +24,6 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 public class MatchService {
-    private SlotCustomRepository slotCustomRepository;
     private SlotRepository slotRepository;
     private YardService yardService;
     private SubYardCustomRepository subYardCustomRepository;
@@ -60,6 +59,7 @@ public class MatchService {
                 .subYardId(subYardId)
                 .slotId(slotId)
                 .bookingStatus(bookingEntity.getStatus())
+                .price(bookingEntity.getPrice())
                 .build();
     }
 
