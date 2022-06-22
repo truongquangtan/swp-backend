@@ -200,6 +200,6 @@ public class BookingService {
     }
 
     public BookingEntity getBookingById(String id) {
-        return bookingRepository.getById(id);
+        return bookingRepository.getBookingEntityById(id);
     }
 }
