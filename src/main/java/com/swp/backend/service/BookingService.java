@@ -118,8 +118,7 @@ public class BookingService {
                 .subYardId(bookingModel.getRefSubYard())
                 .build();
 
-        bookingRepository.save(bookingEntity);
-        return bookingRepository.getBookingEntityById(bookingEntity.getId());
+        return bookingRepository.save(bookingEntity);
     }
     private void increaseNumberOfBookingsOfYard(String yardId)
     {

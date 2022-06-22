@@ -28,7 +28,7 @@ public class BookingHistoryModel {
                 .createdAt(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(bookingHistory.getCreatedAt()))
                 .createdBy(createdBy)
                 .note(bookingHistory.getNote())
-                .reference(bookingHistory.getBookingReference())
+                .reference(bookingHistory.getReference())
                 .build();
     }
 }
