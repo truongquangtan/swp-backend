@@ -169,7 +169,7 @@ public class BookingService {
     public List<BookingHistoryEntity> getBookingHistoryOfUser(String userId, int itemsPerPage, int page) {
         int startIndex = (page - 1) * itemsPerPage;
         int endIndex = startIndex + itemsPerPage - 1;
-        int maxIndex = countAllHistoryBookingsOfOwner(userId);
+        int maxIndex = countAllHistoryBookingsOfUser(userId);
         endIndex = endIndex < maxIndex ? endIndex : maxIndex;
         if (startIndex > endIndex) return new ArrayList<>();
 
