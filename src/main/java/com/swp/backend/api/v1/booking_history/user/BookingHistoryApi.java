@@ -24,7 +24,6 @@ public class BookingHistoryApi {
     private SecurityContextService securityContextService;
     private BookingService bookingService;
     private AccountService accountService;
-    private MatchService matchService;
     private BookingHistoryService bookingHistoryService;
     private Gson gson;
     private static final int ITEMS_PER_PAGE_DEFAULT = 5;
