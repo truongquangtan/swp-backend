@@ -92,17 +92,14 @@ public class VoteService {
                 BookingEntity booking = bookingRepository.findBookingEntityById(bookingId);
                 YardEntity yard = yardService.getYardById(booking.getBigYardId());
                 List<BookingEntity> bookingListOfBigYard = bookingRepository.findAllByBigYardId(yard.getId());
-                List<String> listBookingId = bookingListOfBigYard.parallelStream().map(bookingEntity -> booking.getId()).collect(Collectors.toList());
-
+                List<String> listBookingId = bookingListOfBigYard.parallelStream().map(BookingEntity::getId).collect(Collectors.toList());
                 List<VoteEntity> votes = voteRepository.findAllByBookingIdInAndDeletedFalse(listBookingId);
 
                 if (votes == null) {
                     return;
                 }
-
                 float sumScore = votes.stream().reduce(0, (preSum, vote) -> preSum + vote.getScore(), Integer::sum);
                 int average = Math.round(sumScore / votes.size());
-
                 yard.setScore(average);
                 yard.setNumberOfVote(votes.size());
                 yardService.updateYard(yard);
