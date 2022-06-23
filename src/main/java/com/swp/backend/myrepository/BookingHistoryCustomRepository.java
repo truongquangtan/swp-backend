@@ -91,7 +91,7 @@ public class BookingHistoryCustomRepository {
         Query query = null;
         try {
             String nativeQuery = "SELECT COUNT(*) " +
-                    "FROM booking_history INNER JOIN booking ON booking_history.booking_id = booking.id" +
+                    "FROM booking_history INNER JOIN booking ON booking_history.booking_id = booking.id " +
                     "WHERE booking.account_id = ?1";
 
             query = entityManager.createNativeQuery(nativeQuery);
