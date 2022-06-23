@@ -36,6 +36,7 @@ public class BookingService {
     private SubYardRepository subYardRepository;
     private BookingHistoryRepository bookingHistoryRepository;
     private BookingHistoryCustomRepository bookingHistoryCustomRepository;
+    private BookingHistoryService bookingHistoryService;
 
     @Transactional
     public BookingEntity book(String userId, String yardId, BookingModel bookingModel) {
@@ -126,8 +127,8 @@ public class BookingService {
     }
 
     private void addInformationToBookingHistory(BookingEntity bookingEntity) {
-        BookingHistoryEntity bookingHistoryEntity = BookingHistoryEntityBuilder.buildFromBookingEntity(bookingEntity, "");
-        bookingHistoryRepository.save(bookingHistoryEntity);
+        bookingHistoryService.saveBookingHistory(bookingEntity, "", bookingEntity.getAccountId());
+
     }
 
     public List<BookingEntity> getIncomingMatchesOfUser(String userId, int itemsPerPage, int page) {

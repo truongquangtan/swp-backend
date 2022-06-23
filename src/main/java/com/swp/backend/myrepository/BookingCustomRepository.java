@@ -96,7 +96,7 @@ public class BookingCustomRepository {
         }
     }
 
-    public List<BookingEntity> getAllBookingEntitiesOfSlotInFuture(int slotId)
+    public List<BookingEntity> getAllSuccessBookingEntitiesOfSlotInFuture(int slotId)
     {
         try
         {
@@ -104,13 +104,14 @@ public class BookingCustomRepository {
             Query query = null;
 
             String nativeQuery = "SELECT booking.* FROM booking INNER JOIN slots s ON booking.slot_id = s.id " +
-                    "WHERE (s.id = ?1) AND ((booking.date > ?2) OR ((booking.date = ?2) AND (s.start_time > ?3)))";
+                    "WHERE (s.id = ?1) AND ((booking.date > ?2) OR ((booking.date = ?2) AND (s.start_time > ?3))) AND booking.status = ?4";
+
+            query = entityManager.createNativeQuery(nativeQuery, BookingEntity.class);
 
             query.setParameter(1, slotId);
             query.setParameter(2, today);
             query.setParameter(3, LocalTime.now(ZoneId.of(DateHelper.VIETNAM_ZONE)));
-
-            query = entityManager.createNativeQuery(nativeQuery, BookingEntity.class);
+            query.setParameter(4, BookingStatus.SUCCESS);
 
             List<?> queriedList = query.getResultList();
             List<BookingEntity> result = queriedList.stream().map(queriedObject -> {

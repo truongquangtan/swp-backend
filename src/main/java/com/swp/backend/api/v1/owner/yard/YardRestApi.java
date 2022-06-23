@@ -9,10 +9,14 @@ import com.swp.backend.api.v1.owner.yard.response.GetYardDetailResponse;
 import com.swp.backend.api.v1.owner.yard.response.GetYardResponse;
 import com.swp.backend.entity.YardEntity;
 import com.swp.backend.exception.ErrorResponse;
+import com.swp.backend.exception.InactivateProcessException;
+import com.swp.backend.model.MessageResponse;
 import com.swp.backend.repository.YardRepository;
+import com.swp.backend.service.InactivationService;
 import com.swp.backend.service.SecurityContextService;
 import com.swp.backend.service.YardService;
 import lombok.AllArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,8 +28,8 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping(value = "/api/v1/owners/me")
 public class YardRestApi {
     private YardService yardService;
-    private YardRepository yardRepository;
     private SecurityContextService securityContextService;
+    private InactivationService inactivationService;
     private Gson gson;
 
     @PostMapping(value = "yards")
@@ -96,6 +100,24 @@ public class YardRestApi {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+    @DeleteMapping(value = "yards/{yardId}")
+    public ResponseEntity<String> deleteYardById(@PathVariable String yardId)
+    {
+        try
+        {
+            SecurityContext securityContext = SecurityContextHolder.getContext();
+            String ownerId = securityContextService.extractUsernameFromContext(securityContext);
+
+            inactivationService.deleteYard(ownerId, yardId);
+            MessageResponse response = new MessageResponse("Delete yard successfully");
+            return ResponseEntity.ok().body(gson.toJson(response));
+        }
+        catch(InactivateProcessException inactivateProcessException)
+        {
+            ErrorResponse response = ErrorResponse.builder().message(inactivateProcessException.getFilterMessage()).build();
+            return ResponseEntity.badRequest().body(gson.toJson(response));
         }
     }
 }

@@ -25,6 +25,7 @@ import java.time.format.DateTimeFormatter;
 public class CancelBookingService {
     private YardService yardService;
     private MatchService matchService;
+    private BookingHistoryService bookingHistoryService;
     private SubYardRepository subYardRepository;
     private SlotRepository slotRepository;
     private BookingRepository bookingRepository;
@@ -108,7 +109,15 @@ public class CancelBookingService {
         BookingEntity bookingEntity = saveBookingCanceledInformation(booking, reason);
         String yardId = slotCustomRepository.findYardIdFromSlotId(booking.getSlotId());
         decreaseNumberOfBookingsOfYard(yardId);
-        saveBookingHistory(bookingEntity, reason);
+        saveBookingHistory(bookingEntity, reason, bookingEntity.getAccountId());
+    }
+
+    @Transactional(rollbackFor = CancelBookingProcessException.class)
+    public void cancelBookingProcessCreatedByOwner(BookingEntity booking, String reason, String ownerId) {
+        BookingEntity bookingEntity = saveBookingCanceledInformation(booking, reason);
+        String yardId = slotCustomRepository.findYardIdFromSlotId(booking.getSlotId());
+        decreaseNumberOfBookingsOfYard(yardId);
+        saveBookingHistory(bookingEntity, reason, ownerId);
     }
 
     private BookingEntity saveBookingCanceledInformation(BookingEntity booking, String reason) {
@@ -130,9 +139,9 @@ public class CancelBookingService {
         }
     }
 
-    private void saveBookingHistory(BookingEntity bookingEntity, String reason) {
+    private void saveBookingHistory(BookingEntity bookingEntity, String reason, String createdBy) {
         try {
-            bookingHistoryRepository.save(BookingHistoryEntityBuilder.buildFromBookingEntity(bookingEntity, reason));
+            bookingHistoryService.saveBookingHistory(bookingEntity, reason, createdBy);
         } catch (Exception ex) {
             throw new CancelBookingProcessException("Cancel successfully. However, save to booking history failed due to internal error");
         }
@@ -208,6 +217,10 @@ public class CancelBookingService {
                 "<td>Canceled At</td>" +
                 "<td>" + new SimpleDateFormat("dd/MM/yyyy hh:mm:ss").format(booking.getBookAt()) + "</td>" +
                 "</tr>" +
+                "<tr>" +
+                "<td>Status</td>" +
+                "<td> CANCELED </td>" +
+                "</tr>" +
                 "</table>" +
                 "<p style=\"text-align: center;\">--------------</p>";
         return result;
@@ -218,7 +231,7 @@ public class CancelBookingService {
         String result = "<img style=\"display: block; width: 60px; padding: 2px; height: 60px; margin: auto;\" src=\"https://firebasestorage.googleapis.com/v0/b/fu-swp391.appspot.com/o/mail-icon.png?alt=media\">" +
                 "<h1 style=\"font-family:open Sans Helvetica, Arial, sans-serif; margin: 0; font-size:18px; padding: 2px; text-align: center;\">Playground Basketball</h1>" +
                 "<hr>" +
-                "<p style=\"font-family:open Sans Helvetica, Arial, sans-serif;font-size:16px; margin: 0; padding: 2px; text-align: center;\">There was a booking canceled by owner due to the reason: " + reason + ". Your booking detail: " +
+                "<p style=\"font-family:open Sans Helvetica, Arial, sans-serif;font-size:16px; margin: 0; padding: 2px; text-align: center;\">There was a booking canceled due to the reason: " + reason + ". Your booking detail: " +
                 "<table border=\"1\" style=\"margin: 0 auto;\">" +
                 "<tr>" +
                 "<td>Address</td>" +

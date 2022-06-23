@@ -5,6 +5,7 @@ import com.swp.backend.entity.SlotEntity;
 import com.swp.backend.entity.SubYardEntity;
 import com.swp.backend.entity.YardEntity;
 import com.swp.backend.exception.InactivateProcessException;
+import com.swp.backend.model.Slot;
 import com.swp.backend.myrepository.BookingCustomRepository;
 import com.swp.backend.myrepository.SlotCustomRepository;
 import com.swp.backend.myrepository.SubYardCustomRepository;
@@ -34,6 +35,7 @@ public class InactivationService {
     public static final String INACTIVE_SLOT_REASON = "The slot is disabled by owner";
     public static final String INACTIVE_SUB_YARD_REASON = "The sub yard of this slot is disabled by owner";
     public static final String INACTIVE_YARD_REASON = "The yard of this slot is disabled by owner";
+    public static final String DELETE_YARD_REASON = "The yard of this slot is deleted";
 
     @Transactional(rollbackFor = InactivateProcessException.class)
     public void inactivateSlot(String ownerId, int slotId)
@@ -50,7 +52,7 @@ public class InactivationService {
 
         try
         {
-            processInactivateSlot(slotId, INACTIVE_SLOT_REASON);
+            processInactivateSlot(ownerId, slotId, INACTIVE_SLOT_REASON);
         }
         catch (Exception ex)
         {
@@ -58,16 +60,17 @@ public class InactivationService {
         }
     }
 
-    private void processInactivateSlot(int slotId, String reason)
+    private void processInactivateSlot(String ownerId, int slotId, String reason)
     {
-        List<BookingEntity> bookingEntities = bookingCustomRepository.getAllBookingEntitiesOfSlotInFuture(slotId);
-
-        for(BookingEntity bookingEntity : bookingEntities)
+        List<BookingEntity> bookingEntities = bookingCustomRepository.getAllSuccessBookingEntitiesOfSlotInFuture(slotId);
+        if(bookingEntities != null)
         {
-            cancelBookingService.cancelBookingProcess(bookingEntity, reason);
-            cancelBookingService.sendMailCancelToUser(bookingEntity, reason);
+            for(BookingEntity bookingEntity : bookingEntities)
+            {
+                cancelBookingService.cancelBookingProcessCreatedByOwner(bookingEntity, reason, ownerId);
+                cancelBookingService.sendMailCancelToUser(bookingEntity, reason);
+            }
         }
-
         slotService.inactivateSlot(slotId);
     }
     @Transactional(rollbackFor = InactivateProcessException.class)
@@ -84,22 +87,25 @@ public class InactivationService {
 
         try
         {
-            processInactivateSubYard(subYardId);
+            processInactivateSubYard(ownerId, subYardId, INACTIVE_SUB_YARD_REASON);
         }
         catch (Exception ex)
         {
+            ex.printStackTrace();
             throw new InactivateProcessException("Error in canceling process");
         }
     }
 
-    private void processInactivateSubYard(String subYardId)
+    private void processInactivateSubYard(String ownerId, String subYardId, String message)
     {
         List<SlotEntity> slotEntitiesOfSubYard = slotRepository.findSlotEntitiesByRefYardAndActiveIsTrue(subYardId);
-        for(SlotEntity slotEntity : slotEntitiesOfSubYard)
+        if(slotEntitiesOfSubYard != null)
         {
-            processInactivateSlot(slotEntity.getId(), INACTIVE_SUB_YARD_REASON);
+            for(SlotEntity slotEntity : slotEntitiesOfSubYard)
+            {
+                processInactivateSlot(ownerId, slotEntity.getId(), message);
+            }
         }
-
         SubYardEntity subYardEntity = subYardRepository.getSubYardEntitiesById(subYardId);
         subYardEntity.setActive(false);
         subYardRepository.save(subYardEntity);
@@ -111,7 +117,7 @@ public class InactivationService {
         yardFilter(ownerId, yardId);
         try
         {
-            processInactivateYard(yardId);
+            processInactivateYard(ownerId, yardId);
         }
         catch(Exception ex)
         {
@@ -136,14 +142,17 @@ public class InactivationService {
         }
     }
 
-    private void processInactivateYard(String yardId)
+    private void processInactivateYard(String ownerId, String yardId)
     {
         List<String> listYard = new ArrayList<>();
         listYard.add(yardId);
         List<String> subYardIdList = subYardRepository.getAllSubYardIdByListBigYardId(listYard);
-        for(String subYardId : subYardIdList)
+        if(subYardIdList != null)
         {
-            processInactivateSubYard(subYardId);
+            for(String subYardId : subYardIdList)
+            {
+                processInactivateSubYard(ownerId, subYardId, INACTIVE_YARD_REASON);
+            }
         }
 
         YardEntity yardEntity = yardRepository.findYardEntitiesById(yardId);
@@ -156,7 +165,7 @@ public class InactivationService {
         yardFilter(ownerId, yardId);
         try
         {
-            processInactivateYard(yardId);
+            processDeleteYard(ownerId, yardId);
         }
         catch(Exception ex)
         {
@@ -164,15 +173,16 @@ public class InactivationService {
         }
     }
 
-    private void processDeleteYard(String yardId)
+    private void processDeleteYard(String ownerId, String yardId)
     {
         List<String> listYard = new ArrayList<>();
         listYard.add(yardId);
         List<String> subYardIdList = subYardRepository.getAllSubYardIdByListBigYardId(listYard);
-        for(String subYardId : subYardIdList)
-        {
-            processInactivateSubYard(subYardId);
-        }
+        if(subYardIdList != null)
+            for(String subYardId : subYardIdList)
+            {
+                processInactivateSubYard(ownerId, subYardId, DELETE_YARD_REASON);
+            }
 
         YardEntity yardEntity = yardRepository.findYardEntitiesById(yardId);
         yardEntity.setDeleted(true);
