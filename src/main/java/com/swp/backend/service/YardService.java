@@ -176,6 +176,7 @@ public class YardService {
                     .address(yard.getAddress())
                     .districtName(districtRepository.findById(yard.getDistrictId()).getDistrictName())
                     .province(provinceName)
+                    .score(yard.getScore())
                     .openAt(yard.getOpenAt().format(formatter))
                     .closeAt(yard.getCloseAt().format(formatter))
                     .build();
