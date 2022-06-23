@@ -11,6 +11,7 @@ import com.swp.backend.repository.SlotRepository;
 import com.swp.backend.utils.DateHelper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -86,24 +87,12 @@ public class SlotService {
         return allSlots;
     }
 
-    public void inactivateSlot(String ownerId, int slotId)
+    @Transactional
+    public void inactivateSlot(int slotId)
     {
-        if(!slotCustomRepository.findOwnerIdFromSlotId(slotId).equals(ownerId))
-        {
-            throw new InactivateProcessException("The owner is not author of this slot.");
-        }
-
-        if(slotRepository.findSlotEntityByIdAndActive(slotId, false) != null)
-        {
-            throw new InactivateProcessException("The slot is already inactive.");
-        }
-
-        //Cancel all booking of this slot in future
-
-
-        //Inactive
-
-        //Delete
+        SlotEntity slotEntity = slotRepository.findSlotEntityById(slotId);
+        slotEntity.setActive(false);
+        slotRepository.save(slotEntity);
     }
 
     public boolean isSlotAvailableFromBooking(int slotId, Timestamp timestamp) {

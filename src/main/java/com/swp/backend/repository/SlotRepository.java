@@ -31,4 +31,5 @@ public interface SlotRepository extends JpaRepository<SlotEntity, Integer> {
     @Query("SELECT slot.id FROM SlotEntity slot WHERE slot.refYard IN :listSubYardId")
     public List<Integer> getAllSlotIdsByListSubYardId(@Param("listSubYardId") Collection<String> listSubYardId);
 
+    public SlotEntity findSlotEntityById(int slotId);
 }
