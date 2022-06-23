@@ -10,7 +10,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-@RequestMapping("/api/v1/")
+@RequestMapping("/api/v1")
 @RestController
 @AllArgsConstructor
 public class VoteRestApi {
@@ -19,87 +19,112 @@ public class VoteRestApi {
     private SecurityContextService securityContextService;
     private Gson gson;
 
-    @PostMapping(value = "vote")
+    @GetMapping(value = "me/vote")
+    public ResponseEntity<String> getVote() {
+        try {
+            SecurityContext securityContext = SecurityContextHolder.getContext();
+            String userId = securityContextService.extractUsernameFromContext(securityContext);
+            return ResponseEntity.ok(gson.toJson(voteService.getAllNonVote(userId)));
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            ErrorResponse errorResponse = ErrorResponse.builder().message("Server busy can't handle this request!").build();
+            return ResponseEntity.internalServerError().body(gson.toJson(errorResponse));
+        }
+
+    }
+
+    @GetMapping(value = "vote/yard/{yardId}")
+    public ResponseEntity<String> getVotesOfBigYard(@PathVariable String yardId) {
+        try {
+            return ResponseEntity.ok(gson.toJson(voteService.getAllVoteByBigYardId(yardId)));
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            ErrorResponse errorResponse = ErrorResponse.builder().message("Server busy can't handle this request!").build();
+            return ResponseEntity.internalServerError().body(gson.toJson(errorResponse));
+        }
+    }
+
+    @PostMapping(value = "me/vote")
     public ResponseEntity<String> postVote(@RequestBody(required = false) VoteRequest voteRequest) {
         try {
             if (voteRequest == null) {
-                ErrorResponse errorResponse = ErrorResponse.builder().message("Missing body.").build();
+                ErrorResponse errorResponse = ErrorResponse.builder().message("{message: \"Request failed!\"}").build();
                 return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
             }
             SecurityContext context = SecurityContextHolder.getContext();
             String userId = securityContextService.extractUsernameFromContext(context);
             boolean postVote = voteService.postVote(
                     userId,
-                    voteRequest.getSubYarId(),
+                    voteRequest.getBookingId(),
                     voteRequest.getScore(),
                     voteRequest.getComment()
             );
 
             if (postVote) {
-                return ResponseEntity.ok("Vote success!");
+                return ResponseEntity.ok("{\"message\": \"Vote success!\"}");
             } else {
-                ErrorResponse errorResponse = ErrorResponse.builder().message("Server busy can't handle this vote.").build();
+                ErrorResponse errorResponse = ErrorResponse.builder().message("{message: \"Server busy can't handle this request!\"}").build();
                 return ResponseEntity.internalServerError().body(gson.toJson(errorResponse));
             }
         } catch (Exception exception) {
             exception.printStackTrace();
-            ErrorResponse errorResponse = ErrorResponse.builder().message("Server busy can't handle this request!").build();
+            ErrorResponse errorResponse = ErrorResponse.builder().message("{message: \"Server busy can't handle this request!\"}").build();
             return ResponseEntity.internalServerError().body(gson.toJson(errorResponse));
         }
     }
 
-    @PutMapping(value = "vote")
+    @PutMapping(value = "me/vote")
     public ResponseEntity<String> editVote(@RequestBody(required = false) VoteRequest voteRequest) {
         try {
             if (voteRequest == null) {
-                ErrorResponse errorResponse = ErrorResponse.builder().message("Missing body.").build();
+                ErrorResponse errorResponse = ErrorResponse.builder().message("{message: \"Request failed!\"}").build();
                 return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
             }
             SecurityContext context = SecurityContextHolder.getContext();
-            String userId = securityContextService.extractUsernameFromContext(context);
+            String accountId = securityContextService.extractUsernameFromContext(context);
             boolean editVote = voteService.editVote(
-                    userId,
-                    voteRequest.getPostId(),
+                    accountId,
+                    voteRequest.getVoteId(),
                     voteRequest.getScore(),
                     voteRequest.getComment()
             );
 
             if (editVote) {
-                return ResponseEntity.ok("Vote success!");
+                return ResponseEntity.ok("{\"message\": \"Edit vote success!\"}");
             } else {
-                ErrorResponse errorResponse = ErrorResponse.builder().message("Server busy can't handle this vote.").build();
+                ErrorResponse errorResponse = ErrorResponse.builder().message("{\"message\": \"Server busy can't handle this request!\"}").build();
                 return ResponseEntity.internalServerError().body(gson.toJson(errorResponse));
             }
         } catch (Exception exception) {
             exception.printStackTrace();
-            ErrorResponse errorResponse = ErrorResponse.builder().message("Server busy can't handle this request!").build();
+            ErrorResponse errorResponse = ErrorResponse.builder().message("{\"message\": \"Server busy can't handle this request!\"}").build();
             return ResponseEntity.internalServerError().body(gson.toJson(errorResponse));
         }
     }
 
-    @DeleteMapping(value = "vote")
+    @DeleteMapping(value = "me/vote")
     public ResponseEntity<String> deleteVote(@RequestBody(required = false) VoteRequest voteRequest) {
         try {
             if (voteRequest == null) {
-                ErrorResponse errorResponse = ErrorResponse.builder().message("Missing body.").build();
+                ErrorResponse errorResponse = ErrorResponse.builder().message("{\"message\": \"Missing body!\"}").build();
                 return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
             }
             SecurityContext context = SecurityContextHolder.getContext();
             String userId = securityContextService.extractUsernameFromContext(context);
             boolean deleteVoteVote = voteService.deleteVote(
                     userId,
-                    voteRequest.getPostId()
+                    voteRequest.getVoteId()
             );
 
             if (deleteVoteVote) {
-                return ResponseEntity.ok("Vote success!");
+                return ResponseEntity.ok("{\"message\": \"Deleted vote success!\"}");
             } else {
-                ErrorResponse errorResponse = ErrorResponse.builder().message("Server busy can't handle this vote.").build();
+                ErrorResponse errorResponse = ErrorResponse.builder().message("{\"message\": \"Server busy can't handle this request!\"}").build();
                 return ResponseEntity.internalServerError().body(gson.toJson(errorResponse));
             }
         } catch (Exception exception) {
             exception.printStackTrace();
-            ErrorResponse errorResponse = ErrorResponse.builder().message("Server busy can't handle this request!").build();
+            ErrorResponse errorResponse = ErrorResponse.builder().message("{\"message\": \"Server busy can't handle this request!\"}").build();
             return ResponseEntity.internalServerError().body(gson.toJson(errorResponse));
         }
     }

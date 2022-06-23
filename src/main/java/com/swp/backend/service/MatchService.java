@@ -5,7 +5,6 @@ import com.swp.backend.entity.SlotEntity;
 import com.swp.backend.entity.SubYardEntity;
 import com.swp.backend.model.MatchModel;
 import com.swp.backend.model.YardModel;
-import com.swp.backend.myrepository.SlotCustomRepository;
 import com.swp.backend.myrepository.SubYardCustomRepository;
 import com.swp.backend.repository.SlotRepository;
 import com.swp.backend.repository.SubYardRepository;
@@ -24,7 +23,6 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 public class MatchService {
-    private SlotCustomRepository slotCustomRepository;
     private SlotRepository slotRepository;
     private YardService yardService;
     private SubYardCustomRepository subYardCustomRepository;
@@ -38,10 +36,10 @@ public class MatchService {
         LocalDate date = LocalDate.ofInstant(bookingDate.toInstant(), ZoneId.of(DateHelper.VIETNAM_ZONE));
 
         int slotId = bookingEntity.getSlotId();
-        String subYardId = slotCustomRepository.findSubYardIdFromSlotId(slotId);
+        String subYardId = bookingEntity.getSubYardId();
         String typeYard = subYardCustomRepository.findTypeYardFromSubYardId(subYardId);
         SubYardEntity subYardEntity = subYardRepository.getSubYardEntityByIdAndActive(subYardId, true);
-        String yardId = slotCustomRepository.findYardIdFromSlotId(slotId);
+        String yardId = bookingEntity.getBigYardId();
         SlotEntity slotEntity = slotRepository.findSlotEntityByIdAndActive(slotId, true);
         YardModel yardModel = yardService.getYardModelFromYardId(yardId);
         return MatchModel.builder().bigYardAddress(yardModel.getAddress())
@@ -60,6 +58,7 @@ public class MatchService {
                 .subYardId(subYardId)
                 .slotId(slotId)
                 .bookingStatus(bookingEntity.getStatus())
+                .price(bookingEntity.getPrice())
                 .build();
     }
 

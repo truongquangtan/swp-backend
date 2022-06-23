@@ -35,6 +35,7 @@ public class AccountService {
     private final EmailService emailService;
     private final AccountLoginService accountLoginService;
     private final RoleRepository roleRepository;
+    private final YardService yardService;
 
     private final AccountCustomRepository accountCustomRepository;
 
@@ -112,6 +113,7 @@ public class AccountService {
                     .phone(phone)
                     .password(passwordEncoder.encode(password))
                     .roleId(roleEntity.getId())
+                    .createAt(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE))
                     .isConfirmed(true)
                     .isActive(true)
                     .build();
@@ -147,15 +149,40 @@ public class AccountService {
         emailService.sendHtmlTemplateMessage(email, emailSubject, htmlBody);
     }
 
-    public void modifyUserInformation(String userId, String fullName, String phone)
-    {
+    public void modifyUserInformation(String userId, String fullName, String phone, Boolean isActive) {
         AccountEntity account = accountRepository.findUserEntityByUserId(userId);
-        if(account == null)
-        {
+        if (account == null) {
             throw new RuntimeException("Can not find account.");
         }
-        if(fullName != null) account.setFullName(fullName);
-        if(phone != null) account.setPhone(phone);
+        if (fullName != null) account.setFullName(fullName);
+        if (phone != null) {
+            if (phone.equals("")) phone = null;
+            account.setPhone(phone);
+        }
+        if (isActive == null) {
+            accountRepository.save(account);
+            return;
+        }
+        if (isActive && !account.isActive()) {
+            account.setActive(true);
+            new Thread(() -> {
+                try {
+                    yardService.reactiveAllYardsOfOwner(userId);
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                }
+            }).start();
+        } else if (!isActive && account.isActive()) {
+            account.setActive(false);
+            new Thread(() -> {
+                try {
+                    accountLoginService.deleteAllLogin(userId);
+                    yardService.inactiveAllYardsOfOwner(userId);
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                }
+            }).start();
+        }
         accountRepository.save(account);
     }
 
@@ -235,5 +262,9 @@ public class AccountService {
 
     public List<?> searchAccount(Integer itemsPerPage, Integer page, Integer role, String keyword, String status, List<String> sortBy, String sort) {
         return accountCustomRepository.searchAccount(itemsPerPage, page, role, keyword, status, sortBy, sort);
+    }
+
+    public int getMaxResultSearch(Integer role, String keyword, String status) {
+        return accountCustomRepository.countMaxResultSearchAccount(role, keyword, status);
     }
 }

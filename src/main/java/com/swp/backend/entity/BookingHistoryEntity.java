@@ -9,27 +9,26 @@ import javax.persistence.Table;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "sub_yards")
+@Table(name = "booking_history")
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SubYardEntity {
+public class BookingHistoryEntity {
     @Id
     @Column(name = "id")
     private String id;
-    @Column(name = "name")
-    private String name;
-    @Column(name = "parent_yard")
-    private String parentYard;
-    @Column(name = "type_yard")
-    private int typeYard;
-    @Column(name = "create_at")
-    private Timestamp createAt;
-    @Column(name = "is_active")
-    @Builder.Default
-    private boolean active = true;
+    @Column(name = "booking_id")
+    private String bookingId;
     @Column(name = "reference", insertable = false)
     private int reference;
+    @Column(name = "created_by")
+    private String createdBy;
+    @Column(name = "created_at")
+    private Timestamp createdAt;
+    @Column(name = "note")
+    private String note;
+    @Column(name = "booking_status")
+    private String bookingStatus;
 }

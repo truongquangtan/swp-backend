@@ -20,8 +20,8 @@ public class VoteEntity {
     @Id
     @Column(name = "id")
     private String id;
-    @Column(name = "ref_yard_id")
-    private String subYardId;
+    @Column(name = "booking_id")
+    private String bookingId;
     @Column(name = "score")
     private int score;
     @Column(name = "comment")
@@ -32,6 +32,4 @@ public class VoteEntity {
     @Column(name = "is_deleted")
     @Builder.Default
     private boolean deleted = false;
-    @Column(name = "user_id")
-    private String userId;
 }

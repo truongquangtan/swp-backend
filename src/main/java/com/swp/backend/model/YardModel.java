@@ -21,6 +21,8 @@ public class YardModel {
     private String openAt;
     private String closeAt;
     private int reference;
+    private boolean isActive;
     private Timestamp createdAt;
+    private int score;
     private List<String> images;
 }

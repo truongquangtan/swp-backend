@@ -1,5 +1,7 @@
 package com.swp.backend.api.v1.admin.modify_account;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.swp.backend.utils.RegexHelper;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,15 +13,11 @@ public class ModifyAccountRequest {
     private String fullName;
     private String phone;
 
-    public boolean isValid()
-    {
-        if(fullName == null && phone == null)
-        {
-            return false;
-        }
+    @JsonProperty("isActive")
+    private Boolean isActive;
 
-        if((fullName != null && fullName.trim().equals("")) || (phone != null && phone.length() > 10))
-        {
+    public boolean isValid() {
+        if ((fullName != null && fullName.trim().equals("")) || (phone != null && !phone.trim().equals("") && !phone.matches(RegexHelper.PHONE_REGEX_LOCAL))) {
             return false;
         }
         return true;

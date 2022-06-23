@@ -4,7 +4,12 @@ import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import com.swp.backend.api.v1.owner.yard.request.GetYardRequest;
 import com.swp.backend.api.v1.owner.yard.request.YardRequest;
+import com.swp.backend.api.v1.owner.yard.response.CreateYardSuccessResponse;
+import com.swp.backend.api.v1.owner.yard.response.GetYardDetailResponse;
 import com.swp.backend.api.v1.owner.yard.response.GetYardResponse;
+import com.swp.backend.entity.YardEntity;
+import com.swp.backend.exception.ErrorResponse;
+import com.swp.backend.repository.YardRepository;
 import com.swp.backend.service.SecurityContextService;
 import com.swp.backend.service.YardService;
 import lombok.AllArgsConstructor;
@@ -16,18 +21,19 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping(value = "/api/v1/owners")
+@RequestMapping(value = "/api/v1/owners/me")
 public class YardRestApi {
     private YardService yardService;
+    private YardRepository yardRepository;
     private SecurityContextService securityContextService;
     private Gson gson;
 
-    @PostMapping(value = "me/yards")
+    @PostMapping(value = "yards")
     public ResponseEntity<String> createYard(@RequestParam(name = "yard") String yard, @RequestParam(name = "images") MultipartFile[] images) {
         YardRequest yardRequest;
         try {
             yardRequest = gson.fromJson(yard, YardRequest.class);
-        }catch (JsonParseException exception){
+        } catch (JsonParseException exception) {
             exception.printStackTrace();
             yardRequest = null;
         }
@@ -39,17 +45,20 @@ public class YardRestApi {
             SecurityContext context = SecurityContextHolder.getContext();
             String userId = securityContextService.extractUsernameFromContext(context);
             yardService.createNewYard(userId, yardRequest, images);
-            return ResponseEntity.ok("Create yard success!");
+            CreateYardSuccessResponse successResponse = CreateYardSuccessResponse.builder().message("Create yard success!").build();
+            return ResponseEntity.ok(gson.toJson(successResponse));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
-    @PostMapping(value = "{ownerId}/yards/search")
-    public ResponseEntity<String> showAllYard(@RequestBody(required = false) GetYardRequest getYardRequest, @PathVariable String ownerId) {
+    @PostMapping(value = "yards/search")
+    public ResponseEntity<String> showAllYard(@RequestBody(required = false) GetYardRequest getYardRequest) {
         try {
             GetYardResponse response;
+            SecurityContext securityContext = SecurityContextHolder.getContext();
+            String ownerId = securityContextService.extractUsernameFromContext(securityContext);
             if (getYardRequest == null) {
                 response = yardService.findAllYardByOwnerId(ownerId, null, null);
             } else {
@@ -62,4 +71,31 @@ public class YardRestApi {
         }
     }
 
+    @GetMapping(value = "yards/search/{yardId}")
+    public ResponseEntity<String> showYardById(@PathVariable String yardId) {
+        try {
+            GetYardDetailResponse response;
+            SecurityContext securityContext = SecurityContextHolder.getContext();
+            String ownerId = securityContextService.extractUsernameFromContext(securityContext);
+
+            YardEntity yardEntity = yardService.getYardByIdAndNotDeleted(yardId);
+
+            if (yardEntity == null) {
+                ErrorResponse error = ErrorResponse.builder().message("The yard is deleted or not existed.").build();
+                return ResponseEntity.badRequest().body(gson.toJson(error));
+            }
+
+            if (!yardEntity.getOwnerId().equals(ownerId)) {
+                ErrorResponse error = ErrorResponse.builder().message("The owner is not author of this yard.").build();
+                return ResponseEntity.badRequest().body(gson.toJson(error));
+            }
+
+            response = yardService.getYardDetailResponseFromYardId(yardId);
+
+            return ResponseEntity.ok().body(gson.toJson(response));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
 }

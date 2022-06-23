@@ -18,6 +18,9 @@ public class InviteOwnerRequest {
         if (email.trim().length() == 0 && fullName.trim().length() == 0) {
             return false;
         }
-        return email.matches(RegexHelper.EMAIL_REGEX) && phone.matches(RegexHelper.PHONE_REGEX_LOCAL);
+        if (phone != null && !phone.matches(RegexHelper.PHONE_REGEX_LOCAL)) {
+            return false;
+        }
+        return email.matches(RegexHelper.EMAIL_REGEX);
     }
 }

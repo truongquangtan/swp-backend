@@ -11,8 +11,10 @@ import java.util.Collection;
 import java.util.List;
 
 @Repository
-public interface SlotRepository extends JpaRepository<SlotEntity, String> {
+public interface SlotRepository extends JpaRepository<SlotEntity, Integer> {
     public List<SlotEntity> findSlotEntitiesByRefYardAndActiveIsTrue(String refYard);
+
+    public List<SlotEntity> findSlotEntitiesByRefYard(String refYard);
 
     public List<SlotEntity> findSlotEntitiesByStartTimeGreaterThanAndRefYardAndActiveIsTrue(LocalTime startTime, String refYard);
 
@@ -25,4 +27,8 @@ public interface SlotRepository extends JpaRepository<SlotEntity, String> {
 
     @Query("SELECT slot FROM SlotEntity slot WHERE slot.id IN :listSlotId")
     public List<SlotEntity> getAllSlotEntityByListSlotId(@Param("listSlotId") Collection<String> listSlotId);
+
+    @Query("SELECT slot.id FROM SlotEntity slot WHERE slot.refYard IN :listSubYardId")
+    public List<Integer> getAllSlotIdsByListSubYardId(@Param("listSubYardId") Collection<String> listSubYardId);
+
 }

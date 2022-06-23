@@ -22,7 +22,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -62,12 +61,12 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
             AccountLoginEntity login = accountLoginService.findLoginByToken(token);
             if (login == null) {
-                sendErrorResponse(response, 400, "Token not available.");
+                sendErrorResponse(response, 401, "Token not available.");
                 return;
             }
 
             if (login.isLogout()) {
-                sendErrorResponse(response, 400, "User logged out.");
+                sendErrorResponse(response, 401, "User logged out.");
                 return;
             }
             Claims claims = jwtTokenUtils.deCodeToken(token);
@@ -82,7 +81,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         } catch (SignatureException | MalformedJwtException | ExpiredJwtException | UnsupportedJwtException |
                  IllegalArgumentException e) {
-            sendErrorResponse(response, 400, "Token invalid.");
+            sendErrorResponse(response, 401, "Token invalid.");
             return;
         } catch (Exception exception) {
             exception.printStackTrace();

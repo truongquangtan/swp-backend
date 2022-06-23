@@ -27,9 +27,9 @@ public class AccountLoginService {
         }
     }
 
-    public void deleteAllLogin(String userId){
+    public void deleteAllLogin(String userId) {
         List<AccountLoginEntity> logins = accountLoginRepository.findLoginStateByUserId(userId);
-        if(logins != null && logins.size() > 0){
+        if (logins != null && logins.size() > 0) {
             logins.forEach((login) -> {
                 accountLoginRepository.deleteById(login.getId());
             });
@@ -51,7 +51,7 @@ public class AccountLoginService {
         }).start();
     }
 
-    public AccountLoginEntity findLoginByToken(String token){
+    public AccountLoginEntity findLoginByToken(String token) {
         return accountLoginRepository.findTopByAccessToken(token);
     }
 }

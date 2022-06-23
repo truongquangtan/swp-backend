@@ -35,4 +35,8 @@ public class BookingEntity {
     private Timestamp bookAt;
     @Column(name = "reference", insertable = false)
     private long reference;
+    @Column(name = "sub_yard_id")
+    private String subYardId;
+    @Column(name = "big_yard_id")
+    private String bigYardId;
 }

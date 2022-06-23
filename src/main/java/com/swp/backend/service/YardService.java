@@ -1,15 +1,19 @@
 package com.swp.backend.service;
 
-import com.google.gson.Gson;
 import com.swp.backend.api.v1.owner.yard.request.SubYardRequest;
 import com.swp.backend.api.v1.owner.yard.request.YardRequest;
+import com.swp.backend.api.v1.owner.yard.response.GetYardDetailResponse;
 import com.swp.backend.api.v1.owner.yard.response.GetYardResponse;
 import com.swp.backend.api.v1.yard.search.YardResponse;
 import com.swp.backend.entity.*;
+import com.swp.backend.model.SlotModel;
+import com.swp.backend.model.SubYardDetailModel;
+import com.swp.backend.model.SubYardModel;
 import com.swp.backend.model.YardModel;
 import com.swp.backend.myrepository.YardCustomRepository;
 import com.swp.backend.repository.*;
 import com.swp.backend.utils.DateHelper;
+import com.swp.backend.utils.TimeMappingHelper;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -35,6 +40,8 @@ public class YardService {
     private YardCustomRepository yardCustomRepository;
     private FirebaseStoreService firebaseStoreService;
     private TypeYardRepository typeYardRepository;
+    private TimeMappingHelper timeMappingHelper;
+    private SubYardService subYardService;
 
     @Transactional(rollbackFor = DataAccessException.class)
     public void createNewYard(String userId, YardRequest createYardModel, MultipartFile[] images) throws DataAccessException {
@@ -49,7 +56,7 @@ public class YardService {
                 .createAt(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE))
                 .openAt(LocalTime.parse(createYardModel.getOpenAt()))
                 .closeAt(LocalTime.parse(createYardModel.getCloseAt()))
-                .slotDuration(Integer.parseInt(createYardModel.getSlotDuration()))
+                .slotDuration(timeMappingHelper.getTimeMapping().get(createYardModel.getSlotDuration()))
                 .build();
         //Save parent yard
         yardRepository.save(parentYard);
@@ -93,14 +100,14 @@ public class YardService {
             slotRepository.saveAll(slotEntityList);
         }
         if (images != null && images.length > 0) {
-            List<YardPictureEntity> listImage  = Arrays.stream(images).parallel().map(image -> {
+            List<YardPictureEntity> listImage = Arrays.stream(images).parallel().map(image -> {
                 String url = null;
                 try {
                     url = firebaseStoreService.uploadFile(image);
-                }catch (Exception exception){
+                } catch (Exception exception) {
                     exception.printStackTrace();
                 }
-               return YardPictureEntity.builder().image(url).refId(parentYardId).build();
+                return YardPictureEntity.builder().image(url).refId(parentYardId).build();
             }).collect(Collectors.toList());
             if (listImage.size() > 0) {
                 new Thread(() -> {
@@ -129,6 +136,7 @@ public class YardService {
                         .id(yard.getId())
                         .name(yard.getName())
                         .address(yard.getAddress())
+                        .score(yard.getScore())
                         .districtName(districtRepository.findById(yard.getDistrictId()).getDistrictName())
                         .province(province)
                         .openAt(yard.getOpenAt().format(formatter))
@@ -151,7 +159,7 @@ public class YardService {
 
     public boolean isAvailableYard(String yardId) {
         YardEntity yard = yardRepository.findYardEntityByIdAndActiveAndDeleted(yardId, true, false);
-        return yard == null;
+        return yard != null;
     }
 
     public YardModel getYardModelFromYardId(String yardId) {
@@ -183,6 +191,10 @@ public class YardService {
         return yardRepository.findYardEntitiesById(yardId);
     }
 
+    public YardEntity getYardByIdAndNotDeleted(String yardId) {
+        return yardRepository.findYardEntityByIdAndDeleted(yardId, false);
+    }
+
     public void updateYard(YardEntity yard) throws DataAccessException {
         yardRepository.save(yard);
     }
@@ -198,28 +210,83 @@ public class YardService {
 
 
     public GetYardResponse findAllYardByOwnerId(String ownerId, Integer ofSet, Integer page) throws DataAccessException {
-        int maxResult = yardRepository.countAllByOwnerId(ownerId);
+        int maxResult = yardRepository.countAllByOwnerIdAndDeleted(ownerId, false);
 
         int ofSetValue = (ofSet != null && ofSet > 0) ? ofSet : 10;
         int pageValue = (page != null && page >= 1) ? page : 1;
 
         Pageable pagination = PageRequest.of(pageValue - 1, ofSetValue);
-        List<YardEntity> result = yardRepository.findAllByOwnerId(ownerId, pagination);
+        List<YardEntity> result = yardRepository.findAllByOwnerIdAndDeleted(ownerId, false, pagination);
 
         List<YardModel> listYard = result.stream().map(yard -> {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
             return YardModel.builder()
                     .id(yard.getId())
                     .address(yard.getAddress())
+                    .name(yard.getName())
                     .openAt(yard.getOpenAt().format(formatter))
                     .closeAt(yard.getCloseAt().format(formatter))
                     .reference(yard.getReference())
                     .createdAt(yard.getCreateAt())
                     .address(yard.getAddress())
+                    .isActive(yard.isActive())
                     .build();
         }).collect(Collectors.toList());
 
         return GetYardResponse.builder().page(pageValue).maxResult(maxResult).listYard(listYard).build();
     }
 
+    @Transactional
+    public int inactiveAllYardsOfOwner(String ownerId) {
+        return yardCustomRepository.inactivateAllYardsOfOwner(ownerId);
+    }
+
+    @Transactional
+    public int reactiveAllYardsOfOwner(String ownerId) {
+        return yardCustomRepository.reactivateAllYardsOfOwner(ownerId);
+    }
+
+    public GetYardDetailResponse getYardDetailResponseFromYardId(String yardId) {
+        YardEntity yardEntity = getYardByIdAndNotDeleted(yardId);
+        if (yardEntity == null) {
+            throw new RuntimeException("Can not get yard from " + yardId);
+        }
+
+        DistrictEntity districtEntity = districtRepository.findById(yardEntity.getDistrictId());
+
+        String districtName = districtEntity.getDistrictName();
+        int provinceId = districtEntity.getProvinceId();
+        String provinceName = provinceRepository.findDistinctById(provinceId).getProvinceName();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        int hour = yardEntity.getSlotDuration() / 60;
+        int minute = yardEntity.getSlotDuration() % 60;
+        String duration = LocalTime.of(hour, minute).format(formatter);
+
+        List<String> images = yardPictureRepository.getAllByRefId(yardId).stream().map(YardPictureEntity::getImage).collect(Collectors.toList());
+        List<SubYardModel> subYards = subYardService.getSubYardsByBigYard(yardId);
+        List<SubYardDetailModel> subYardDetailModels = subYards.stream().map(subYardModel -> {
+            List<SlotModel> slots = slotRepository.findSlotEntitiesByRefYard(subYardModel.getId()).stream().map(SlotModel::buildFromSlotEntity).collect(Collectors.toList());
+            return SubYardDetailModel.builder().id(subYardModel.getId())
+                    .name(subYardModel.getName())
+                    .reference(subYardModel.getReference())
+                    .createAt(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(subYardModel.getCreateAt()))
+                    .isActive(subYardModel.isActive())
+                    .typeYard(subYardModel.getTypeYard())
+                    .slots(slots).build();
+        }).collect(Collectors.toList());
+        return GetYardDetailResponse.builder()
+                .id(yardEntity.getId())
+                .name(yardEntity.getName())
+                .address(yardEntity.getAddress())
+                .districtId(yardEntity.getDistrictId())
+                .districtName(districtName)
+                .provinceId(provinceId)
+                .provinceName(provinceName)
+                .openTime(yardEntity.getOpenAt().format(formatter))
+                .closeTime(yardEntity.getCloseAt().format(formatter))
+                .duration(duration)
+                .images(images)
+                .subYards(subYardDetailModels).build();
+    }
 }

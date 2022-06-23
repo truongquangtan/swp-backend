@@ -11,5 +11,6 @@ public class Slot {
     private int price;
     private String startTime;
     private String endTime;
+    private boolean isActive;
     private boolean isBooked = true;
 }

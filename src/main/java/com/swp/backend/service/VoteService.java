@@ -1,9 +1,11 @@
 package com.swp.backend.service;
 
-import com.swp.backend.entity.SubYardEntity;
+import com.swp.backend.entity.BookingEntity;
 import com.swp.backend.entity.VoteEntity;
 import com.swp.backend.entity.YardEntity;
-import com.swp.backend.myrepository.SubYardCustomRepository;
+import com.swp.backend.model.VoteModel;
+import com.swp.backend.myrepository.VoteCustomRepository;
+import com.swp.backend.repository.BookingRepository;
 import com.swp.backend.repository.VoteRepository;
 import com.swp.backend.utils.DateHelper;
 import lombok.AllArgsConstructor;
@@ -18,22 +20,25 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class VoteService {
     private final VoteRepository voteRepository;
-    private final SubYardService subYardService;
     private final YardService yardService;
-    private SubYardCustomRepository subYardCustomRepository;
+    private final BookingRepository bookingRepository;
+    private VoteCustomRepository voteCustomRepository;
 
-    public boolean postVote(String userId, String subYarId, int score, String comment) throws DataAccessException {
+    public boolean postVote(String accountId, String bookingId, Integer score, String comment) throws DataAccessException {
         try {
+            BookingEntity booking = bookingRepository.getBookingEntityById(bookingId);
+            if (!booking.getAccountId().equals(accountId)) {
+                return false;
+            }
             VoteEntity voteEntity = VoteEntity.builder()
                     .id(UUID.randomUUID().toString())
                     .comment(comment)
                     .score(score)
-                    .subYardId(subYarId)
+                    .bookingId(bookingId)
                     .date(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE))
-                    .userId(userId)
                     .build();
             voteRepository.save(voteEntity);
-            reUpdateAverageScoreVote(subYarId);
+            reUpdateAverageScoreVote(bookingId);
             return true;
         } catch (DataAccessException dataAccessException) {
             dataAccessException.printStackTrace();
@@ -41,10 +46,11 @@ public class VoteService {
         }
     }
 
-    public boolean editVote(String userId, String votedId, int score, String comment) {
+    public boolean editVote(String accountId, String votedId, int score, String comment) {
         try {
             VoteEntity vote = voteRepository.findVoteEntityById(votedId);
-            if (!userId.equals(vote.getUserId())) {
+            BookingEntity booking = bookingRepository.findBookingEntityById(vote.getBookingId());
+            if (!accountId.equals(booking.getAccountId())) {
                 return false;
             }
             boolean recalculateScore = false;
@@ -55,7 +61,7 @@ public class VoteService {
             vote.setComment(comment);
             voteRepository.save(vote);
             if (recalculateScore) {
-                reUpdateAverageScoreVote(vote.getSubYardId());
+                reUpdateAverageScoreVote(booking.getId());
             }
             return true;
         } catch (Exception exception) {
@@ -64,43 +70,57 @@ public class VoteService {
         }
     }
 
-    public boolean deleteVote(String userId, String votedId) {
+    public boolean deleteVote(String accountId, String voteId) {
         try {
-            VoteEntity vote = voteRepository.findVoteEntityById(votedId);
-            if (!userId.equals(vote.getUserId())) {
+            VoteEntity vote = voteRepository.findVoteEntityById(voteId);
+            BookingEntity booking = bookingRepository.findBookingEntityById(vote.getBookingId());
+            if (!accountId.equals(booking.getAccountId())) {
                 return false;
             }
             vote.setDeleted(true);
             voteRepository.save(vote);
-            reUpdateAverageScoreVote(vote.getSubYardId());
+            reUpdateAverageScoreVote(booking.getId());
             return true;
         } catch (Exception exception) {
             return false;
         }
     }
 
-    private void reUpdateAverageScoreVote(String subYardId) {
+    private void reUpdateAverageScoreVote(String bookingId) {
         new Thread(() -> {
             try {
-                String parentYardId = subYardService.getBigYardIdFromSubYard(subYardId);
-                YardEntity bigYard = yardService.getYardById(parentYardId);
-                List<SubYardEntity> listRelativeSubYard = subYardCustomRepository.getAllSubYardByBigYard(parentYardId);
-                if (listRelativeSubYard == null) {
+                BookingEntity booking = bookingRepository.findBookingEntityById(bookingId);
+                YardEntity yard = yardService.getYardById(booking.getBigYardId());
+                List<BookingEntity> bookingListOfBigYard = bookingRepository.findAllByBigYardId(yard.getId());
+                List<String> listBookingId = bookingListOfBigYard.parallelStream().map(bookingEntity -> booking.getId()).collect(Collectors.toList());
+
+                List<VoteEntity> votes = voteRepository.findAllByBookingIdInAndDeletedFalse(listBookingId);
+
+                if (votes == null) {
                     return;
                 }
-
-                List<String> subYardIds = listRelativeSubYard.stream().map(SubYardEntity::getId).collect(Collectors.toList());
-                List<VoteEntity> votes = voteRepository.findBySubYardIdInAndDeletedIsFalse(subYardIds);
 
                 float sumScore = votes.stream().reduce(0, (preSum, vote) -> preSum + vote.getScore(), Integer::sum);
                 int average = Math.round(sumScore / votes.size());
 
-                bigYard.setScore(average);
-                bigYard.setNumberOfVote(votes.size());
-                yardService.updateYard(bigYard);
+                yard.setScore(average);
+                yard.setNumberOfVote(votes.size());
+                yardService.updateYard(yard);
             } catch (Exception exception) {
                 exception.printStackTrace();
             }
         }).start();
+    }
+
+    public List<VoteModel> getAllVote(String userId) {
+        return voteCustomRepository.getAllVoteByUserId(userId);
+    }
+
+    public List<VoteModel> getAllNonVote(String userId) {
+        return voteCustomRepository.getAllNonVoteByUserId(userId);
+    }
+
+    public List<VoteModel> getAllVoteByBigYardId(String bigYardId) {
+        return voteCustomRepository.getAllVoteByBigYard(bigYardId);
     }
 }

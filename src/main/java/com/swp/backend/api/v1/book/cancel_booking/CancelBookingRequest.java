@@ -9,12 +9,9 @@ import lombok.NoArgsConstructor;
 @Data
 public class CancelBookingRequest {
     private String reason;
-    private String subYardId;
-    private String yardId;
-    private int slotId;
 
     public boolean isValid() {
-        return reason != null && subYardId != null && yardId != null
-                && !reason.trim().isEmpty() && !subYardId.trim().isEmpty() && !yardId.trim().isEmpty();
+        return reason != null
+                && !reason.trim().isEmpty();
     }
 }

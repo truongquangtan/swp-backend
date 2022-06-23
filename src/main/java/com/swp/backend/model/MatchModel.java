@@ -26,4 +26,5 @@ public class MatchModel {
     private int slotId;
     private Long bookingReference;
     private String bookingStatus;
+    private int price;
 }

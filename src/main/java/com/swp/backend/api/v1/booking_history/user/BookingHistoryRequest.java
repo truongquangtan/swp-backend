@@ -1,4 +1,4 @@
-package com.swp.backend.api.v1.booking_history;
+package com.swp.backend.api.v1.booking_history.user;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
