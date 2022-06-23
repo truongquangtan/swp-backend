@@ -97,6 +97,13 @@ public class SlotService {
         {
             throw new InactivateProcessException("The slot is already inactive.");
         }
+
+        //Cancel all booking of this slot in future
+
+
+        //Inactive
+
+        //Delete
     }
 
     public boolean isSlotAvailableFromBooking(int slotId, Timestamp timestamp) {
