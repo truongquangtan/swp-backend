@@ -23,6 +23,7 @@ public class GetYardDetailResponse {
     private String openTime;
     private String closeTime;
     private String duration;
+    private Integer score;
     private List<String> images;
     private List<SubYardDetailModel> subYards;
 }

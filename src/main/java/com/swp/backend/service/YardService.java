@@ -287,6 +287,7 @@ public class YardService {
                 .openTime(yardEntity.getOpenAt().format(formatter))
                 .closeTime(yardEntity.getCloseAt().format(formatter))
                 .duration(duration)
+                .score(yardEntity.getScore())
                 .images(images)
                 .subYards(subYardDetailModels).build();
     }

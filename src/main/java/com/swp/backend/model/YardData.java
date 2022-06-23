@@ -16,6 +16,7 @@ public class YardData {
     private String districtName;
     private String openAt;
     private String closeAt;
+    private Integer score;
     private List<String> images;
     private List<SubYardModel> subYards;
 
@@ -26,6 +27,7 @@ public class YardData {
         this.name = yardModel.getName();
         this.images = yardModel.getImages();
         this.openAt = yardModel.getOpenAt();
+        this.score = yardModel.getScore();
         this.districtName = yardModel.getDistrictName();
         this.subYards = subYards;
     }
