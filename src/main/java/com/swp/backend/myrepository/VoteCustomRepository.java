@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import java.math.BigInteger;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.format.DateTimeFormatter;
@@ -52,7 +53,7 @@ public class VoteCustomRepository {
         }).collect(Collectors.toList());
     }
 
-    public List<VoteModel> getAllNonVoteByUserId(String userId) {
+    public List<VoteModel> getAllNonVoteByUserId(String userId, int offSet, int page) {
         try {
             String nativeQuery = "SELECT yards.name, sub_yards.name as sub_yard_name, type_yards.type_name, yards.address, booking.date, slots.start_time, slots.end_time, booking.id as book_id FROM booking" +
                     " INNER JOIN slots ON slots.id = booking.slot_id" +
@@ -65,6 +66,8 @@ public class VoteCustomRepository {
             query.setParameter(1, userId);
             query.setParameter(2, BookingStatus.SUCCESS);
             query.setParameter(3, DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE));
+            query.setFirstResult((page - 1) * offSet);
+            query.setMaxResults(offSet);
             List<?> results = query.getResultList();
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("d/M/y");
             DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm");
@@ -84,6 +87,27 @@ public class VoteCustomRepository {
         } catch (Exception exception) {
             exception.printStackTrace();
             return null;
+        }
+    }
+
+    public int countAllNonVoteByUserId(String userId) {
+        try {
+            String nativeQuery = "SELECT COUNT(*) FROM booking" +
+                    " INNER JOIN slots ON slots.id = booking.slot_id" +
+                    " INNER JOIN sub_yards ON slots.ref_yard = sub_yards.id" +
+                    " INNER JOIN yards ON sub_yards.parent_yard = yards.id" +
+                    " LEFT JOIN votes ON votes.booking_id = booking.id" +
+                    " INNER JOIN type_yards ON type_yards.id = sub_yards.type_yard" +
+                    " WHERE (booking.account_id = ?1) AND (booking.status = ?2) AND (booking.date <= ?3) AND (votes.id IS NULL )";
+            Query query = entityManager.createNativeQuery(nativeQuery);
+            query.setParameter(1, userId);
+            query.setParameter(2, BookingStatus.SUCCESS);
+            query.setParameter(3, DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE));
+            Object results = query.getSingleResult();
+            return (results instanceof BigInteger) ? ((BigInteger) results).intValue() : 0;
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return 0;
         }
     }
 

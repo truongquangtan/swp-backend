@@ -1,5 +1,7 @@
 package com.swp.backend.service;
 
+import com.swp.backend.api.v1.vote.GetVoteRequest;
+import com.swp.backend.api.v1.vote.GetVoteResponse;
 import com.swp.backend.entity.BookingEntity;
 import com.swp.backend.entity.VoteEntity;
 import com.swp.backend.entity.YardEntity;
@@ -109,12 +111,24 @@ public class VoteService {
         }).start();
     }
 
-    public List<VoteModel> getAllVote(String userId) {
-        return voteCustomRepository.getAllVoteByUserId(userId);
+    public GetVoteResponse getAllNonVoteByUserId(String userId, GetVoteRequest request) {
+        int maxResult = countAllNonVote(userId);
+        int offSet = 6;
+        int page = 1;
+        if (request != null) {
+            offSet = (request.getItemsPerPage() != null) ? (int) request.getItemsPerPage() : offSet;
+            page = (request.getPage() != null) ? (int) request.getPage() : page;
+        }
+        List<VoteModel> votes = voteCustomRepository.getAllNonVoteByUserId(userId, offSet, page);
+        return GetVoteResponse.builder().votes(votes).maxResult(maxResult).page(page).build();
     }
 
-    public List<VoteModel> getAllNonVote(String userId) {
-        return voteCustomRepository.getAllNonVoteByUserId(userId);
+    private List<VoteModel> getAllNonVote(String userId, int offSet, int page) {
+        return voteCustomRepository.getAllNonVoteByUserId(userId, offSet, page);
+    }
+
+    public int countAllNonVote(String userId) {
+        return voteCustomRepository.countAllNonVoteByUserId(userId);
     }
 
     public List<VoteModel> getAllVoteByBigYardId(String bigYardId) {

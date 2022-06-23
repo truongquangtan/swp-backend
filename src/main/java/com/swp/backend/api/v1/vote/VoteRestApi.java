@@ -19,18 +19,18 @@ public class VoteRestApi {
     private SecurityContextService securityContextService;
     private Gson gson;
 
-    @GetMapping(value = "me/vote")
-    public ResponseEntity<String> getVote() {
+    @PostMapping(value = "me/votes")
+    public ResponseEntity<String> getVote(@RequestBody(required = false) GetVoteRequest request) {
         try {
             SecurityContext securityContext = SecurityContextHolder.getContext();
             String userId = securityContextService.extractUsernameFromContext(securityContext);
-            return ResponseEntity.ok(gson.toJson(voteService.getAllNonVote(userId)));
+            GetVoteResponse response = voteService.getAllNonVoteByUserId(userId, request);
+            return ResponseEntity.ok(gson.toJson(response));
         } catch (Exception exception) {
             exception.printStackTrace();
             ErrorResponse errorResponse = ErrorResponse.builder().message("Server busy can't handle this request!").build();
             return ResponseEntity.internalServerError().body(gson.toJson(errorResponse));
         }
-
     }
 
     @GetMapping(value = "vote/yard/{yardId}")
