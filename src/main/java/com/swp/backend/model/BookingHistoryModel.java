@@ -19,8 +19,14 @@ public class BookingHistoryModel {
     private String createdBy;
     private String note;
     private String bookingStatus;
+    private String bigYardName;
+    private String subYardName;
+    private String type;
+    private int price;
+    private String address;
+    private String time;
 
-    public static BookingHistoryModel buildFromBookingHistoryEntityAndCreatedBy(BookingHistoryEntity bookingHistory, String createdBy)
+    public static BookingHistoryModel buildFromBookingHistoryEntityAndCreatedByAndMatchModel(BookingHistoryEntity bookingHistory, String createdBy, MatchModel matchModel)
     {
         return BookingHistoryModel.builder()
                 .bookingId(bookingHistory.getBookingId())
@@ -28,7 +34,13 @@ public class BookingHistoryModel {
                 .createdAt(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(bookingHistory.getCreatedAt()))
                 .createdBy(createdBy)
                 .note(bookingHistory.getNote())
-                .reference(bookingHistory.getBookingReference())
+                .reference(bookingHistory.getReference())
+                .time(matchModel.getStartTime() + " - " + matchModel.getEndTime())
+                .bigYardName(matchModel.getBigYardName())
+                .subYardName(matchModel.getSubYardName())
+                .type(matchModel.getType())
+                .price(matchModel.getPrice())
+                .address(matchModel.getBigYardAddress())
                 .build();
     }
 }

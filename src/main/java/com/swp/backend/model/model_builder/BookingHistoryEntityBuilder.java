@@ -17,7 +17,6 @@ public class BookingHistoryEntityBuilder {
                 .bookingStatus(bookingEntity.getStatus())
                 .id(id)
                 .note(reason)
-                .bookingReference(bookingEntity.getReference())
                 .build();
         return bookingHistoryEntity;
     }
