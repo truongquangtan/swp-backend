@@ -30,4 +30,6 @@ public class SubYardEntity {
     @Column(name = "is_active")
     @Builder.Default
     private boolean active = true;
+    @Column(name = "reference", insertable = false)
+    private int reference;
 }

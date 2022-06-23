@@ -260,9 +260,7 @@ public class YardService {
         int minute = yardEntity.getSlotDuration() % 60;
         String duration = LocalTime.of(hour, minute).format(formatter);
 
-        List<String> images = yardPictureRepository.getAllByRefId(yardId).stream().map(yardPictureEntity -> {
-            return yardPictureEntity.getImage();
-        }).collect(Collectors.toList());
+        List<String> images = yardPictureRepository.getAllByRefId(yardId).stream().map(YardPictureEntity::getImage).collect(Collectors.toList());
         List<SubYardModel> subYards = subYardService.getSubYardsByBigYard(yardId);
         return GetYardDetailResponse.builder()
                 .id(yardEntity.getId())
