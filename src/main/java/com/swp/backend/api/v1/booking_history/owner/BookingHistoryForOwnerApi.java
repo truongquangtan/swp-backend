@@ -5,6 +5,7 @@ import com.swp.backend.api.v1.booking_history.user.BookingHistoryRequest;
 import com.swp.backend.api.v1.booking_history.BookingHistoryResponse;
 import com.swp.backend.entity.BookingHistoryEntity;
 import com.swp.backend.model.BookingHistoryModel;
+import com.swp.backend.repository.AccountRepository;
 import com.swp.backend.service.AccountService;
 import com.swp.backend.service.BookingHistoryService;
 import com.swp.backend.service.BookingService;
@@ -30,6 +31,7 @@ public class BookingHistoryForOwnerApi {
     private SecurityContextService securityContextService;
     private BookingService bookingService;
     private AccountService accountService;
+    private AccountRepository accountRepository;
     private BookingHistoryService bookingHistoryService;
     private static final int ITEMS_PER_PAGE_DEFAULT = 5;
     private static final int PAGE_DEFAULT = 1;
@@ -57,7 +59,7 @@ public class BookingHistoryForOwnerApi {
 
             List<BookingHistoryModel> data = bookingHistoryEntities.stream().map(bookingHistoryEntity -> {
                 String createdBy = bookingHistoryEntity.getCreatedBy();
-                String displayCreatedBy = createdBy.equals(ownerId) ? "You" : accountService.getRoleFromUserId(createdBy);
+                String displayCreatedBy = createdBy.equals(ownerId) ? "You" : accountRepository.findUserEntityByUserId(bookingHistoryEntity.getCreatedBy()).getFullName();
                 return bookingHistoryService.getBookingHistoryModelFromBookingHistoryEntityAndCreatedBy(bookingHistoryEntity, displayCreatedBy);
             }).collect(Collectors.toList());
 

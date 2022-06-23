@@ -173,16 +173,14 @@ public class BookingService {
     }
 
     public List<BookingHistoryEntity> getBookingHistoryOfUser(String userId, int itemsPerPage, int page) {
-        List<BookingHistoryEntity> result;
+        int startIndex = (page - 1)*itemsPerPage;
+        int endIndex = startIndex + itemsPerPage - 1;
+        int maxIndex = countAllHistoryBookingsOfOwner(userId);
+        endIndex = endIndex < maxIndex ? endIndex : maxIndex;
+        if(startIndex > endIndex) return new ArrayList<>();
 
-        Pageable pagination = PageRequest.of(page - 1, itemsPerPage);
-
-        result = bookingHistoryRepository.getAllByCreatedByOrderByCreatedAtDesc(userId, pagination);
-
-        if (result == null) {
-            return new ArrayList<>();
-        }
-        return result;
+        List<BookingHistoryEntity> result =  bookingHistoryCustomRepository.getAllBookingHistoryOfUser(userId, itemsPerPage, page);
+        return result == null ? new ArrayList<>() : result;
     }
 
     public List<BookingHistoryEntity> getBookingHistoryOfOwner(String ownerId, int itemsPerPage, int page)
@@ -193,7 +191,8 @@ public class BookingService {
         endIndex = endIndex < maxIndex ? endIndex : maxIndex;
         if(startIndex > endIndex) return new ArrayList<>();
 
-        return bookingHistoryCustomRepository.getAllBookingHistoryOfOwner(ownerId, startIndex, endIndex);
+        List<BookingHistoryEntity> result = bookingHistoryCustomRepository.getAllBookingHistoryOfOwner(ownerId, startIndex, endIndex);
+        return result == null ? new ArrayList<>() : result;
     }
     public int countAllHistoryBookingsOfOwner(String ownerId)
     {
