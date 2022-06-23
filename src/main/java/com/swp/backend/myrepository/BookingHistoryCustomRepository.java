@@ -1,7 +1,6 @@
 package com.swp.backend.myrepository;
 
 import com.swp.backend.entity.BookingHistoryEntity;
-import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -16,14 +15,12 @@ public class BookingHistoryCustomRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public List<BookingHistoryEntity> getAllBookingHistoryOfOwner(String ownerId, int startIndex, int endIndex)
-    {
+    public List<BookingHistoryEntity> getAllBookingHistoryOfOwner(String ownerId, int startIndex, int endIndex) {
         Query query = null;
-        try
-        {
+        try {
             String nativeQuery = "SELECT booking_history.* " +
                     "FROM booking_history INNER JOIN booking ON booking.id = booking_history.booking_id " +
-                                         "INNER JOIN yards y on booking.big_yard_id = y.id " +
+                    "INNER JOIN yards y on booking.big_yard_id = y.id " +
                     "WHERE y.owner_id = ?1 " +
                     "ORDER BY booking_history.created_at DESC";
 
@@ -33,26 +30,21 @@ public class BookingHistoryCustomRepository {
             query.setMaxResults(endIndex - startIndex + 1);
 
             List<?> queriedList = query.getResultList();
-            if(queriedList == null)
-            {
+            if (queriedList == null) {
                 return null;
             }
             List<BookingHistoryEntity> result = queriedList.stream().map(objectQueried -> {
                 return (BookingHistoryEntity) objectQueried;
             }).collect(Collectors.toList());
             return result;
-        }
-        catch(Exception ex)
-        {
+        } catch (Exception ex) {
             return null;
         }
     }
 
-    public int countAllBookingHistoryOfOwner(String ownerId)
-    {
+    public int countAllBookingHistoryOfOwner(String ownerId) {
         Query query = null;
-        try
-        {
+        try {
             String nativeQuery = "SELECT count(*) " +
                     "FROM booking_history INNER JOIN booking ON booking.id = booking_history.booking_id " +
                     "INNER JOIN yards y on booking.big_yard_id = y.id " +
@@ -64,9 +56,7 @@ public class BookingHistoryCustomRepository {
             int result = ((BigInteger) query.getSingleResult()).intValue();
 
             return result;
-        }
-        catch(Exception ex)
-        {
+        } catch (Exception ex) {
             return 0;
         }
     }

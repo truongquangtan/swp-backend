@@ -14,8 +14,7 @@ public class BookingHistoryService {
     private MatchService matchService;
     private BookingRepository bookingRepository;
 
-    public BookingHistoryModel getBookingHistoryModelFromBookingHistoryEntityAndCreatedBy (BookingHistoryEntity bookingHistoryEntity, String createdBy)
-    {
+    public BookingHistoryModel getBookingHistoryModelFromBookingHistoryEntityAndCreatedBy(BookingHistoryEntity bookingHistoryEntity, String createdBy) {
         BookingEntity booking = bookingRepository.findBookingEntityById(bookingHistoryEntity.getBookingId());
         MatchModel matchModel = matchService.getMatchModelFromBookingEntity(booking);
         return BookingHistoryModel.buildFromBookingHistoryEntityAndCreatedByAndMatchModel(bookingHistoryEntity, createdBy, matchModel);

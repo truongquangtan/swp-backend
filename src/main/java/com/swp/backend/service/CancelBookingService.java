@@ -127,8 +127,7 @@ public class CancelBookingService {
         }
     }
 
-    private void saveBookingHistory(BookingEntity bookingEntity, String reason)
-    {
+    private void saveBookingHistory(BookingEntity bookingEntity, String reason) {
         try {
             bookingHistoryRepository.save(BookingHistoryEntityBuilder.buildFromBookingEntity(bookingEntity, reason));
         } catch (Exception ex) {

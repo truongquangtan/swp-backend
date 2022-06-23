@@ -19,8 +19,7 @@ public class SlotModel {
     private String endTime;
     private boolean isActive;
 
-    public static SlotModel buildFromSlotEntity(SlotEntity slotEntity)
-    {
+    public static SlotModel buildFromSlotEntity(SlotEntity slotEntity) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
         return SlotModel.builder().id(slotEntity.getId())
                 .isActive(slotEntity.isActive())

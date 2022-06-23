@@ -1,12 +1,10 @@
 package com.swp.backend.model;
 
-import com.swp.backend.entity.SlotEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
 import java.util.List;
 
 @AllArgsConstructor
@@ -19,5 +17,6 @@ public class SubYardDetailModel {
     private String typeYard;
     private String createAt;
     private boolean isActive;
+    private int reference;
     private List<SlotModel> slots;
 }

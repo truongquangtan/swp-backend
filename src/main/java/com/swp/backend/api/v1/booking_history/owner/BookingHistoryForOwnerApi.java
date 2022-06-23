@@ -1,8 +1,8 @@
 package com.swp.backend.api.v1.booking_history.owner;
 
 import com.google.gson.Gson;
-import com.swp.backend.api.v1.booking_history.user.BookingHistoryRequest;
 import com.swp.backend.api.v1.booking_history.BookingHistoryResponse;
+import com.swp.backend.api.v1.booking_history.user.BookingHistoryRequest;
 import com.swp.backend.entity.BookingHistoryEntity;
 import com.swp.backend.model.BookingHistoryModel;
 import com.swp.backend.service.AccountService;
@@ -50,8 +50,7 @@ public class BookingHistoryForOwnerApi {
 
             List<BookingHistoryEntity> bookingHistoryEntities = bookingService.getBookingHistoryOfOwner(ownerId, itemsPerPage, page);
 
-            if(bookingHistoryEntities == null)
-            {
+            if (bookingHistoryEntities == null) {
                 bookingHistoryEntities = new ArrayList<>();
             }
 

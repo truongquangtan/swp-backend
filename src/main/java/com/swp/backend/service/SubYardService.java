@@ -47,7 +47,6 @@ public class SubYardService {
                         .isActive(true)
                         .reference(subYardEntity.getReference())
                         .build();
-
             } else {
                 return null;
             }

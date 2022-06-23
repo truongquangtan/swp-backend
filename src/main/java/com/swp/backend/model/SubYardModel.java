@@ -15,6 +15,6 @@ public class SubYardModel {
     private String parentYard;
     private String typeYard;
     private Timestamp createAt;
-    private int reference;
+    private Integer reference;
     private boolean isActive;
 }
