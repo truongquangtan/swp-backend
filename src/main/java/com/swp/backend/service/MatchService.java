@@ -5,7 +5,6 @@ import com.swp.backend.entity.SlotEntity;
 import com.swp.backend.entity.SubYardEntity;
 import com.swp.backend.model.MatchModel;
 import com.swp.backend.model.YardModel;
-import com.swp.backend.myrepository.SlotCustomRepository;
 import com.swp.backend.myrepository.SubYardCustomRepository;
 import com.swp.backend.repository.SlotRepository;
 import com.swp.backend.repository.SubYardRepository;

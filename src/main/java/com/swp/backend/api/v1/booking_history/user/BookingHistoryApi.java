@@ -2,10 +2,8 @@ package com.swp.backend.api.v1.booking_history.user;
 
 import com.google.gson.Gson;
 import com.swp.backend.api.v1.booking_history.BookingHistoryResponse;
-import com.swp.backend.entity.BookingEntity;
 import com.swp.backend.entity.BookingHistoryEntity;
 import com.swp.backend.model.BookingHistoryModel;
-import com.swp.backend.model.MatchModel;
 import com.swp.backend.service.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;

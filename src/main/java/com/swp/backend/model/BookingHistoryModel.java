@@ -26,8 +26,7 @@ public class BookingHistoryModel {
     private String address;
     private String time;
 
-    public static BookingHistoryModel buildFromBookingHistoryEntityAndCreatedByAndMatchModel(BookingHistoryEntity bookingHistory, String createdBy, MatchModel matchModel)
-    {
+    public static BookingHistoryModel buildFromBookingHistoryEntityAndCreatedByAndMatchModel(BookingHistoryEntity bookingHistory, String createdBy, MatchModel matchModel) {
         return BookingHistoryModel.builder()
                 .bookingId(bookingHistory.getBookingId())
                 .bookingStatus(bookingHistory.getBookingStatus())

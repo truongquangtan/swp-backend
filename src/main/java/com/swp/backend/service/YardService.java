@@ -263,16 +263,13 @@ public class YardService {
         int minute = yardEntity.getSlotDuration() % 60;
         String duration = LocalTime.of(hour, minute).format(formatter);
 
-        List<String> images = yardPictureRepository.getAllByRefId(yardId).stream().map(yardPictureEntity -> {
-            return yardPictureEntity.getImage();
-        }).collect(Collectors.toList());
+        List<String> images = yardPictureRepository.getAllByRefId(yardId).stream().map(YardPictureEntity::getImage).collect(Collectors.toList());
         List<SubYardModel> subYards = subYardService.getSubYardsByBigYard(yardId);
         List<SubYardDetailModel> subYardDetailModels = subYards.stream().map(subYardModel -> {
-            List<SlotModel> slots = slotRepository.findSlotEntitiesByRefYard(subYardModel.getId()).stream().map(slotEntity -> {
-                return SlotModel.buildFromSlotEntity(slotEntity);
-            }).collect(Collectors.toList());
+            List<SlotModel> slots = slotRepository.findSlotEntitiesByRefYard(subYardModel.getId()).stream().map(SlotModel::buildFromSlotEntity).collect(Collectors.toList());
             return SubYardDetailModel.builder().id(subYardModel.getId())
                     .name(subYardModel.getName())
+                    .reference(subYardModel.getReference())
                     .createAt(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(subYardModel.getCreateAt()))
                     .isActive(subYardModel.isActive())
                     .typeYard(subYardModel.getTypeYard())

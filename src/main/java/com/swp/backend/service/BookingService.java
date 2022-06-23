@@ -86,22 +86,19 @@ public class BookingService {
 
     @Transactional
     public BookingEntity processBooking(String userId, String yardId, BookingModel bookingModel, String errorNote, String status) {
-        try
-        {
+        try {
             BookingEntity bookingEntity = saveBookingEntity(userId, yardId, bookingModel, errorNote, status);
             addInformationToBookingHistory(bookingEntity);
-            if(status.equals(BookingStatus.SUCCESS))
-            {
+            if (status.equals(BookingStatus.SUCCESS)) {
                 increaseNumberOfBookingsOfYard(yardId);
             }
             return bookingEntity;
-        } catch (Exception ex)
-        {
+        } catch (Exception ex) {
             throw new RuntimeException("Error when process booking.");
         }
     }
-    private BookingEntity saveBookingEntity(String userId, String yardId, BookingModel bookingModel, String errorNote, String status)
-    {
+
+    private BookingEntity saveBookingEntity(String userId, String yardId, BookingModel bookingModel, String errorNote, String status) {
         Timestamp timestamp = DateHelper.parseFromStringToTimestamp(bookingModel.getDate());
         Timestamp now = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
 
@@ -122,16 +119,15 @@ public class BookingService {
 
         return bookingRepository.save(bookingEntity);
     }
-    private void increaseNumberOfBookingsOfYard(String yardId)
-    {
+
+    private void increaseNumberOfBookingsOfYard(String yardId) {
         YardEntity yardEntity = yardRepository.findYardEntitiesById(yardId);
         int currentNumberOfBookings = yardEntity.getNumberOfBookings() == null ? 0 : yardEntity.getNumberOfBookings();
         yardEntity.setNumberOfBookings(currentNumberOfBookings + 1);
         yardRepository.save(yardEntity);
     }
 
-    private void addInformationToBookingHistory(BookingEntity bookingEntity)
-    {
+    private void addInformationToBookingHistory(BookingEntity bookingEntity) {
         BookingHistoryEntity bookingHistoryEntity = BookingHistoryEntityBuilder.buildFromBookingEntity(bookingEntity, "");
         bookingHistoryRepository.save(bookingHistoryEntity);
     }
@@ -183,21 +179,21 @@ public class BookingService {
         return result == null ? new ArrayList<>() : result;
     }
 
-    public List<BookingHistoryEntity> getBookingHistoryOfOwner(String ownerId, int itemsPerPage, int page)
-    {
-        int startIndex = (page - 1)*itemsPerPage;
+    public List<BookingHistoryEntity> getBookingHistoryOfOwner(String ownerId, int itemsPerPage, int page) {
+        int startIndex = (page - 1) * itemsPerPage;
         int endIndex = startIndex + itemsPerPage - 1;
         int maxIndex = countAllHistoryBookingsOfOwner(ownerId);
         endIndex = endIndex < maxIndex ? endIndex : maxIndex;
-        if(startIndex > endIndex) return new ArrayList<>();
+        if (startIndex > endIndex) return new ArrayList<>();
 
         List<BookingHistoryEntity> result = bookingHistoryCustomRepository.getAllBookingHistoryOfOwner(ownerId, startIndex, endIndex);
         return result == null ? new ArrayList<>() : result;
     }
-    public int countAllHistoryBookingsOfOwner(String ownerId)
-    {
+
+    public int countAllHistoryBookingsOfOwner(String ownerId) {
         return bookingHistoryCustomRepository.countAllBookingHistoryOfOwner(ownerId);
     }
+
     public int countAllHistoryBookingsOfUser(String userId) {
         return bookingHistoryRepository.countAllByCreatedBy(userId);
     }

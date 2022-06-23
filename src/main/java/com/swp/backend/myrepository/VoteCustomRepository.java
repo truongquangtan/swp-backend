@@ -81,13 +81,13 @@ public class VoteCustomRepository {
                 voteModel.setBookingId((String) vote[7]);
                 return voteModel;
             }).collect(Collectors.toList());
-        }catch (Exception exception){
+        } catch (Exception exception) {
             exception.printStackTrace();
             return null;
         }
     }
 
-    public List<VoteModel> getAllVoteByBigYard (String bigYardId){
+    public List<VoteModel> getAllVoteByBigYard(String bigYardId) {
         try {
             String nativeQuery = "SELECT accounts.id as account_id, accounts.avatar_url, accounts.full_name, votes.id as vote_id, votes.comment, votes.date, votes.score FROM votes" +
                     " INNER JOIN booking ON booking.id = votes.booking_id" +
@@ -109,7 +109,7 @@ public class VoteCustomRepository {
                 voteModel.setScore((Integer) vote[6]);
                 return voteModel;
             }).collect(Collectors.toList());
-        }catch (Exception exception){
+        } catch (Exception exception) {
             exception.printStackTrace();
             return null;
         }

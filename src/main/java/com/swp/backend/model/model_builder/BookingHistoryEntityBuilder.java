@@ -7,8 +7,7 @@ import com.swp.backend.utils.DateHelper;
 import java.util.UUID;
 
 public class BookingHistoryEntityBuilder {
-    public static BookingHistoryEntity buildFromBookingEntity(BookingEntity bookingEntity, String reason)
-    {
+    public static BookingHistoryEntity buildFromBookingEntity(BookingEntity bookingEntity, String reason) {
         String id = UUID.randomUUID().toString();
         BookingHistoryEntity bookingHistoryEntity = BookingHistoryEntity.builder()
                 .bookingId(bookingEntity.getId())

@@ -45,8 +45,8 @@ public class SubYardService {
                         .parentYard(subYardEntity.getParentYard())
                         .createAt(subYardEntity.getCreateAt())
                         .isActive(true)
+                        .reference(subYardEntity.getReference())
                         .build();
-
             } else {
                 return null;
             }

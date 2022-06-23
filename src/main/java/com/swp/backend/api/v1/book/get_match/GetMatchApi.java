@@ -1,9 +1,7 @@
 package com.swp.backend.api.v1.book.get_match;
 
 import com.google.gson.Gson;
-import com.swp.backend.api.v1.book.cancel_booking.CancelBookingResponse;
 import com.swp.backend.entity.BookingEntity;
-import com.swp.backend.exception.CancelBookingProcessException;
 import com.swp.backend.exception.ErrorResponse;
 import com.swp.backend.model.MatchModel;
 import com.swp.backend.service.BookingService;
@@ -28,8 +26,7 @@ public class GetMatchApi {
     private SecurityContextService securityContextService;
 
     @GetMapping(value = "{bookingId}")
-    public ResponseEntity<String> getMatch(@PathVariable String bookingId)
-    {
+    public ResponseEntity<String> getMatch(@PathVariable String bookingId) {
         MatchModel data;
 
         String userId;
@@ -38,8 +35,7 @@ public class GetMatchApi {
 
         BookingEntity booking = bookingService.getBookingById(bookingId);
 
-        if(booking.getAccountId().equals(userId) == false)
-        {
+        if (booking.getAccountId().equals(userId) == false) {
             ErrorResponse error = ErrorResponse.builder().message("The user is not author of booking").build();
             return ResponseEntity.badRequest().body(gson.toJson(error));
         }
