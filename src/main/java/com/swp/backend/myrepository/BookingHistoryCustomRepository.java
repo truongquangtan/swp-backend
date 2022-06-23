@@ -60,4 +60,35 @@ public class BookingHistoryCustomRepository {
             return 0;
         }
     }
+
+    public List<BookingHistoryEntity> getAllBookingHistoryOfUser(String userId, int startIndex, int endIndex)
+    {
+        Query query = null;
+        try
+        {
+            String nativeQuery = "SELECT booking_history.* " +
+                    "FROM booking_history INNER JOIN booking ON booking.id = booking_history.booking_id " +
+                    "WHERE booking.account_id = ?1 " +
+                    "ORDER BY booking_history.created_at DESC";
+
+            query = entityManager.createNativeQuery(nativeQuery, BookingHistoryEntity.class);
+            query.setParameter(1, userId);
+            query.setFirstResult(startIndex);
+            query.setMaxResults(endIndex - startIndex + 1);
+
+            List<?> queriedList = query.getResultList();
+            if(queriedList == null)
+            {
+                return null;
+            }
+            List<BookingHistoryEntity> result = queriedList.stream().map(objectQueried -> {
+                return (BookingHistoryEntity) objectQueried;
+            }).collect(Collectors.toList());
+            return result;
+        }
+        catch(Exception ex)
+        {
+            return null;
+        }
+    }
 }
