@@ -173,7 +173,7 @@ public class BookingService {
         endIndex = endIndex < maxIndex ? endIndex : maxIndex;
         if (startIndex > endIndex) return new ArrayList<>();
 
-        List<BookingHistoryEntity> result = bookingHistoryCustomRepository.getAllBookingHistoryOfUser(userId, itemsPerPage, page);
+        List<BookingHistoryEntity> result = bookingHistoryCustomRepository.getAllBookingHistoryOfUser(userId, startIndex, endIndex);
         return result == null ? new ArrayList<>() : result;
     }
 
@@ -193,7 +193,7 @@ public class BookingService {
     }
 
     public int countAllHistoryBookingsOfUser(String userId) {
-        return bookingHistoryRepository.countAllByCreatedBy(userId);
+        return bookingHistoryCustomRepository.countAllBookingHistoryOfUser(userId);
     }
 
     public int countAllIncomingMatchesOfUser(String userId) {

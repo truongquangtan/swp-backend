@@ -86,4 +86,21 @@ public class BookingHistoryCustomRepository {
             return null;
         }
     }
+
+    public int countAllBookingHistoryOfUser(String userId) {
+        Query query = null;
+        try {
+            String nativeQuery = "SELECT COUNT(*) " +
+                    "FROM booking_history INNER JOIN booking ON booking.id = booking_history.booking_id " +
+                    "WHERE booking.account_id = ?1 " +
+                    "ORDER BY booking_history.created_at DESC";
+
+            query = entityManager.createNativeQuery(nativeQuery);
+            query.setParameter(1, userId);
+
+            return ((BigInteger) query.getSingleResult()).intValue();
+        } catch (Exception ex) {
+            return 0;
+        }
+    }
 }
