@@ -365,7 +365,6 @@ public class YardService {
             addSubYard(subYardToAdd, updateYardRequest.getId());
             updateSubYards(subYardToUpdate);
         } catch (Exception ex) {
-            ex.printStackTrace();
             throw new RuntimeException("Error when update subyards");
         }
     }

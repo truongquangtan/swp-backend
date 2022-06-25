@@ -136,7 +136,6 @@ public class YardRestApi {
             MessageResponse response = new MessageResponse("Update successfully");
             return ResponseEntity.ok(gson.toJson(response));
         } catch (RuntimeException ex) {
-            ex.printStackTrace();
             return ResponseEntity.internalServerError().body(ex.getMessage());
         }
     }
