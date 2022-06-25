@@ -50,7 +50,7 @@ public class InactivateYardApi {
 
             reactivationService.reactiveYard(ownerId, yardId);
 
-            MessageResponse response = new MessageResponse("Inactivate successfully");
+            MessageResponse response = new MessageResponse("Reactivate successfully");
             return ResponseEntity.ok().body(gson.toJson(response));
         } catch (RuntimeException runtimeException)
         {

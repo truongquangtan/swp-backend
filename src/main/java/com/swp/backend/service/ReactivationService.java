@@ -104,9 +104,9 @@ public class ReactivationService {
         {
             throw new RuntimeException("The owner is not author of this yard.");
         }
-        if(yardRepository.findYardEntityByIdAndActiveAndDeleted(yardId, true, false) == null)
+        if(yardRepository.findYardEntityByIdAndActiveAndDeleted(yardId, false, false) == null)
         {
-            throw new RuntimeException("The yard is already inactive or deleted.");
+            throw new RuntimeException("The yard is already active.");
         }
 
         try
