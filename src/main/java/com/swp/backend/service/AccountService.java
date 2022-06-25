@@ -17,7 +17,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -36,6 +38,7 @@ public class AccountService {
     private final AccountLoginService accountLoginService;
     private final RoleRepository roleRepository;
     private final YardService yardService;
+    private final FirebaseStoreService firebaseStoreService;
 
     private final AccountCustomRepository accountCustomRepository;
 
@@ -266,5 +269,36 @@ public class AccountService {
 
     public int getMaxResultSearch(Integer role, String keyword, String status) {
         return accountCustomRepository.countMaxResultSearchAccount(role, keyword, status);
+    }
+
+    public boolean updateAccount(MultipartFile avatar, String userId, String email, String oldPassword, String password, String phone) throws IOException, DataAccessException {
+        AccountEntity account = findAccountByUsername(userId);
+        if (account == null) {
+            return false;
+        }
+
+        if (avatar != null) {
+            String url = firebaseStoreService.uploadFile(avatar);
+            account.setAvatar(url);
+        }
+
+        if (oldPassword != null && password != null)  {
+            if(passwordEncoder.matches(oldPassword, account.getPassword()) && password.trim().length() >= 8){
+                account.setPassword(passwordEncoder.encode(password));
+            }else {
+                return false;
+            }
+        }
+
+        if (phone != null && phone.matches(RegexHelper.PHONE_REGEX_LOCAL)) {
+            account.setPhone(phone);
+        }
+
+        if (email != null && email.matches(RegexHelper.EMAIL_REGEX)) {
+            account.setEmail(email);
+        }
+
+        accountRepository.save(account);
+        return true;
     }
 }
