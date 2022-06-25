@@ -38,9 +38,9 @@ public class MatchService {
         int slotId = bookingEntity.getSlotId();
         String subYardId = bookingEntity.getSubYardId();
         String typeYard = subYardCustomRepository.findTypeYardFromSubYardId(subYardId);
-        SubYardEntity subYardEntity = subYardRepository.getSubYardEntityByIdAndActive(subYardId, true);
+        SubYardEntity subYardEntity = subYardRepository.getSubYardEntitiesById(subYardId);
         String yardId = bookingEntity.getBigYardId();
-        SlotEntity slotEntity = slotRepository.findSlotEntityByIdAndActive(slotId, true);
+        SlotEntity slotEntity = slotRepository.findSlotEntityById(slotId);
         YardModel yardModel = yardService.getYardModelFromYardId(yardId);
         return MatchModel.builder().bigYardAddress(yardModel.getAddress())
                 .bigYardName(yardModel.getName())

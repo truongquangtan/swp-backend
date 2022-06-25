@@ -91,4 +91,21 @@ public class SubYardCustomRepository {
             return null;
         }
     }
+
+    public String getOwnerIdOfSubYard(String subYardId)
+    {
+        try {
+            Query query = null;
+
+            String nativeQuery = "SELECT y.owner_id " +
+                    "FROM sub_yards s INNER JOIN yards y ON s.parent_yard = y.id " +
+                    "WHERE s.id = ?1";
+
+            query = entityManager.createNativeQuery(nativeQuery);
+            query.setParameter(1, subYardId);
+            return (String) query.getSingleResult();
+        } catch (Exception ex) {
+            return "";
+        }
+    }
 }

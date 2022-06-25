@@ -27,4 +27,7 @@ public class SlotEntity {
     private LocalTime startTime;
     @Column(name = "end_time")
     private LocalTime endTime;
+    @Column(name = "is_parent_active")
+    @Builder.Default
+    private boolean parentActive = true;
 }

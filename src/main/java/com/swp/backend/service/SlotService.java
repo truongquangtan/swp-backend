@@ -2,6 +2,7 @@ package com.swp.backend.service;
 
 import com.swp.backend.constance.BookingStatus;
 import com.swp.backend.entity.SlotEntity;
+import com.swp.backend.exception.InactivateProcessException;
 import com.swp.backend.model.Slot;
 import com.swp.backend.model.model_builder.ListSlotBuilder;
 import com.swp.backend.myrepository.SlotCustomRepository;
@@ -10,6 +11,7 @@ import com.swp.backend.repository.SlotRepository;
 import com.swp.backend.utils.DateHelper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -85,6 +87,34 @@ public class SlotService {
         return allSlots;
     }
 
+    @Transactional
+    public void inactivateSlot(int slotId)
+    {
+        SlotEntity slotEntity = slotRepository.findSlotEntityById(slotId);
+        slotEntity.setActive(false);
+        slotRepository.save(slotEntity);
+    }
+    @Transactional
+    public void reactivateSlot(int slotId)
+    {
+        SlotEntity slotEntity = slotRepository.findSlotEntityById(slotId);
+        slotEntity.setActive(true);
+        slotRepository.save(slotEntity);
+    }
+    @Transactional
+    public void setIsParentActiveFalse(int slotId)
+    {
+        SlotEntity slotEntity = slotRepository.findSlotEntityById(slotId);
+        slotEntity.setParentActive(false);
+        slotRepository.save(slotEntity);
+    }
+    @Transactional
+    public void setIsParentActiveTrue(int slotId)
+    {
+        SlotEntity slotEntity = slotRepository.findSlotEntityById(slotId);
+        slotEntity.setParentActive(true);
+        slotRepository.save(slotEntity);
+    }
     public boolean isSlotAvailableFromBooking(int slotId, Timestamp timestamp) {
         LocalDate localDate = DateHelper.parseFromTimestampToLocalDate(timestamp);
         Timestamp startTime = Timestamp.valueOf(localDate.toString() + " 00:00:00");
@@ -93,7 +123,7 @@ public class SlotService {
     }
 
     public boolean isSlotActive(int slotId) {
-        return slotRepository.findSlotEntityByIdAndActive(slotId, true) != null;
+        return slotRepository.findSlotEntityByIdAndActiveAndParentActive(slotId, true, true) != null;
     }
 
     public boolean isSlotExceedTimeToday(int slotId) {

@@ -4,6 +4,7 @@ import com.swp.backend.constance.BookingStatus;
 import com.swp.backend.entity.BookingEntity;
 import com.swp.backend.utils.DateHelper;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -91,6 +92,36 @@ public class BookingCustomRepository {
 
             return result;
         } catch (Exception ex) {
+            return null;
+        }
+    }
+
+    public List<BookingEntity> getAllSuccessBookingEntitiesOfSlotInFuture(int slotId)
+    {
+        try
+        {
+            Timestamp today = Timestamp.valueOf(LocalDate.now(ZoneId.of(DateHelper.VIETNAM_ZONE)).toString() + " 00:00:00");
+            Query query = null;
+
+            String nativeQuery = "SELECT booking.* FROM booking INNER JOIN slots s ON booking.slot_id = s.id " +
+                    "WHERE (s.id = ?1) AND ((booking.date > ?2) OR ((booking.date = ?2) AND (s.start_time > ?3))) AND booking.status = ?4";
+
+            query = entityManager.createNativeQuery(nativeQuery, BookingEntity.class);
+
+            query.setParameter(1, slotId);
+            query.setParameter(2, today);
+            query.setParameter(3, LocalTime.now(ZoneId.of(DateHelper.VIETNAM_ZONE)));
+            query.setParameter(4, BookingStatus.SUCCESS);
+
+            List<?> queriedList = query.getResultList();
+            List<BookingEntity> result = queriedList.stream().map(queriedObject -> {
+                return (BookingEntity)queriedObject;
+            }).collect(Collectors.toList());
+
+            return result;
+        }
+        catch (Exception ex)
+        {
             return null;
         }
     }
