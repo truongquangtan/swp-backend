@@ -22,6 +22,8 @@ public interface SlotRepository extends JpaRepository<SlotEntity, Integer> {
 
     public SlotEntity findSlotEntityByIdAndActive(int slotId, boolean isActive);
 
+    public SlotEntity findSlotEntityByIdAndActiveAndParentActive(int slotId, boolean isActive, boolean isParentActive);
+
     @Query("SELECT slot FROM SlotEntity slot WHERE slot.refYard IN :listSubYardId")
     public List<SlotEntity> getAllSlotsByListSubYardId(@Param("listSubYardId") Collection<String> listSubYardId);
 

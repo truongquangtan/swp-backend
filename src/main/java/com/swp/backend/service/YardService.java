@@ -267,7 +267,7 @@ public class YardService {
         List<String> images = yardPictureRepository.getAllByRefId(yardId).stream().map(YardPictureEntity::getImage).collect(Collectors.toList());
         List<SubYardModel> subYards = subYardService.getSubYardsByBigYard(yardId);
         List<SubYardDetailModel> subYardDetailModels = subYards.stream().map(subYardModel -> {
-            List<SlotModel> slots = slotRepository.findSlotEntitiesByRefYard(subYardModel.getId()).stream().map(SlotModel::buildFromSlotEntity).collect(Collectors.toList());
+            List<SlotModel> slots = slotRepository.findSlotEntitiesByRefYardAndActiveIsTrue(subYardModel.getId()).stream().map(SlotModel::buildFromSlotEntity).collect(Collectors.toList());
             return SubYardDetailModel.builder().id(subYardModel.getId())
                     .name(subYardModel.getName())
                     .reference(subYardModel.getReference())
@@ -290,5 +290,27 @@ public class YardService {
                 .score(yardEntity.getScore())
                 .images(images)
                 .subYards(subYardDetailModels).build();
+    }
+
+    @Transactional
+    public void setIsActiveFalseForYard(String yardId)
+    {
+        YardEntity yardEntity = yardRepository.findYardEntitiesById(yardId);
+        yardEntity.setActive(false);
+        yardRepository.save(yardEntity);
+    }
+    @Transactional
+    public void setIsActiveTrueForYard(String yardId)
+    {
+        YardEntity yardEntity = yardRepository.findYardEntitiesById(yardId);
+        yardEntity.setActive(true);
+        yardRepository.save(yardEntity);
+    }
+    @Transactional
+    public void setIsDeletedTrueForYard(String yardId)
+    {
+        YardEntity yardEntity = yardRepository.findYardEntitiesById(yardId);
+        yardEntity.setDeleted(true);
+        yardRepository.save(yardEntity);
     }
 }

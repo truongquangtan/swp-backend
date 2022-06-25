@@ -104,7 +104,7 @@ public class SubYardCustomRepository {
             query = entityManager.createNativeQuery(nativeQuery);
             query.setParameter(1, subYardId);
             return (String) query.getSingleResult();
-        } catch (NoResultException noResultException) {
+        } catch (Exception ex) {
             return "";
         }
     }

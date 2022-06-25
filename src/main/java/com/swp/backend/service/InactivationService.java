@@ -5,7 +5,6 @@ import com.swp.backend.entity.SlotEntity;
 import com.swp.backend.entity.SubYardEntity;
 import com.swp.backend.entity.YardEntity;
 import com.swp.backend.exception.InactivateProcessException;
-import com.swp.backend.model.Slot;
 import com.swp.backend.myrepository.BookingCustomRepository;
 import com.swp.backend.myrepository.SlotCustomRepository;
 import com.swp.backend.myrepository.SubYardCustomRepository;
@@ -22,7 +21,6 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 public class InactivationService {
-
     private SlotCustomRepository slotCustomRepository;
     private SubYardCustomRepository subYardCustomRepository;
     private BookingCustomRepository bookingCustomRepository;
@@ -31,6 +29,8 @@ public class InactivationService {
     private YardRepository yardRepository;
     private CancelBookingService cancelBookingService;
     private SlotService slotService;
+    private SubYardService subYardService;
+    private YardService yardService;
 
     public static final String INACTIVE_SLOT_REASON = "The slot is disabled by owner";
     public static final String INACTIVE_SUB_YARD_REASON = "The sub yard of this slot is disabled by owner";
@@ -59,8 +59,12 @@ public class InactivationService {
             throw new InactivateProcessException("Error in canceling process");
         }
     }
-
     private void processInactivateSlot(String ownerId, int slotId, String reason)
+    {
+        cancelAllBookingOfSlotProcess(ownerId, slotId, reason);
+        slotService.inactivateSlot(slotId);
+    }
+    private void cancelAllBookingOfSlotProcess(String ownerId, int slotId, String reason)
     {
         List<BookingEntity> bookingEntities = bookingCustomRepository.getAllSuccessBookingEntitiesOfSlotInFuture(slotId);
         if(bookingEntities != null)
@@ -71,8 +75,8 @@ public class InactivationService {
                 cancelBookingService.sendMailCancelToUser(bookingEntity, reason);
             }
         }
-        slotService.inactivateSlot(slotId);
     }
+
     @Transactional(rollbackFor = InactivateProcessException.class)
     public void inactivateSubYard(String ownerId, String subYardId)
     {
@@ -91,24 +95,26 @@ public class InactivationService {
         }
         catch (Exception ex)
         {
-            ex.printStackTrace();
             throw new InactivateProcessException("Error in canceling process");
         }
     }
 
     private void processInactivateSubYard(String ownerId, String subYardId, String message)
     {
+        cancelAllBookingInSubYardAndSetParentActiveFalseForAllSlot(ownerId, subYardId, message);
+        subYardService.setIsActiveFalseForSubYard(subYardId);
+    }
+    private void cancelAllBookingInSubYardAndSetParentActiveFalseForAllSlot(String ownerId, String subYardId, String message)
+    {
         List<SlotEntity> slotEntitiesOfSubYard = slotRepository.findSlotEntitiesByRefYardAndActiveIsTrue(subYardId);
         if(slotEntitiesOfSubYard != null)
         {
             for(SlotEntity slotEntity : slotEntitiesOfSubYard)
             {
-                processInactivateSlot(ownerId, slotEntity.getId(), message);
+                cancelAllBookingOfSlotProcess(ownerId, slotEntity.getId(), message);
+                slotService.setIsParentActiveFalse(slotEntity.getId());
             }
         }
-        SubYardEntity subYardEntity = subYardRepository.getSubYardEntitiesById(subYardId);
-        subYardEntity.setActive(false);
-        subYardRepository.save(subYardEntity);
     }
 
     @Transactional(rollbackFor = InactivateProcessException.class)
@@ -147,17 +153,17 @@ public class InactivationService {
         List<String> listYard = new ArrayList<>();
         listYard.add(yardId);
         List<String> subYardIdList = subYardRepository.getAllSubYardIdByListBigYardId(listYard);
+
         if(subYardIdList != null)
         {
             for(String subYardId : subYardIdList)
             {
-                processInactivateSubYard(ownerId, subYardId, INACTIVE_YARD_REASON);
+                cancelAllBookingInSubYardAndSetParentActiveFalseForAllSlot(ownerId, subYardId, INACTIVE_YARD_REASON);
+                subYardService.setIsParentActiveFalseForSubYard(subYardId);
             }
         }
 
-        YardEntity yardEntity = yardRepository.findYardEntitiesById(yardId);
-        yardEntity.setActive(false);
-        yardRepository.save(yardEntity);
+        yardService.setIsActiveFalseForYard(yardId);
     }
 
     public void deleteYard(String ownerId, String yardId)
@@ -181,11 +187,10 @@ public class InactivationService {
         if(subYardIdList != null)
             for(String subYardId : subYardIdList)
             {
-                processInactivateSubYard(ownerId, subYardId, DELETE_YARD_REASON);
+                cancelAllBookingInSubYardAndSetParentActiveFalseForAllSlot(ownerId, subYardId, DELETE_YARD_REASON);
+                subYardService.setIsParentActiveFalseForSubYard(subYardId);
             }
 
-        YardEntity yardEntity = yardRepository.findYardEntitiesById(yardId);
-        yardEntity.setDeleted(true);
-        yardRepository.save(yardEntity);
+        yardService.setIsDeletedTrueForYard(yardId);
     }
 }

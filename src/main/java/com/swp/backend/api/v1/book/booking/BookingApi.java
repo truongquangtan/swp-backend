@@ -70,6 +70,7 @@ public class BookingApi {
             response = new BookingResponse(isError ? "There were some booking slot error." : "Booking all slot successfully", isError, bookingEntities);
             return ResponseEntity.ok().body(gson.toJson(response));
         } catch (Exception ex) {
+            ex.printStackTrace();
             return ResponseEntity.internalServerError().body("Error when save in database: " + ex.getMessage());
         }
     }
