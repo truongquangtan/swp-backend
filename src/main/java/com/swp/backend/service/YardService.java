@@ -1,20 +1,22 @@
 package com.swp.backend.service;
 
+import com.swp.backend.api.v1.owner.yard.request.SlotRequest;
 import com.swp.backend.api.v1.owner.yard.request.SubYardRequest;
 import com.swp.backend.api.v1.owner.yard.request.YardRequest;
 import com.swp.backend.api.v1.owner.yard.response.GetYardDetailResponse;
 import com.swp.backend.api.v1.owner.yard.response.GetYardResponse;
+import com.swp.backend.api.v1.owner.yard.updateYardRequest.UpdateSubYardRequest;
+import com.swp.backend.api.v1.owner.yard.updateYardRequest.UpdateYardRequest;
 import com.swp.backend.api.v1.yard.search.YardResponse;
 import com.swp.backend.entity.*;
-import com.swp.backend.model.SlotModel;
-import com.swp.backend.model.SubYardDetailModel;
-import com.swp.backend.model.SubYardModel;
-import com.swp.backend.model.YardModel;
+import com.swp.backend.model.*;
 import com.swp.backend.myrepository.YardCustomRepository;
 import com.swp.backend.repository.*;
 import com.swp.backend.utils.DateHelper;
 import com.swp.backend.utils.TimeMappingHelper;
 import lombok.AllArgsConstructor;
+import org.apache.tomcat.jni.Local;
+import org.hibernate.sql.Update;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -64,27 +67,33 @@ public class YardService {
         //Save sub-yard
         List<SubYardRequest> subYardList = createYardModel.getSubYards();
 
-        if (subYardList != null && subYardList.size() > 0) {
-            List<SubYardEntity> subYardEntityList = new ArrayList<>();
-            List<SlotEntity> slotEntityList = new ArrayList<>();
+        addSubYard(subYardList, parentYardId);
+
+        addImages(images, parentYardId);
+    }
+    private void addSubYard(List<SubYardRequest> subYards, String yardId)
+    {
+        if (subYards != null && subYards.size() > 0) {
+            List<SubYardEntity> subYardEntities = new ArrayList<>();
+            List<SlotEntity> slotEntities = new ArrayList<>();
             List<TypeYard> typeList = typeYardRepository.findAll();
             HashMap<String, Integer> typeMapper = new HashMap<>();
             typeList.forEach(typeYard -> {
                 typeMapper.put(typeYard.getTypeName().toUpperCase(), typeYard.getId());
             });
-            subYardList.forEach(subYard -> {
+            subYards.forEach(subYard -> {
                 String subYardId = UUID.randomUUID().toString();
                 int type = typeMapper.get(subYard.getType() == 3 ? "3 VS 3" : "5 VS 5");
                 SubYardEntity subYardEntity = SubYardEntity.builder()
                         .id(subYardId)
                         .name(subYard.getName())
-                        .parentYard(parentYard.getId())
+                        .parentYard(yardId)
                         .typeYard(type)
                         .active(true)
                         .createAt(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE))
                         .build();
+                subYardEntities.add(subYardEntity);
 
-                subYardEntityList.add(subYardEntity);
                 subYard.getSlots().forEach(slot -> {
                     SlotEntity slotEntity = SlotEntity.builder()
                             .refYard(subYardId)
@@ -93,12 +102,15 @@ public class YardService {
                             .active(true)
                             .price(slot.getPrice())
                             .build();
-                    slotEntityList.add(slotEntity);
+                    slotEntities.add(slotEntity);
                 });
             });
-            subYardRepository.saveAll(subYardEntityList);
-            slotRepository.saveAll(slotEntityList);
+            subYardRepository.saveAll(subYardEntities);
+            slotRepository.saveAll(slotEntities);
         }
+    }
+    private void addImages(MultipartFile[] images, String yardId)
+    {
         if (images != null && images.length > 0) {
             List<YardPictureEntity> listImage = Arrays.stream(images).parallel().map(image -> {
                 String url = null;
@@ -107,7 +119,7 @@ public class YardService {
                 } catch (Exception exception) {
                     exception.printStackTrace();
                 }
-                return YardPictureEntity.builder().image(url).refId(parentYardId).build();
+                return YardPictureEntity.builder().image(url).refId(yardId).build();
             }).collect(Collectors.toList());
             if (listImage.size() > 0) {
                 new Thread(() -> {
@@ -312,5 +324,161 @@ public class YardService {
         YardEntity yardEntity = yardRepository.findYardEntitiesById(yardId);
         yardEntity.setDeleted(true);
         yardRepository.save(yardEntity);
+    }
+
+    @Transactional(rollbackFor = RuntimeException.class)
+    public void updateYard(String ownerId, UpdateYardRequest updateYardRequest, MultipartFile[] images)
+    {
+        YardEntity yard = getYardById(updateYardRequest.getId());
+
+        if(!ownerId.equals(yard.getOwnerId()))
+        {
+            throw new RuntimeException("Owner is not author of this yard");
+        }
+
+        updateImages(updateYardRequest, images);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        yard.setAddress(updateYardRequest.getAddress());
+        yard.setDistrictId(updateYardRequest.getDistrictId());
+        yard.setName(updateYardRequest.getName());
+        yard.setOpenAt(LocalTime.parse(updateYardRequest.getOpenAt(), formatter));
+        yard.setCloseAt(LocalTime.parse(updateYardRequest.getCloseAt(), formatter));
+        yard.setSlotDuration(getSlotDuration(updateYardRequest.getSlotDuration()));
+
+        List<UpdateSubYardRequest> subYards = updateYardRequest.getSubYards();
+        List<SubYardRequest> subYardToAdd = new ArrayList<>();
+        List<UpdateSubYardRequest> subYardToUpdate = new ArrayList<>();
+        for(UpdateSubYardRequest subYardRequest : subYards)
+        {
+            if(subYardRequest.getId() == null || subYardRequest.getId().equals(""))
+            {
+               subYardToAdd.add(new SubYardRequest(subYardRequest.getName(), subYardRequest.getType(), subYardRequest.getSlots()));
+            }
+            else
+            {
+                subYardToUpdate.add(subYardRequest);
+            }
+        }
+
+        try {
+            addSubYard(subYardToAdd, updateYardRequest.getId());
+            updateSubYards(subYardToUpdate);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new RuntimeException("Error when update subyards");
+        }
+    }
+    private void updateImages(UpdateYardRequest updateYardRequest, MultipartFile[] images)
+    {
+        if(updateYardRequest.getImagesChange() == null || updateYardRequest.getImagesChange().size() == 0)
+        {
+            return;
+        }
+        for(String image : updateYardRequest.getImagesChange())
+        {
+            try {
+                String name = image.split("[/?]")[7];
+                firebaseStoreService.deleteFile(name);
+                YardPictureEntity picture = yardPictureRepository.findYardPictureEntityByRefIdAndImage(updateYardRequest.getId(), image);
+                yardPictureRepository.delete(picture);
+            } catch (IOException ex)
+            {
+                throw new RuntimeException("Error when delete old image");
+            }
+        }
+        addImages(images, updateYardRequest.getId());
+    }
+    private void updateSubYards(List<UpdateSubYardRequest> subYardRequests)
+    {
+        if(subYardRequests != null && subYardRequests.size() > 0)
+        {
+            for(UpdateSubYardRequest request : subYardRequests)
+            {
+                SubYardEntity subYardEntity = subYardService.getSubYardById(request.getId());
+
+                subYardEntity.setName(request.getName());
+                List<TypeYard> typeList = typeYardRepository.findAll();
+                HashMap<String, Integer> typeMapper = new HashMap<>();
+                typeList.forEach(typeYard -> {
+                    typeMapper.put(typeYard.getTypeName().toUpperCase(), typeYard.getId());
+                });
+                subYardEntity.setTypeYard(typeMapper.get(request.getType() == 3 ? "3 VS 3" : "5 VS 5"));
+                subYardRepository.save(subYardEntity);
+
+                updateSlots(request.getSlots(), request.getId());
+            }
+        }
+    }
+    private void updateSlots(List<SlotRequest> slots, String subYardId)
+    {
+        List<SlotEntity> slotEntities = slotRepository.findSlotEntitiesByRefYardAndActiveIsTrue(subYardId);
+
+        List<SlotInfo> slotRequests = slots.stream().map(slot -> {
+            return SlotInfo.getSlotInfo(slot);
+        }).collect(Collectors.toList());
+
+        List<SlotInfo> slotEntitiesInfo = new ArrayList<>();
+        HashMap<SlotInfo, SlotEntity> slotInfoToSlotEntityMapper = new HashMap<>();
+        for(SlotEntity slotEntity : slotEntities)
+        {
+            SlotInfo slotInfo = SlotInfo.getSlotInfo(slotEntity);
+            slotEntitiesInfo.add(slotInfo);
+            slotInfoToSlotEntityMapper.put(slotInfo, slotEntity);
+        }
+
+        //Voi moi slot entity (trong db), tim tat ca cac slot request xem có cai nao giong khong,
+        //neu giong het, ko update
+        //neu khac gia, update gia
+        //neu khac het (th còn lại), thêm slot request vào db, inactive slot entity
+        for(SlotInfo slotEntityInfo : slotEntitiesInfo)
+        {
+            boolean isContainInRequests = false;
+            for(SlotInfo slotRequest : slotRequests)
+            {
+                if(slotEntityInfo.equals(slotRequest))
+                {
+                    slotRequest.setExistedInStorage(true);
+                    isContainInRequests = true;
+                    break;
+                }
+                else if(slotEntityInfo.isPriceChange(slotRequest))
+                {
+                    SlotEntity slotEntity = slotInfoToSlotEntityMapper.get(slotEntityInfo);
+                    slotEntity.setPrice(slotRequest.getPrice());
+                    slotRepository.save(slotEntity);
+                    slotRequest.setExistedInStorage(true);
+                    isContainInRequests = true;
+                    break;
+                }
+            }
+            if(!isContainInRequests)
+            {
+                SlotEntity slotEntity = slotInfoToSlotEntityMapper.get(slotEntityInfo);
+                slotEntity.setActive(false);
+                slotRepository.save(slotEntity);
+            }
+        }
+        for(SlotInfo slotInfo : slotRequests)
+        {
+            if(!slotInfo.isExistedInStorage())
+            {
+                DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+                SlotEntity slotEntity = SlotEntity.builder().startTime(LocalTime.parse(slotInfo.getStart(), dateTimeFormatter))
+                        .endTime(LocalTime.parse(slotInfo.getEnd(), dateTimeFormatter))
+                        .price(slotInfo.getPrice())
+                        .refYard(subYardId)
+                        .active(true)
+                        .build();
+                slotRepository.save(slotEntity);
+            }
+        }
+    }
+    private int getSlotDuration(String slotDurationRequest)
+    {
+        String[] getHourAndMinute = slotDurationRequest.split(":");
+        int hour = Integer.parseInt(getHourAndMinute[0]);
+        int minute = Integer.parseInt(getHourAndMinute[1]);
+        return hour*60+minute;
     }
 }

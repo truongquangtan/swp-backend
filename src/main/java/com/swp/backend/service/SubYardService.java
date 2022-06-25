@@ -124,4 +124,8 @@ public class SubYardService {
         subYardEntity.setParentActive(true);
         subYardRepository.save(subYardEntity);
     }
+    public SubYardEntity getSubYardById(String subYardId)
+    {
+        return subYardRepository.getSubYardEntitiesById(subYardId);
+    }
 }

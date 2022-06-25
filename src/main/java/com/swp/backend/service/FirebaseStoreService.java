@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.StringTokenizer;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 @Service
 @AllArgsConstructor
@@ -22,5 +24,10 @@ public class FirebaseStoreService {
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(multipartFile.getContentType()).build();
         Blob blob = bucket.getStorage().create(blobInfo, multipartFile.getInputStream().readAllBytes());
         return "https://firebasestorage.googleapis.com/v0/b/" + bucket.getName() + "/o/" + fileName + "?alt=media";
+    }
+
+    public boolean deleteFile(String fileName) throws IOException
+    {
+        return bucket.getStorage().delete(BlobId.of(bucket.getName(), fileName));
     }
 }

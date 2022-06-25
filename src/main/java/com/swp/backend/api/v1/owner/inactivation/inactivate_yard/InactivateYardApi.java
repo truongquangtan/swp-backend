@@ -22,7 +22,7 @@ public class InactivateYardApi {
     private ReactivationService reactivationService;
     private SecurityContextService securityContextService;
 
-    @PutMapping (value = "yards/{yardId}")
+    @PutMapping (value = "yards/{yardId}/inactivate")
     public ResponseEntity<String> inactivateYard(@PathVariable String yardId)
     {
         try
