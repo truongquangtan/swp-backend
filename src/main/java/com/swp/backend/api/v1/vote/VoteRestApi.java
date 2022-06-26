@@ -33,10 +33,16 @@ public class VoteRestApi {
         }
     }
 
-    @GetMapping(value = "vote/yard/{yardId}")
-    public ResponseEntity<String> getVotesOfBigYard(@PathVariable String yardId) {
+    @PostMapping(value = "vote/yards/{yardId}")
+    public ResponseEntity<String> getVotesOfBigYard(@PathVariable String yardId, @RequestBody(required = false) GetVoteRequest request) {
         try {
-            return ResponseEntity.ok(gson.toJson(voteService.getAllVoteByBigYardId(yardId)));
+            GetVoteResponse response;
+            if(request == null){
+                response = voteService.getAllVoteByBigYardId(yardId, null, null);
+            }else {
+                response = voteService.getAllVoteByBigYardId(yardId, request.getItemsPerPage(), request.getPage());
+            }
+            return ResponseEntity.ok(gson.toJson(response));
         } catch (Exception exception) {
             exception.printStackTrace();
             ErrorResponse errorResponse = ErrorResponse.builder().message("Server busy can't handle this request!").build();
