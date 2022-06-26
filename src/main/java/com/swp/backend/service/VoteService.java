@@ -6,6 +6,7 @@ import com.swp.backend.entity.BookingEntity;
 import com.swp.backend.entity.VoteEntity;
 import com.swp.backend.entity.YardEntity;
 import com.swp.backend.model.VoteModel;
+import com.swp.backend.model.YardModel;
 import com.swp.backend.myrepository.VoteCustomRepository;
 import com.swp.backend.repository.BookingRepository;
 import com.swp.backend.repository.VoteRepository;
@@ -131,7 +132,19 @@ public class VoteService {
         return voteCustomRepository.countAllNonVoteByUserId(userId);
     }
 
-    public List<VoteModel> getAllVoteByBigYardId(String bigYardId) {
-        return voteCustomRepository.getAllVoteByBigYard(bigYardId);
+    private List<VoteModel> getAllVoteByBigYardId(String bigYardId, int offSet, int page) {
+        return voteCustomRepository.getAllVoteByBigYard(bigYardId, offSet, page);
     }
+
+    public GetVoteResponse getAllVoteByBigYardId(String bigYardId, Integer offSet, Integer page){
+        int maxResult = voteCustomRepository.countAllVoteByBigYard(bigYardId);
+        int offSetValue = offSet != null ? (int)offSet : 10;
+        int pageValue = page != null ? (int)page : 1;
+        if((pageValue - 1) * offSetValue >= maxResult){
+            pageValue = 1;
+        }
+        List<VoteModel> votes = getAllVoteByBigYardId(bigYardId, offSetValue, pageValue);
+        return GetVoteResponse.builder().votes(votes).page(pageValue).maxResult(maxResult).build();
+    }
+
 }

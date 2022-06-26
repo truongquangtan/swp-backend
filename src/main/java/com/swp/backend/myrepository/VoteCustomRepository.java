@@ -111,14 +111,16 @@ public class VoteCustomRepository {
         }
     }
 
-    public List<VoteModel> getAllVoteByBigYard(String bigYardId) {
+    public List<VoteModel> getAllVoteByBigYard(String bigYardId, int offSet, int page) {
         try {
             String nativeQuery = "SELECT accounts.id as account_id, accounts.avatar_url, accounts.full_name, votes.id as vote_id, votes.comment, votes.date, votes.score FROM votes" +
                     " INNER JOIN booking ON booking.id = votes.booking_id" +
                     " INNER JOIN accounts ON booking.account_id = accounts.id" +
-                    " WHERE (booking.big_yard_id = ?1) AND (votes.is_deleted = 'false')";
+                    " WHERE (booking.big_yard_id = ?1) AND (votes.is_deleted = 'false') ORDER BY votes.date DESC";
             Query query = entityManager.createNativeQuery(nativeQuery);
             query.setParameter(1, bigYardId);
+            query.setMaxResults(offSet);
+            query.setFirstResult((page - 1) * offSet);
             List<?> results = query.getResultList();
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss a");
             return results.stream().map(result -> {
@@ -136,6 +138,22 @@ public class VoteCustomRepository {
         } catch (Exception exception) {
             exception.printStackTrace();
             return null;
+        }
+    }
+
+    public int countAllVoteByBigYard(String bigYardId) {
+        try {
+            String nativeQuery = "SELECT count(*) FROM votes" +
+                    " INNER JOIN booking ON booking.id = votes.booking_id" +
+                    " INNER JOIN accounts ON booking.account_id = accounts.id" +
+                    " WHERE (booking.big_yard_id = ?1) AND (votes.is_deleted = 'false')";
+            Query query = entityManager.createNativeQuery(nativeQuery);
+            query.setParameter(1, bigYardId);
+            Object result = query.getSingleResult();
+            return (result instanceof BigInteger) ? ((BigInteger) result).intValue() : 0;
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return 0;
         }
     }
 }
