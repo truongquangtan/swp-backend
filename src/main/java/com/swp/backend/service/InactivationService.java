@@ -2,7 +2,6 @@ package com.swp.backend.service;
 
 import com.swp.backend.entity.BookingEntity;
 import com.swp.backend.entity.SlotEntity;
-import com.swp.backend.entity.SubYardEntity;
 import com.swp.backend.entity.YardEntity;
 import com.swp.backend.exception.InactivateProcessException;
 import com.swp.backend.myrepository.BookingCustomRepository;
@@ -59,7 +58,7 @@ public class InactivationService {
             throw new InactivateProcessException("Error in canceling process");
         }
     }
-    private void processInactivateSlot(String ownerId, int slotId, String reason)
+    public void processInactivateSlot(String ownerId, int slotId, String reason)
     {
         cancelAllBookingOfSlotProcess(ownerId, slotId, reason);
         slotService.inactivateSlot(slotId);

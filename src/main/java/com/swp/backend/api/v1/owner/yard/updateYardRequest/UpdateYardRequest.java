@@ -14,13 +14,12 @@ import java.util.List;
 @Data
 @Builder
 public class UpdateYardRequest {
-    private String id;
     private String name;
     private String address;
     private Integer districtId;
     private String openAt;
     private String closeAt;
     private String slotDuration;
-    private List<String> imagesChange;
+    private List<String> currentImages;
     private List<UpdateSubYardRequest> subYards;
 }
