@@ -8,6 +8,7 @@ import com.swp.backend.api.v1.owner.yard.response.GetYardResponse;
 import com.swp.backend.api.v1.owner.yard.updateYardRequest.UpdateSubYardRequest;
 import com.swp.backend.api.v1.owner.yard.updateYardRequest.UpdateYardRequest;
 import com.swp.backend.api.v1.yard.search.YardResponse;
+import com.swp.backend.constance.NoImageUrl;
 import com.swp.backend.entity.*;
 import com.swp.backend.model.*;
 import com.swp.backend.myrepository.YardCustomRepository;
@@ -128,6 +129,14 @@ public class YardService {
                 }).start();
             }
         }
+        int noImageCount = images == null ? 3 : YardService.MAX_IMAGE - images.length;
+        for(int i = 0; i < noImageCount; ++i)
+        {
+            YardPictureEntity yardPictureEntity = YardPictureEntity.builder().refId(yardId)
+                    .image(NoImageUrl.NO_IMAGE)
+                    .build();
+            yardPictureRepository.save(yardPictureEntity);
+        }
     }
 
 
@@ -164,7 +173,7 @@ public class YardService {
 
         yardModels.forEach(yardModel -> {
             List<String> images = new ArrayList<>();
-            List<YardPictureEntity> listPicture = yardPictureRepository.getAllByRefId(yardModel.getId());
+            List<YardPictureEntity> listPicture = yardPictureRepository.getAllByRefIdOrderById(yardModel.getId());
             listPicture.forEach(picture -> images.add(picture.getImage()));
             yardModel.setImages(images);
         });
@@ -195,7 +204,7 @@ public class YardService {
                     .closeAt(yard.getCloseAt().format(formatter))
                     .build();
             List<String> images = new ArrayList<>();
-            List<YardPictureEntity> listPicture = yardPictureRepository.getAllByRefId(yardModel.getId());
+            List<YardPictureEntity> listPicture = yardPictureRepository.getAllByRefIdOrderById(yardModel.getId());
             listPicture.forEach(picture -> images.add(picture.getImage()));
             yardModel.setImages(images);
             return yardModel;
@@ -278,7 +287,7 @@ public class YardService {
         int minute = yardEntity.getSlotDuration() % 60;
         String duration = LocalTime.of(hour, minute).format(formatter);
 
-        List<String> images = yardPictureRepository.getAllByRefId(yardId).stream().map(YardPictureEntity::getImage).collect(Collectors.toList());
+        List<String> images = yardPictureRepository.getAllByRefIdOrderById(yardId).stream().map(YardPictureEntity::getImage).collect(Collectors.toList());
         List<SubYardModel> subYards = subYardService.getSubYardsByBigYard(yardId);
         List<SubYardDetailModel> subYardDetailModels = subYards.stream().map(subYardModel -> {
             List<SlotModel> slots = slotRepository.findSlotEntitiesByRefYardAndActiveIsTrue(subYardModel.getId()).stream().map(SlotModel::buildFromSlotEntity).collect(Collectors.toList());

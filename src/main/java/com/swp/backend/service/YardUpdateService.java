@@ -48,63 +48,65 @@ public class YardUpdateService {
             throw new RuntimeException("Owner is not author of this yard");
         }
 
-        updateImages(images, newImages, yardId);
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-        yard.setAddress(updateYardRequest.getAddress());
-        yard.setDistrictId(updateYardRequest.getDistrictId());
-        yard.setName(updateYardRequest.getName());
-        yard.setOpenAt(LocalTime.parse(updateYardRequest.getOpenAt(), formatter));
-        yard.setCloseAt(LocalTime.parse(updateYardRequest.getCloseAt(), formatter));
-        yard.setSlotDuration(getSlotDuration(updateYardRequest.getSlotDuration()));
-
-        List<UpdateSubYardRequest> subYards = updateYardRequest.getSubYards();
-        List<SubYardRequest> subYardToAdd = new ArrayList<>();
-        List<UpdateSubYardRequest> subYardToUpdate = new ArrayList<>();
-        for(UpdateSubYardRequest subYardRequest : subYards)
+        try
         {
-            if(subYardRequest.getId() == null || subYardRequest.getId().equals(""))
-            {
-                subYardToAdd.add(new SubYardRequest(subYardRequest.getName(), subYardRequest.getType(), subYardRequest.getSlots()));
-            }
-            else
-            {
-                subYardToUpdate.add(subYardRequest);
-            }
-        }
+            updateImages(images, newImages, yardId);
 
-        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+            yard.setAddress(updateYardRequest.getAddress());
+            yard.setDistrictId(updateYardRequest.getDistrictId());
+            yard.setName(updateYardRequest.getName());
+            yard.setOpenAt(LocalTime.parse(updateYardRequest.getOpenAt(), formatter));
+            yard.setCloseAt(LocalTime.parse(updateYardRequest.getCloseAt(), formatter));
+            yard.setSlotDuration(getSlotDuration(updateYardRequest.getSlotDuration()));
+
+            List<UpdateSubYardRequest> subYards = updateYardRequest.getSubYards();
+            List<SubYardRequest> subYardToAdd = new ArrayList<>();
+            List<UpdateSubYardRequest> subYardToUpdate = new ArrayList<>();
+            for(UpdateSubYardRequest subYardRequest : subYards)
+            {
+                if(subYardRequest.getId() == null || subYardRequest.getId().equals(""))
+                {
+                    subYardToAdd.add(new SubYardRequest(subYardRequest.getName(), subYardRequest.getType(), subYardRequest.getSlots()));
+                }
+                else
+                {
+                    subYardToUpdate.add(subYardRequest);
+                }
+            }
             yardService.addSubYard(subYardToAdd, yardId);
             updateSubYards(ownerId, subYardToUpdate);
         } catch (Exception ex) {
-            throw new RuntimeException("Error when update subyards");
+            ex.printStackTrace();
+            throw new RuntimeException(ex.getMessage());
         }
     }
     private void updateImages(List<String> images, MultipartFile[] newImages, String yardId)
     {
-        if( images == null || images.size() != YardService.MAX_IMAGE)
+        if( images == null || images.size() == 0)
         {
             return;
         }
-        for(int i = 0; i < YardService.MAX_IMAGE; ++i)
+
+        if(images.size() != newImages.length)
         {
-            if(newImages[i] != null)
+            throw new RuntimeException("Image to update not match the current image request");
+        }
+
+        try
+        {
+            for(int i = 0; i < images.size(); ++i)
             {
-                try
-                {
-                    String currentImageUrl = images.get(i);
-                    String currentImageName = currentImageUrl.split("[/?]")[7];
-                    firebaseStoreService.deleteFile(currentImageName);
-                    YardPictureEntity picture = yardPictureRepository.findYardPictureEntityByRefIdAndImage(yardId, currentImageUrl);
-                    System.out.println("This:" + currentImageUrl);
-                    picture.setImage(firebaseStoreService.uploadFile(newImages[i]));
-                }
-                catch (Exception ex)
-                {
-                    ex.printStackTrace();
-                    throw new RuntimeException("Error when update images");
-                }
+                String currentImgUrl = images.get(i);
+                String currentImgName = currentImgUrl.split("[/?]")[7];
+                firebaseStoreService.deleteFile(currentImgName);
+                YardPictureEntity picture = yardPictureRepository.findTop1ByRefIdAndImage(yardId, currentImgUrl);
+                picture.setImage(firebaseStoreService.uploadFile(newImages[i]));
+                yardPictureRepository.save(picture);
             }
+        } catch (IOException ex)
+        {
+            throw new RuntimeException(ex.getMessage());
         }
     }
     private void updateSubYards(String ownerId, List<UpdateSubYardRequest> subYardRequests)
