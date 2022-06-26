@@ -45,6 +45,7 @@ public class YardService {
     private TypeYardRepository typeYardRepository;
     private TimeMappingHelper timeMappingHelper;
     private SubYardService subYardService;
+    public static final int MAX_IMAGE = 3;
 
     @Transactional(rollbackFor = DataAccessException.class)
     public void createNewYard(String userId, YardRequest createYardModel, MultipartFile[] images) throws DataAccessException {
@@ -128,6 +129,7 @@ public class YardService {
             }
         }
     }
+
 
     public YardResponse findYardByFilter(Integer provinceId, Integer districtId, Integer ofSet, Integer page) {
         int pageValue = (page == null || page < 1) ? 1 : page;

@@ -35,7 +35,11 @@ public class YardUpdateService {
 
 
     @Transactional(rollbackFor = RuntimeException.class)
-    public void updateYard(String ownerId, UpdateYardRequest updateYardRequest, MultipartFile[] images, String yardId)
+    public void updateYard(String ownerId,
+                           UpdateYardRequest updateYardRequest,
+                           List<String> images,
+                           MultipartFile[] newImages,
+                           String yardId)
     {
         YardEntity yard = yardRepository.findYardEntitiesById(yardId);
 
@@ -44,7 +48,7 @@ public class YardUpdateService {
             throw new RuntimeException("Owner is not author of this yard");
         }
 
-        updateImages(updateYardRequest, images, yardId);
+        updateImages(images, newImages, yardId);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
         yard.setAddress(updateYardRequest.getAddress());
@@ -76,25 +80,32 @@ public class YardUpdateService {
             throw new RuntimeException("Error when update subyards");
         }
     }
-    private void updateImages(UpdateYardRequest updateYardRequest, MultipartFile[] images, String yardId)
+    private void updateImages(List<String> images, MultipartFile[] newImages, String yardId)
     {
-        if(updateYardRequest.getCurrentImages() == null || updateYardRequest.getCurrentImages().size() == 0)
+        if( images == null || images.size() != YardService.MAX_IMAGE)
         {
             return;
         }
-        for(String image : updateYardRequest.getCurrentImages())
+        for(int i = 0; i < YardService.MAX_IMAGE; ++i)
         {
-            try {
-                String name = image.split("[/?]")[7];
-                firebaseStoreService.deleteFile(name);
-                YardPictureEntity picture = yardPictureRepository.findYardPictureEntityByRefIdAndImage(yardId, image);
-                yardPictureRepository.delete(picture);
-            } catch (IOException ex)
+            if(newImages[i] != null)
             {
-                throw new RuntimeException("Error when delete old image");
+                try
+                {
+                    String currentImageUrl = images.get(i);
+                    String currentImageName = currentImageUrl.split("[/?]")[7];
+                    firebaseStoreService.deleteFile(currentImageName);
+                    YardPictureEntity picture = yardPictureRepository.findYardPictureEntityByRefIdAndImage(yardId, currentImageUrl);
+                    System.out.println("This:" + currentImageUrl);
+                    picture.setImage(firebaseStoreService.uploadFile(newImages[i]));
+                }
+                catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                    throw new RuntimeException("Error when update images");
+                }
             }
         }
-        yardService.addImages(images, yardId);
     }
     private void updateSubYards(String ownerId, List<UpdateSubYardRequest> subYardRequests)
     {
