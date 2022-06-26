@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 public class VoucherRestApi {
     private VoucherService voucherService;
     private SecurityContextService securityContextService;
-    @GetMapping(name = "voucher/yard/{yardId}")
+    @GetMapping( "voucher/yard/{yardId}")
     public ResponseEntity<String> getVoucherAvailableOfYard(@PathVariable String yardId){
         try {
 
@@ -25,7 +25,7 @@ public class VoucherRestApi {
         }
     }
 
-    @GetMapping(name = "owner/voucher")
+    @GetMapping("owner/voucher")
     public ResponseEntity<String> getVoucherAvailableOfYard(){
         try {
             SecurityContext securityContext = SecurityContextHolder.getContext();
@@ -38,7 +38,7 @@ public class VoucherRestApi {
         }
     }
 
-    @GetMapping(name = "owner/voucher/summary")
+    @GetMapping("owner/voucher/summary")
     public ResponseEntity<String> summaryVoucher(){
         try {
             SecurityContext securityContext = SecurityContextHolder.getContext();
@@ -50,7 +50,7 @@ public class VoucherRestApi {
         }
     }
 
-    @PostMapping(name = "owner/voucher")
+    @PostMapping( "owner/voucher")
     public ResponseEntity<String> createVoucher(){
         try {
             SecurityContext securityContext = SecurityContextHolder.getContext();
@@ -63,7 +63,7 @@ public class VoucherRestApi {
         }
     }
 
-    @PutMapping(name = "owner/voucher")
+    @PutMapping("owner/voucher")
     public ResponseEntity<String> editVoucher(){
         try {
             SecurityContext securityContext = SecurityContextHolder.getContext();
