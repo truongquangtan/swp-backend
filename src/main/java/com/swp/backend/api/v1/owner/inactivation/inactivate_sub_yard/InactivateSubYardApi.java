@@ -4,17 +4,15 @@ import com.google.gson.Gson;
 import com.swp.backend.exception.ErrorResponse;
 import com.swp.backend.exception.InactivateProcessException;
 import com.swp.backend.model.MessageResponse;
-import com.swp.backend.service.InactivationService;
-import com.swp.backend.service.ReactivationService;
-import com.swp.backend.service.SecurityContextService;
-import com.swp.backend.service.SubYardService;
+import com.swp.backend.model.SubYardDetailModel;
+import com.swp.backend.service.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.mail.Message;
+import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -25,6 +23,7 @@ public class InactivateSubYardApi {
     private InactivationService inactivationService;
     private SecurityContextService securityContextService;
     private SubYardService subYardService;
+    private YardService yardService;
 
     @PutMapping(value = "yards/{yardId}/sub-yards/{subYardId}/deactivate")
     public ResponseEntity<String> inactivateSubYard(@PathVariable(name = "yardId") String yardId,
@@ -43,7 +42,8 @@ public class InactivateSubYardApi {
             }
 
             inactivationService.inactivateSubYard(ownerId, subYardId);
-            MessageResponse response = new MessageResponse("Deactivate successfully");
+            List<SubYardDetailModel> subYardDetailModels = yardService.getSubYardDetailModelFromYardId(yardId);
+            SubYardsResponse response = new SubYardsResponse("Deactivate successfully.", subYardDetailModels);
             return ResponseEntity.ok().body(gson.toJson(response));
         } catch (InactivateProcessException inactivateProcessException)
         {
@@ -94,7 +94,8 @@ public class InactivateSubYardApi {
             }
 
             inactivationService.deleteSubYard(ownerId, subYardId);
-            MessageResponse response = new MessageResponse("Delete sub-yard successfully.");
+            List<SubYardDetailModel> subYardDetailModels = yardService.getSubYardDetailModelFromYardId(yardId);
+            SubYardsResponse response = new SubYardsResponse("Delete successfully.", subYardDetailModels);
             return ResponseEntity.ok().body(gson.toJson(response));
         } catch (InactivateProcessException ex)
         {

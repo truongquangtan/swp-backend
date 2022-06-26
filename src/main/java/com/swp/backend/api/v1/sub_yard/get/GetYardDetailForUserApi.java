@@ -29,7 +29,7 @@ public class GetYardDetailForUserApi {
             return ResponseEntity.ok().body(gson.toJson(new YardDetailForUserResponse("The yard is not active or deleted.", null)));
         }
 
-        List<SubYardModel> subYards = subYardService.getSubYardsByBigYard(yardId);
+        List<SubYardModel> subYards = subYardService.getActiveSubYardsByBigYard(yardId);
         YardModel bigYard = yardService.getYardModelFromYardId(yardId);
         YardData data = new YardData(bigYard, subYards);
 

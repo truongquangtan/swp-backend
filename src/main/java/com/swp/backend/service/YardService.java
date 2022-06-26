@@ -288,18 +288,7 @@ public class YardService {
         String duration = LocalTime.of(hour, minute).format(formatter);
 
         List<String> images = yardPictureRepository.getAllByRefIdOrderById(yardId).stream().map(YardPictureEntity::getImage).collect(Collectors.toList());
-        List<SubYardModel> subYards = subYardService.getSubYardsByBigYard(yardId);
-        List<SubYardDetailModel> subYardDetailModels = subYards.stream().map(subYardModel -> {
-            List<SlotModel> slots = slotRepository.findSlotEntitiesByRefYardAndActiveIsTrue(subYardModel.getId()).stream().map(SlotModel::buildFromSlotEntity).collect(Collectors.toList());
-            Collections.sort(slots);
-            return SubYardDetailModel.builder().id(subYardModel.getId())
-                    .name(subYardModel.getName())
-                    .reference(subYardModel.getReference())
-                    .createAt(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(subYardModel.getCreateAt()))
-                    .isActive(subYardModel.isActive())
-                    .typeYard(subYardModel.getTypeYard())
-                    .slots(slots).build();
-        }).collect(Collectors.toList());
+        List<SubYardDetailModel> subYardDetailModels = getSubYardDetailModelFromYardId(yardId);
         return GetYardDetailResponse.builder()
                 .id(yardEntity.getId())
                 .name(yardEntity.getName())
@@ -316,6 +305,22 @@ public class YardService {
                 .subYards(subYardDetailModels).build();
     }
 
+    public List<SubYardDetailModel> getSubYardDetailModelFromYardId(String yardId)
+    {
+        List<SubYardModel> subYards = subYardService.getSubYardsByBigYard(yardId);
+        List<SubYardDetailModel> subYardDetailModels = subYards.stream().map(subYardModel -> {
+            List<SlotModel> slots = slotRepository.findSlotEntitiesByRefYardAndActiveIsTrue(subYardModel.getId()).stream().map(SlotModel::buildFromSlotEntity).collect(Collectors.toList());
+            Collections.sort(slots);
+            return SubYardDetailModel.builder().id(subYardModel.getId())
+                    .name(subYardModel.getName())
+                    .reference(subYardModel.getReference())
+                    .createAt(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(subYardModel.getCreateAt()))
+                    .isActive(subYardModel.isActive())
+                    .typeYard(subYardModel.getTypeYard())
+                    .slots(slots).build();
+        }).collect(Collectors.toList());
+        return  subYardDetailModels;
+    }
     @Transactional
     public void setIsActiveFalseForYard(String yardId)
     {
