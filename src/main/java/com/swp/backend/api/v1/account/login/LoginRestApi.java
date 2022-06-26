@@ -91,7 +91,7 @@ public class LoginRestApi {
 
             } else {
                 //Case password not match
-                ErrorResponse error = ErrorResponse.builder().message("Password incorrect.").build();
+                ErrorResponse error = ErrorResponse.builder().message("Incorrect email or password.").build();
                 return ResponseEntity.badRequest().body(gson.toJson(error));
             }
         } catch (Exception exception) {
