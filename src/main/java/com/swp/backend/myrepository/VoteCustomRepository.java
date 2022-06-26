@@ -116,7 +116,7 @@ public class VoteCustomRepository {
             String nativeQuery = "SELECT accounts.id as account_id, accounts.avatar_url, accounts.full_name, votes.id as vote_id, votes.comment, votes.date, votes.score FROM votes" +
                     " INNER JOIN booking ON booking.id = votes.booking_id" +
                     " INNER JOIN accounts ON booking.account_id = accounts.id" +
-                    " WHERE (booking.big_yard_id = ?1) AND (votes.is_deleted = 'false')";
+                    " WHERE (booking.big_yard_id = ?1) AND (votes.is_deleted = 'false') ORDER BY votes.date DESC";
             Query query = entityManager.createNativeQuery(nativeQuery);
             query.setParameter(1, bigYardId);
             query.setMaxResults(offSet);
