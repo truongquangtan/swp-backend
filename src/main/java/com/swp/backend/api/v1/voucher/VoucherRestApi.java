@@ -2,6 +2,7 @@ package com.swp.backend.api.v1.voucher;
 
 import com.google.gson.Gson;
 import com.swp.backend.api.v1.owner.voucher.VoucherResponse;
+import com.swp.backend.exception.ErrorResponse;
 import com.swp.backend.model.RequestPageModel;
 import com.swp.backend.service.VoucherService;
 import lombok.AllArgsConstructor;
@@ -26,8 +27,8 @@ public class VoucherRestApi {
             }
             return ResponseEntity.ok().body(gson.toJson(response));
         } catch (Exception exception) {
-            exception.printStackTrace();
-            return ResponseEntity.internalServerError().build();
+            ErrorResponse errorResponse = ErrorResponse.builder().stack(exception.getMessage()).message("Server busy temp can't create voucher.").build();
+            return ResponseEntity.internalServerError().body(gson.toJson(errorResponse));
         }
     }
 }

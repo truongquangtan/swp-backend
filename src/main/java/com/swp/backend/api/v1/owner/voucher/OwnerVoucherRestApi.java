@@ -2,6 +2,7 @@ package com.swp.backend.api.v1.owner.voucher;
 
 import com.google.gson.Gson;
 import com.swp.backend.exception.ErrorResponse;
+import com.swp.backend.model.MessageResponse;
 import com.swp.backend.model.RequestPageModel;
 import com.swp.backend.model.VoucherModel;
 import com.swp.backend.service.SecurityContextService;
@@ -33,10 +34,11 @@ public class OwnerVoucherRestApi {
             SecurityContext securityContext = SecurityContextHolder.getContext();
             String accountId = securityContextService.extractUsernameFromContext(securityContext);
             voucherService.createVoucher(voucherModel, accountId);
-            return ResponseEntity.ok().build();
+            MessageResponse response = MessageResponse.builder().message("Created voucher success!").build();
+            return ResponseEntity.ok(gson.toJson(response));
         } catch (Exception exception) {
-            exception.printStackTrace();
-            return ResponseEntity.internalServerError().build();
+            ErrorResponse errorResponse = ErrorResponse.builder().stack(exception.getMessage()).message("Server busy temp can't create voucher.").build();
+            return ResponseEntity.internalServerError().body(gson.toJson(errorResponse));
         }
     }
 
@@ -54,9 +56,8 @@ public class OwnerVoucherRestApi {
             }
             return ResponseEntity.ok(gson.toJson(response));
         } catch (Exception exception) {
-            exception.printStackTrace();
-            return ResponseEntity.internalServerError().build();
+            ErrorResponse errorResponse = ErrorResponse.builder().stack(exception.getMessage()).message("Server busy temp can't create voucher.").build();
+            return ResponseEntity.internalServerError().body(gson.toJson(errorResponse));
         }
     }
-
 }
