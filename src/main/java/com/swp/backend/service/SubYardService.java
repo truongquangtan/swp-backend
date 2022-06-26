@@ -14,6 +14,7 @@ import com.swp.backend.repository.TypeYardRepository;
 import com.swp.backend.repository.YardRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -74,7 +75,7 @@ public class SubYardService {
     public GetSubYardDetailResponse processGetSubYardDetailResponseByOwner(String subYardId) {
         SubYardEntity subYardEntity = subYardRepository.getSubYardEntitiesById(subYardId);
         String type = typeYardRepository.getTypeYardById(subYardEntity.getTypeYard()).getTypeName();
-        List<SlotEntity> slotEntities = slotRepository.findSlotEntitiesByRefYard(subYardId);
+        List<SlotEntity> slotEntities = slotRepository.findSlotEntitiesByRefYardAndActiveIsTrue(subYardId);
         List<Slot> slots = ListSlotBuilder.getAvailableSlotsFromSlotEntities(slotEntities);
 
 
@@ -93,5 +94,38 @@ public class SubYardService {
 
     public String getBigYardIdFromSubYard(String subYardId) {
         return subYardCustomRepository.getBigYardIdFromSubYard(subYardId);
+    }
+
+    @Transactional
+    public void setIsActiveFalseForSubYard(String subYardId)
+    {
+        SubYardEntity subYardEntity = subYardRepository.getSubYardEntitiesById(subYardId);
+        subYardEntity.setActive(false);
+        subYardRepository.save(subYardEntity);
+    }
+    @Transactional
+    public void setIsParentActiveFalseForSubYard(String subYardId)
+    {
+        SubYardEntity subYardEntity = subYardRepository.getSubYardEntitiesById(subYardId);
+        subYardEntity.setParentActive(false);
+        subYardRepository.save(subYardEntity);
+    }
+    @Transactional
+    public void setIsActiveTrueForSubYard(String subYardId)
+    {
+        SubYardEntity subYardEntity = subYardRepository.getSubYardEntitiesById(subYardId);
+        subYardEntity.setActive(true);
+        subYardRepository.save(subYardEntity);
+    }
+    @Transactional
+    public void setIsParentActiveTrueForSubYard(String subYardId)
+    {
+        SubYardEntity subYardEntity = subYardRepository.getSubYardEntitiesById(subYardId);
+        subYardEntity.setParentActive(true);
+        subYardRepository.save(subYardEntity);
+    }
+    public SubYardEntity getSubYardById(String subYardId)
+    {
+        return subYardRepository.getSubYardEntitiesById(subYardId);
     }
 }

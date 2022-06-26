@@ -3,13 +3,16 @@ package com.swp.backend.api.v1.owner.yard;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import com.swp.backend.api.v1.owner.yard.request.GetYardRequest;
+import com.swp.backend.api.v1.owner.yard.updateYardRequest.UpdateYardRequest;
 import com.swp.backend.api.v1.owner.yard.request.YardRequest;
 import com.swp.backend.api.v1.owner.yard.response.CreateYardSuccessResponse;
 import com.swp.backend.api.v1.owner.yard.response.GetYardDetailResponse;
 import com.swp.backend.api.v1.owner.yard.response.GetYardResponse;
 import com.swp.backend.entity.YardEntity;
 import com.swp.backend.exception.ErrorResponse;
-import com.swp.backend.repository.YardRepository;
+import com.swp.backend.exception.InactivateProcessException;
+import com.swp.backend.model.MessageResponse;
+import com.swp.backend.service.InactivationService;
 import com.swp.backend.service.SecurityContextService;
 import com.swp.backend.service.YardService;
 import lombok.AllArgsConstructor;
@@ -24,8 +27,8 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping(value = "/api/v1/owners/me")
 public class YardRestApi {
     private YardService yardService;
-    private YardRepository yardRepository;
     private SecurityContextService securityContextService;
+    private InactivationService inactivationService;
     private Gson gson;
 
     @PostMapping(value = "yards")
@@ -48,7 +51,6 @@ public class YardRestApi {
             CreateYardSuccessResponse successResponse = CreateYardSuccessResponse.builder().message("Create yard success!").build();
             return ResponseEntity.ok(gson.toJson(successResponse));
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -96,6 +98,45 @@ public class YardRestApi {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+    @DeleteMapping(value = "yards/{yardId}")
+    public ResponseEntity<String> deleteYardById(@PathVariable String yardId)
+    {
+        try
+        {
+            SecurityContext securityContext = SecurityContextHolder.getContext();
+            String ownerId = securityContextService.extractUsernameFromContext(securityContext);
+
+            inactivationService.deleteYard(ownerId, yardId);
+            MessageResponse response = new MessageResponse("Delete yard successfully");
+            return ResponseEntity.ok().body(gson.toJson(response));
+        }
+        catch(InactivateProcessException inactivateProcessException)
+        {
+            ErrorResponse response = ErrorResponse.builder().message(inactivateProcessException.getFilterMessage()).build();
+            return ResponseEntity.badRequest().body(gson.toJson(response));
+        }
+    }
+    @PutMapping(value = "yards/{yardId}")
+    public ResponseEntity<String> updateyardById(@RequestParam(name = "yard") String yard, @RequestParam(name = "images", required = false) MultipartFile[] images)
+    {
+        UpdateYardRequest request;
+        try {
+            request = gson.fromJson(yard, UpdateYardRequest.class);
+        } catch (JsonParseException exception) {
+            return ResponseEntity.badRequest().body("Cannot parse the request.");
+        }
+
+        try {
+            SecurityContext context = SecurityContextHolder.getContext();
+            String userId = securityContextService.extractUsernameFromContext(context);
+
+            yardService.updateYard(userId, request, images);
+            MessageResponse response = new MessageResponse("Update successfully");
+            return ResponseEntity.ok(gson.toJson(response));
+        } catch (RuntimeException ex) {
+            return ResponseEntity.internalServerError().body(ex.getMessage());
         }
     }
 }

@@ -22,6 +22,8 @@ public interface SlotRepository extends JpaRepository<SlotEntity, Integer> {
 
     public SlotEntity findSlotEntityByIdAndActive(int slotId, boolean isActive);
 
+    public SlotEntity findSlotEntityByIdAndActiveAndParentActive(int slotId, boolean isActive, boolean isParentActive);
+
     @Query("SELECT slot FROM SlotEntity slot WHERE slot.refYard IN :listSubYardId")
     public List<SlotEntity> getAllSlotsByListSubYardId(@Param("listSubYardId") Collection<String> listSubYardId);
 
@@ -31,4 +33,6 @@ public interface SlotRepository extends JpaRepository<SlotEntity, Integer> {
     @Query("SELECT slot.id FROM SlotEntity slot WHERE slot.refYard IN :listSubYardId")
     public List<Integer> getAllSlotIdsByListSubYardId(@Param("listSubYardId") Collection<String> listSubYardId);
 
+    public SlotEntity findSlotEntityById(int slotId);
+    public SlotEntity findSlotEntityByRefYardAndStartTimeAndEndTimeAndPriceAndActiveIsTrue(String refYard, LocalTime startTime, LocalTime endTime, int price);
 }

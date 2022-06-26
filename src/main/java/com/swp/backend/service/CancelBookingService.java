@@ -1,9 +1,11 @@
 package com.swp.backend.service;
 
+import com.google.type.DateTime;
 import com.swp.backend.api.v1.book.cancel_booking.CancelBookingRequest;
 import com.swp.backend.constance.BookingStatus;
 import com.swp.backend.entity.*;
 import com.swp.backend.exception.CancelBookingProcessException;
+import com.swp.backend.model.MatchModel;
 import com.swp.backend.model.model_builder.BookingHistoryEntityBuilder;
 import com.swp.backend.myrepository.SlotCustomRepository;
 import com.swp.backend.repository.*;
@@ -22,6 +24,8 @@ import java.time.format.DateTimeFormatter;
 @AllArgsConstructor
 public class CancelBookingService {
     private YardService yardService;
+    private MatchService matchService;
+    private BookingHistoryService bookingHistoryService;
     private SubYardRepository subYardRepository;
     private SlotRepository slotRepository;
     private BookingRepository bookingRepository;
@@ -41,7 +45,7 @@ public class CancelBookingService {
         bookingStatusIsSuccessFilter(booking);
         slotTimeStartIsNotOverPreventTimeForCancel(booking, slot);
 
-        cancelBookingProcess(booking, request, slotId);
+        cancelBookingProcess(booking, request.getReason());
     }
 
     private void slotTimeStartIsNotOverPreventTimeForCancel(BookingEntity booking, SlotEntity slot) {
@@ -101,11 +105,19 @@ public class CancelBookingService {
     }
 
     @Transactional(rollbackFor = CancelBookingProcessException.class)
-    protected void cancelBookingProcess(BookingEntity booking, CancelBookingRequest request, int slotId) {
-        BookingEntity bookingEntity = saveBookingCanceledInformation(booking, request.getReason());
-        String yardId = slotCustomRepository.findYardIdFromSlotId(slotId);
+    public void cancelBookingProcess(BookingEntity booking, String reason) {
+        BookingEntity bookingEntity = saveBookingCanceledInformation(booking, reason);
+        String yardId = slotCustomRepository.findYardIdFromSlotId(booking.getSlotId());
         decreaseNumberOfBookingsOfYard(yardId);
-        saveBookingHistory(bookingEntity, request.getReason());
+        saveBookingHistory(bookingEntity, reason, bookingEntity.getAccountId());
+    }
+
+    @Transactional(rollbackFor = CancelBookingProcessException.class)
+    public void cancelBookingProcessCreatedByOwner(BookingEntity booking, String reason, String ownerId) {
+        BookingEntity bookingEntity = saveBookingCanceledInformation(booking, reason);
+        String yardId = slotCustomRepository.findYardIdFromSlotId(booking.getSlotId());
+        decreaseNumberOfBookingsOfYard(yardId);
+        saveBookingHistory(bookingEntity, reason, ownerId);
     }
 
     private BookingEntity saveBookingCanceledInformation(BookingEntity booking, String reason) {
@@ -127,9 +139,9 @@ public class CancelBookingService {
         }
     }
 
-    private void saveBookingHistory(BookingEntity bookingEntity, String reason) {
+    private void saveBookingHistory(BookingEntity bookingEntity, String reason, String createdBy) {
         try {
-            bookingHistoryRepository.save(BookingHistoryEntityBuilder.buildFromBookingEntity(bookingEntity, reason));
+            bookingHistoryService.saveBookingHistory(bookingEntity, reason, createdBy);
         } catch (Exception ex) {
             throw new CancelBookingProcessException("Cancel successfully. However, save to booking history failed due to internal error");
         }
@@ -151,6 +163,14 @@ public class CancelBookingService {
                 booking,
                 slot);
         emailService.sendHtmlTemplateMessage(destination, "Cancel booking from " + user.getFullName(), htmlTemplate);
+    }
+
+    public void sendMailCancelToUser(BookingEntity booking, String reason)
+    {
+        AccountEntity user = accountRepository.findUserEntityByUserId(booking.getAccountId());
+        String destination = user.getEmail();
+        MatchModel match = matchService.getMatchModelFromBookingEntity(booking);
+        emailService.sendHtmlTemplateMessage(destination, "Your booking is canceled", getHtmlTemplateMailToUser(match, reason));
     }
 
     private static String getHtmlTemplate(String yardAddress,
@@ -196,6 +216,54 @@ public class CancelBookingService {
                 "<tr>" +
                 "<td>Canceled At</td>" +
                 "<td>" + new SimpleDateFormat("dd/MM/yyyy hh:mm:ss").format(booking.getBookAt()) + "</td>" +
+                "</tr>" +
+                "<tr>" +
+                "<td>Status</td>" +
+                "<td> CANCELED </td>" +
+                "</tr>" +
+                "</table>" +
+                "<p style=\"text-align: center;\">--------------</p>";
+        return result;
+    }
+
+    private static String getHtmlTemplateMailToUser(MatchModel matchModel, String reason)
+    {
+        String result = "<img style=\"display: block; width: 60px; padding: 2px; height: 60px; margin: auto;\" src=\"https://firebasestorage.googleapis.com/v0/b/fu-swp391.appspot.com/o/mail-icon.png?alt=media\">" +
+                "<h1 style=\"font-family:open Sans Helvetica, Arial, sans-serif; margin: 0; font-size:18px; padding: 2px; text-align: center;\">Playground Basketball</h1>" +
+                "<hr>" +
+                "<p style=\"font-family:open Sans Helvetica, Arial, sans-serif;font-size:16px; margin: 0; padding: 2px; text-align: center;\">There was a booking canceled due to the reason: " + reason + ". Your booking detail: " +
+                "<table border=\"1\" style=\"margin: 0 auto;\">" +
+                "<tr>" +
+                "<td>Address</td>" +
+                "<td>" + matchModel.getBigYardAddress() + "</td>" +
+                "</tr>" +
+                "<tr>" +
+                "<td>Yard</td>" +
+                "<td>" + matchModel.getBigYardName() + "</td>" +
+                "</tr>" +
+                "<tr>" +
+                "<td>SubYard</td>" +
+                "<td>" + matchModel.getSubYardName() + "</td>" +
+                "</tr>" +
+                "<tr>" +
+                "<td>Type</td>" +
+                "<td>" + matchModel.getType() + "</td>" +
+                "</tr>" +
+                "<tr>" +
+                "<td>Start Time</td>" +
+                "<td>" + matchModel.getStartTime() + "</td>" +
+                "</tr>" +
+                "<tr>" +
+                "<td>End Time</td>" +
+                "<td>" + matchModel.getEndTime() + "</td>" +
+                "</tr>" +
+                "<tr>" +
+                "<td>Date</td>" +
+                "<td>" + matchModel.getDate() +  "</td>" +
+                "</tr>" +
+                "<tr>" +
+                "<td>Canceled At</td>" +
+                "<td>" + new SimpleDateFormat("dd/MM/yyyy").format(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE)) + "</td>" +
                 "</tr>" +
                 "</table>" +
                 "<p style=\"text-align: center;\">--------------</p>";
