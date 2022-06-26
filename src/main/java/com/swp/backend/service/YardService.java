@@ -177,7 +177,7 @@ public class YardService {
     }
 
     public YardModel getYardModelFromYardId(String yardId) {
-        YardEntity yard = yardRepository.findYardEntityByIdAndActiveAndDeleted(yardId, true, false);
+        YardEntity yard = yardRepository.findYardEntityById(yardId);
         if (yard == null) {
             return null;
         } else {
