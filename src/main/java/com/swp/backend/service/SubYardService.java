@@ -97,35 +97,34 @@ public class SubYardService {
     }
 
     @Transactional
-    public void setIsActiveFalseForSubYard(String subYardId)
-    {
+    public void setIsActiveFalseForSubYard(String subYardId) {
         SubYardEntity subYardEntity = subYardRepository.getSubYardEntitiesById(subYardId);
         subYardEntity.setActive(false);
         subYardRepository.save(subYardEntity);
     }
+
     @Transactional
-    public void setIsParentActiveFalseForSubYard(String subYardId)
-    {
+    public void setIsParentActiveFalseForSubYard(String subYardId) {
         SubYardEntity subYardEntity = subYardRepository.getSubYardEntitiesById(subYardId);
         subYardEntity.setParentActive(false);
         subYardRepository.save(subYardEntity);
     }
+
     @Transactional
-    public void setIsActiveTrueForSubYard(String subYardId)
-    {
+    public void setIsActiveTrueForSubYard(String subYardId) {
         SubYardEntity subYardEntity = subYardRepository.getSubYardEntitiesById(subYardId);
         subYardEntity.setActive(true);
         subYardRepository.save(subYardEntity);
     }
+
     @Transactional
-    public void setIsParentActiveTrueForSubYard(String subYardId)
-    {
+    public void setIsParentActiveTrueForSubYard(String subYardId) {
         SubYardEntity subYardEntity = subYardRepository.getSubYardEntitiesById(subYardId);
         subYardEntity.setParentActive(true);
         subYardRepository.save(subYardEntity);
     }
-    public SubYardEntity getSubYardById(String subYardId)
-    {
+
+    public SubYardEntity getSubYardById(String subYardId) {
         return subYardRepository.getSubYardEntitiesById(subYardId);
     }
 }

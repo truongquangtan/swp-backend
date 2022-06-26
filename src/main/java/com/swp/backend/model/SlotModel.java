@@ -28,9 +28,9 @@ public class SlotModel implements Comparable<SlotModel> {
                 .price(slotEntity.getPrice())
                 .build();
     }
+
     @Override
-    public int compareTo(SlotModel slotModel)
-    {
+    public int compareTo(SlotModel slotModel) {
         return this.startTime.compareTo(slotModel.startTime);
     }
 }

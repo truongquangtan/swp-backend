@@ -282,10 +282,10 @@ public class AccountService {
             account.setAvatar(url);
         }
 
-        if (oldPassword != null && password != null)  {
-            if(passwordEncoder.matches(oldPassword, account.getPassword()) && password.trim().length() >= 8){
+        if (oldPassword != null && password != null) {
+            if (passwordEncoder.matches(oldPassword, account.getPassword()) && password.trim().length() >= 8) {
                 account.setPassword(passwordEncoder.encode(password));
-            }else {
+            } else {
                 return false;
             }
         }

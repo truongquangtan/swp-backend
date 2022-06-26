@@ -92,8 +92,7 @@ public class SubYardCustomRepository {
         }
     }
 
-    public String getOwnerIdOfSubYard(String subYardId)
-    {
+    public String getOwnerIdOfSubYard(String subYardId) {
         try {
             Query query = null;
 

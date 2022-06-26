@@ -1,14 +1,11 @@
 package com.swp.backend.model;
 
-import com.google.type.Date;
-import com.google.type.DateTime;
 import com.swp.backend.api.v1.owner.yard.request.SlotRequest;
+import com.swp.backend.entity.SlotEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import com.swp.backend.entity.SlotEntity;
 
 import java.time.format.DateTimeFormatter;
 
@@ -24,22 +21,20 @@ public class SlotInfo {
     private boolean isExistedInStorage = false;
 
     @Override
-    public boolean equals(Object anotherSlot)
-    {
+    public boolean equals(Object anotherSlot) {
         SlotInfo slot = (SlotInfo) anotherSlot;
         return this.start.equals(slot.start)
                 && this.end.equals(slot.end)
                 && this.price == slot.price;
     }
-    public boolean isPriceChange(SlotInfo anotherSlot)
-    {
+
+    public boolean isPriceChange(SlotInfo anotherSlot) {
         return this.start.equals(anotherSlot.getStart())
                 && this.end.equals(anotherSlot.getEnd())
                 && this.price != anotherSlot.getPrice();
     }
 
-    public static SlotInfo getSlotInfo(SlotEntity slotEntity)
-    {
+    public static SlotInfo getSlotInfo(SlotEntity slotEntity) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
         return SlotInfo.builder().start(slotEntity.getStartTime().format(formatter))
                 .end(slotEntity.getEndTime().format(formatter))
@@ -47,8 +42,8 @@ public class SlotInfo {
                 .isExistedInStorage(true)
                 .build();
     }
-    public static SlotInfo getSlotInfo(SlotRequest slotRequest)
-    {
+
+    public static SlotInfo getSlotInfo(SlotRequest slotRequest) {
         return SlotInfo.builder().start(slotRequest.getStartTime())
                 .end(slotRequest.getEndTime())
                 .price(slotRequest.getPrice())

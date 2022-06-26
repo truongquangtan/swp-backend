@@ -37,9 +37,9 @@ public class VoteRestApi {
     public ResponseEntity<String> getVotesOfBigYard(@PathVariable String yardId, @RequestBody(required = false) GetVoteRequest request) {
         try {
             GetVoteResponse response;
-            if(request == null){
+            if (request == null) {
                 response = voteService.getAllVoteByBigYardId(yardId, null, null);
-            }else {
+            } else {
                 response = voteService.getAllVoteByBigYardId(yardId, request.getItemsPerPage(), request.getPage());
             }
             return ResponseEntity.ok(gson.toJson(response));

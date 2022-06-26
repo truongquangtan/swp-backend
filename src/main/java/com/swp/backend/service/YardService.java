@@ -1,22 +1,20 @@
 package com.swp.backend.service;
 
-import com.swp.backend.api.v1.owner.yard.request.SlotRequest;
 import com.swp.backend.api.v1.owner.yard.request.SubYardRequest;
 import com.swp.backend.api.v1.owner.yard.request.YardRequest;
 import com.swp.backend.api.v1.owner.yard.response.GetYardDetailResponse;
 import com.swp.backend.api.v1.owner.yard.response.GetYardResponse;
-import com.swp.backend.api.v1.owner.yard.updateYardRequest.UpdateSubYardRequest;
-import com.swp.backend.api.v1.owner.yard.updateYardRequest.UpdateYardRequest;
 import com.swp.backend.api.v1.yard.search.YardResponse;
 import com.swp.backend.entity.*;
-import com.swp.backend.model.*;
+import com.swp.backend.model.SlotModel;
+import com.swp.backend.model.SubYardDetailModel;
+import com.swp.backend.model.SubYardModel;
+import com.swp.backend.model.YardModel;
 import com.swp.backend.myrepository.YardCustomRepository;
 import com.swp.backend.repository.*;
 import com.swp.backend.utils.DateHelper;
 import com.swp.backend.utils.TimeMappingHelper;
 import lombok.AllArgsConstructor;
-import org.apache.tomcat.jni.Local;
-import org.hibernate.sql.Update;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -71,8 +68,8 @@ public class YardService {
 
         addImages(images, parentYardId);
     }
-    public void addSubYard(List<SubYardRequest> subYards, String yardId)
-    {
+
+    public void addSubYard(List<SubYardRequest> subYards, String yardId) {
         if (subYards != null && subYards.size() > 0) {
             List<SubYardEntity> subYardEntities = new ArrayList<>();
             List<SlotEntity> slotEntities = new ArrayList<>();
@@ -109,8 +106,8 @@ public class YardService {
             slotRepository.saveAll(slotEntities);
         }
     }
-    public void addImages(MultipartFile[] images, String yardId)
-    {
+
+    public void addImages(MultipartFile[] images, String yardId) {
         if (images != null && images.length > 0) {
             List<YardPictureEntity> listImage = Arrays.stream(images).parallel().map(image -> {
                 String url = null;
@@ -154,6 +151,7 @@ public class YardService {
                         .openAt(yard.getOpenAt().format(formatter))
                         .closeAt(yard.getCloseAt().format(formatter))
                         .reference(yard.getReference())
+                        .ownerId(yard.getOwnerId())
                         .build();
             } else {
                 return null;
@@ -306,22 +304,21 @@ public class YardService {
     }
 
     @Transactional
-    public void setIsActiveFalseForYard(String yardId)
-    {
+    public void setIsActiveFalseForYard(String yardId) {
         YardEntity yardEntity = yardRepository.findYardEntitiesById(yardId);
         yardEntity.setActive(false);
         yardRepository.save(yardEntity);
     }
+
     @Transactional
-    public void setIsActiveTrueForYard(String yardId)
-    {
+    public void setIsActiveTrueForYard(String yardId) {
         YardEntity yardEntity = yardRepository.findYardEntitiesById(yardId);
         yardEntity.setActive(true);
         yardRepository.save(yardEntity);
     }
+
     @Transactional
-    public void setIsDeletedTrueForYard(String yardId)
-    {
+    public void setIsDeletedTrueForYard(String yardId) {
         YardEntity yardEntity = yardRepository.findYardEntitiesById(yardId);
         yardEntity.setDeleted(true);
         yardRepository.save(yardEntity);

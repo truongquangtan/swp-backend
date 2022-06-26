@@ -34,10 +34,11 @@ public class ApiEndpointProperties {
             "/api/v1/slots/get-by-date",
             "/api/v1/sub-yards",
             "/api/v1/sub-yards/**",
-            "/api/v1/vote/yards/**"
+            "/api/v1/vote/yards/**",
+            "/api/v1/owners/{ownerId}/vouchers"
     };
     public static String[] ownerOnlyEndpoint = {
-            "/api/v1/owners/**"
+            "/api/v1/owners/me/**"
     };
 
     public static String[] adminOnlyEndpoint = {
