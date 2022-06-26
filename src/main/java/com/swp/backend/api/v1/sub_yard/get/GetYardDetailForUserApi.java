@@ -18,7 +18,7 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "api/v1/yards")
-public class GetSubYardApi {
+public class GetYardDetailForUserApi {
     private SubYardService subYardService;
     private YardService yardService;
     private Gson gson;
@@ -26,14 +26,14 @@ public class GetSubYardApi {
     @GetMapping(value = "{yardId}")
     public ResponseEntity<String> getSubYardByBigYard(@PathVariable String yardId) {
         if (!yardService.isAvailableYard(yardId)) {
-            return ResponseEntity.ok().body(gson.toJson(new SubYardResponse("The yard is not active or deleted.", null)));
+            return ResponseEntity.ok().body(gson.toJson(new YardDetailForUserResponse("The yard is not active or deleted.", null)));
         }
 
-        List<SubYardModel> subYards = subYardService.getSubYardsByBigYard(yardId);
+        List<SubYardModel> subYards = subYardService.getActiveSubYardsByBigYard(yardId);
         YardModel bigYard = yardService.getYardModelFromYardId(yardId);
         YardData data = new YardData(bigYard, subYards);
 
-        SubYardResponse response = new SubYardResponse("Get successful", data);
+        YardDetailForUserResponse response = new YardDetailForUserResponse("Get successful", data);
 
         return ResponseEntity.ok().body(gson.toJson(response));
     }

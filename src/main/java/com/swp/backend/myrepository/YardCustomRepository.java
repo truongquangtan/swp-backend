@@ -18,7 +18,7 @@ public class YardCustomRepository {
         Query query = null;
 
         if (districtId == null && provinceId == null) {
-            String nativeQuery = "SELECT * FROM yards";
+            String nativeQuery = "SELECT * FROM yards WHERE is_active = true AND is_deleted = false";
             query = entityManager.createNativeQuery(nativeQuery, YardEntity.class);
         }
 
@@ -50,7 +50,7 @@ public class YardCustomRepository {
         Query query = null;
 
         if (districtId == null && provinceId == null) {
-            String nativeQuery = "SELECT COUNT(*) FROM yards";
+            String nativeQuery = "SELECT COUNT(*) FROM yards WHERE is_active = true AND is_deleted = false";
             query = entityManager.createNativeQuery(nativeQuery);
         }
 

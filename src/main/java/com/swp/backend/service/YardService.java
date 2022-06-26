@@ -5,6 +5,7 @@ import com.swp.backend.api.v1.owner.yard.request.YardRequest;
 import com.swp.backend.api.v1.owner.yard.response.GetYardDetailResponse;
 import com.swp.backend.api.v1.owner.yard.response.GetYardResponse;
 import com.swp.backend.api.v1.yard.search.YardResponse;
+import com.swp.backend.constance.NoImageUrl;
 import com.swp.backend.entity.*;
 import com.swp.backend.model.SlotModel;
 import com.swp.backend.model.SubYardDetailModel;
@@ -42,6 +43,7 @@ public class YardService {
     private TypeYardRepository typeYardRepository;
     private TimeMappingHelper timeMappingHelper;
     private SubYardService subYardService;
+    public static final int MAX_IMAGE = 3;
 
     @Transactional(rollbackFor = DataAccessException.class)
     public void createNewYard(String userId, YardRequest createYardModel, MultipartFile[] images) throws DataAccessException {
@@ -124,7 +126,16 @@ public class YardService {
                 }).start();
             }
         }
+        int noImageCount = images == null ? 3 : YardService.MAX_IMAGE - images.length;
+        for(int i = 0; i < noImageCount; ++i)
+        {
+            YardPictureEntity yardPictureEntity = YardPictureEntity.builder().refId(yardId)
+                    .image(NoImageUrl.NO_IMAGE)
+                    .build();
+            yardPictureRepository.save(yardPictureEntity);
+        }
     }
+
 
     public YardResponse findYardByFilter(Integer provinceId, Integer districtId, Integer ofSet, Integer page) {
         int pageValue = (page == null || page < 1) ? 1 : page;
@@ -160,7 +171,7 @@ public class YardService {
 
         yardModels.forEach(yardModel -> {
             List<String> images = new ArrayList<>();
-            List<YardPictureEntity> listPicture = yardPictureRepository.getAllByRefId(yardModel.getId());
+            List<YardPictureEntity> listPicture = yardPictureRepository.getAllByRefIdOrderById(yardModel.getId());
             listPicture.forEach(picture -> images.add(picture.getImage()));
             yardModel.setImages(images);
         });
@@ -173,7 +184,7 @@ public class YardService {
     }
 
     public YardModel getYardModelFromYardId(String yardId) {
-        YardEntity yard = yardRepository.findYardEntityByIdAndActiveAndDeleted(yardId, true, false);
+        YardEntity yard = yardRepository.findYardEntityById(yardId);
         if (yard == null) {
             return null;
         } else {
@@ -191,7 +202,7 @@ public class YardService {
                     .closeAt(yard.getCloseAt().format(formatter))
                     .build();
             List<String> images = new ArrayList<>();
-            List<YardPictureEntity> listPicture = yardPictureRepository.getAllByRefId(yardModel.getId());
+            List<YardPictureEntity> listPicture = yardPictureRepository.getAllByRefIdOrderById(yardModel.getId());
             listPicture.forEach(picture -> images.add(picture.getImage()));
             yardModel.setImages(images);
             return yardModel;
@@ -227,7 +238,7 @@ public class YardService {
         int pageValue = (page != null && page >= 1) ? page : 1;
 
         Pageable pagination = PageRequest.of(pageValue - 1, ofSetValue);
-        List<YardEntity> result = yardRepository.findAllByOwnerIdAndDeleted(ownerId, false, pagination);
+        List<YardEntity> result = yardRepository.findAllByOwnerIdAndDeletedOrderByCreateAtDesc(ownerId, false, pagination);
 
         List<YardModel> listYard = result.stream().map(yard -> {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
@@ -274,19 +285,8 @@ public class YardService {
         int minute = yardEntity.getSlotDuration() % 60;
         String duration = LocalTime.of(hour, minute).format(formatter);
 
-        List<String> images = yardPictureRepository.getAllByRefId(yardId).stream().map(YardPictureEntity::getImage).collect(Collectors.toList());
-        List<SubYardModel> subYards = subYardService.getSubYardsByBigYard(yardId);
-        List<SubYardDetailModel> subYardDetailModels = subYards.stream().map(subYardModel -> {
-            List<SlotModel> slots = slotRepository.findSlotEntitiesByRefYardAndActiveIsTrue(subYardModel.getId()).stream().map(SlotModel::buildFromSlotEntity).collect(Collectors.toList());
-            Collections.sort(slots);
-            return SubYardDetailModel.builder().id(subYardModel.getId())
-                    .name(subYardModel.getName())
-                    .reference(subYardModel.getReference())
-                    .createAt(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(subYardModel.getCreateAt()))
-                    .isActive(subYardModel.isActive())
-                    .typeYard(subYardModel.getTypeYard())
-                    .slots(slots).build();
-        }).collect(Collectors.toList());
+        List<String> images = yardPictureRepository.getAllByRefIdOrderById(yardId).stream().map(YardPictureEntity::getImage).collect(Collectors.toList());
+        List<SubYardDetailModel> subYardDetailModels = getSubYardDetailModelFromYardId(yardId);
         return GetYardDetailResponse.builder()
                 .id(yardEntity.getId())
                 .name(yardEntity.getName())
@@ -303,6 +303,22 @@ public class YardService {
                 .subYards(subYardDetailModels).build();
     }
 
+    public List<SubYardDetailModel> getSubYardDetailModelFromYardId(String yardId)
+    {
+        List<SubYardModel> subYards = subYardService.getSubYardsByBigYard(yardId);
+        List<SubYardDetailModel> subYardDetailModels = subYards.stream().map(subYardModel -> {
+            List<SlotModel> slots = slotRepository.findSlotEntitiesByRefYardAndActiveIsTrue(subYardModel.getId()).stream().map(SlotModel::buildFromSlotEntity).collect(Collectors.toList());
+            Collections.sort(slots);
+            return SubYardDetailModel.builder().id(subYardModel.getId())
+                    .name(subYardModel.getName())
+                    .reference(subYardModel.getReference())
+                    .createAt(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(subYardModel.getCreateAt()))
+                    .isActive(subYardModel.isActive())
+                    .typeYard(subYardModel.getTypeYard())
+                    .slots(slots).build();
+        }).collect(Collectors.toList());
+        return  subYardDetailModels;
+    }
     @Transactional
     public void setIsActiveFalseForYard(String yardId) {
         YardEntity yardEntity = yardRepository.findYardEntitiesById(yardId);

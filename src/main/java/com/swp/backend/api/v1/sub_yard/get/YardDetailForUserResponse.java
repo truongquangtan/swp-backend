@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class SubYardResponse {
+public class YardDetailForUserResponse {
     private String message;
     private YardData data;
 }

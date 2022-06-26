@@ -35,33 +35,42 @@ public class InactivationService {
     public static final String INACTIVE_SUB_YARD_REASON = "The sub yard of this slot is disabled by owner";
     public static final String INACTIVE_YARD_REASON = "The yard of this slot is disabled by owner";
     public static final String DELETE_YARD_REASON = "The yard of this slot is deleted";
+    public static final String DELETE_SUB_YARD_REASON = "The sub-yard of this slot is deleted";
 
     @Transactional(rollbackFor = InactivateProcessException.class)
-    public void inactivateSlot(String ownerId, int slotId) {
-        if (!slotCustomRepository.findOwnerIdFromSlotId(slotId).equals(ownerId)) {
+    public void inactivateSlot(String ownerId, int slotId)
+    {
+        if(!slotCustomRepository.findOwnerIdFromSlotId(slotId).equals(ownerId))
+        {
             throw new InactivateProcessException("The owner is not author of this slot.");
         }
 
-        if (slotRepository.findSlotEntityByIdAndActive(slotId, false) != null) {
+        if(slotRepository.findSlotEntityByIdAndActive(slotId, false) != null)
+        {
             throw new InactivateProcessException("The slot is already inactive.");
         }
 
-        try {
+        try
+        {
             processInactivateSlot(ownerId, slotId, INACTIVE_SLOT_REASON);
-        } catch (Exception ex) {
+        }
+        catch (Exception ex)
+        {
             throw new InactivateProcessException("Error in canceling process");
         }
     }
-
-    public void processInactivateSlot(String ownerId, int slotId, String reason) {
+    public void processInactivateSlot(String ownerId, int slotId, String reason)
+    {
         cancelAllBookingOfSlotProcess(ownerId, slotId, reason);
         slotService.inactivateSlot(slotId);
     }
-
-    private void cancelAllBookingOfSlotProcess(String ownerId, int slotId, String reason) {
+    private void cancelAllBookingOfSlotProcess(String ownerId, int slotId, String reason)
+    {
         List<BookingEntity> bookingEntities = bookingCustomRepository.getAllSuccessBookingEntitiesOfSlotInFuture(slotId);
-        if (bookingEntities != null) {
-            for (BookingEntity bookingEntity : bookingEntities) {
+        if(bookingEntities != null)
+        {
+            for(BookingEntity bookingEntity : bookingEntities)
+            {
                 cancelBookingService.cancelBookingProcessCreatedByOwner(bookingEntity, reason, ownerId);
                 cancelBookingService.sendMailCancelToUser(bookingEntity, reason);
             }
@@ -69,67 +78,105 @@ public class InactivationService {
     }
 
     @Transactional(rollbackFor = InactivateProcessException.class)
-    public void inactivateSubYard(String ownerId, String subYardId) {
-        if (!subYardCustomRepository.getOwnerIdOfSubYard(subYardId).equals(ownerId)) {
-            throw new InactivateProcessException("The owner is not author of this sub-yard.");
-        }
-        if (subYardRepository.getSubYardEntityByIdAndActive(subYardId, true) == null) {
-            throw new InactivateProcessException("The sub-yard is already inactive.");
-        }
-
-        try {
+    public void inactivateSubYard(String ownerId, String subYardId)
+    {
+        subYardFilter(ownerId, subYardId);
+        try
+        {
             processInactivateSubYard(ownerId, subYardId, INACTIVE_SUB_YARD_REASON);
-        } catch (Exception ex) {
+        }
+        catch (Exception ex)
+        {
             throw new InactivateProcessException("Error in canceling process");
         }
     }
-
-    private void processInactivateSubYard(String ownerId, String subYardId, String message) {
-        cancelAllBookingInSubYardAndSetParentActiveFalseForAllSlot(ownerId, subYardId, message);
+    private void subYardFilter(String ownerId, String subYardId)
+    {
+        if(!subYardCustomRepository.getOwnerIdOfSubYard(subYardId).equals(ownerId))
+        {
+            throw new InactivateProcessException("The owner is not author of this sub-yard.");
+        }
+        if(subYardRepository.getSubYardEntityByIdAndActiveAndDeletedIsFalse(subYardId, true) == null)
+        {
+            throw new InactivateProcessException("The sub-yard is already inactive or deleted.");
+        }
+    }
+    private void processInactivateSubYard(String ownerId, String subYardId, String message)
+    {
+        cancelAllBookingInSubYardAndSetParentActiveFalseForAllSlots(ownerId, subYardId, message);
         subYardService.setIsActiveFalseForSubYard(subYardId);
     }
-
-    private void cancelAllBookingInSubYardAndSetParentActiveFalseForAllSlot(String ownerId, String subYardId, String message) {
+    private void cancelAllBookingInSubYardAndSetParentActiveFalseForAllSlots(String ownerId, String subYardId, String message)
+    {
         List<SlotEntity> slotEntitiesOfSubYard = slotRepository.findSlotEntitiesByRefYardAndActiveIsTrue(subYardId);
-        if (slotEntitiesOfSubYard != null) {
-            for (SlotEntity slotEntity : slotEntitiesOfSubYard) {
+        if(slotEntitiesOfSubYard != null)
+        {
+            for(SlotEntity slotEntity : slotEntitiesOfSubYard)
+            {
                 cancelAllBookingOfSlotProcess(ownerId, slotEntity.getId(), message);
                 slotService.setIsParentActiveFalse(slotEntity.getId());
             }
         }
     }
 
+
     @Transactional(rollbackFor = InactivateProcessException.class)
-    public void inactivateYard(String ownerId, String yardId) {
+    public void deleteSubYard(String ownerId, String subYardId)
+    {
+        subYardFilter(ownerId, subYardId);
+        try
+        {
+            cancelAllBookingInSubYardAndSetParentActiveFalseForAllSlots(ownerId, subYardId, DELETE_SUB_YARD_REASON);
+            subYardService.setIsDeletedTrueForSubYard(subYardId);
+        }
+        catch (Exception ex)
+        {
+            throw new InactivateProcessException(ex.getMessage());
+        }
+    }
+
+    @Transactional(rollbackFor = InactivateProcessException.class)
+    public void inactivateYard(String ownerId, String yardId)
+    {
         yardFilter(ownerId, yardId);
-        try {
+        try
+        {
             processInactivateYard(ownerId, yardId);
-        } catch (Exception ex) {
+        }
+        catch(Exception ex)
+        {
             throw new InactivateProcessException("Error when process inactivate yard.");
         }
     }
 
-    private void yardFilter(String ownerId, String yardId) {
+    private void yardFilter(String ownerId, String yardId)
+    {
         YardEntity yardEntity = yardRepository.findYardEntitiesById(yardId);
-        if (yardEntity == null) {
+        if(yardEntity == null)
+        {
             throw new InactivateProcessException("The yard is not exist.");
         }
-        if (!yardEntity.getOwnerId().equals(ownerId)) {
+        if(!yardEntity.getOwnerId().equals(ownerId))
+        {
             throw new InactivateProcessException("The owner is not author of this yard.");
         }
-        if (yardRepository.findYardEntityByIdAndActiveAndDeleted(yardId, true, false) == null) {
+        if(yardRepository.findYardEntityByIdAndActiveAndDeleted(yardId, true, false) == null)
+        {
             throw new InactivateProcessException("The yard is already inactive or deleted.");
         }
     }
 
-    private void processInactivateYard(String ownerId, String yardId) {
+    private void processInactivateYard(String ownerId, String yardId)
+    {
         List<String> listYard = new ArrayList<>();
         listYard.add(yardId);
         List<String> subYardIdList = subYardRepository.getAllSubYardIdByListBigYardId(listYard);
 
-        if (subYardIdList != null) {
-            for (String subYardId : subYardIdList) {
-                cancelAllBookingInSubYardAndSetParentActiveFalseForAllSlot(ownerId, subYardId, INACTIVE_YARD_REASON);
+        if(subYardIdList != null)
+        {
+            for(String subYardId : subYardIdList)
+            {
+                cancelAllBookingInSubYardAndSetParentActiveFalseForAllSlots(ownerId, subYardId, INACTIVE_YARD_REASON);
                 subYardService.setIsParentActiveFalseForSubYard(subYardId);
             }
         }
@@ -137,22 +184,28 @@ public class InactivationService {
         yardService.setIsActiveFalseForYard(yardId);
     }
 
-    public void deleteYard(String ownerId, String yardId) {
+    public void deleteYard(String ownerId, String yardId)
+    {
         yardFilter(ownerId, yardId);
-        try {
+        try
+        {
             processDeleteYard(ownerId, yardId);
-        } catch (Exception ex) {
+        }
+        catch(Exception ex)
+        {
             throw new InactivateProcessException("Error when process inactivate yard.");
         }
     }
 
-    private void processDeleteYard(String ownerId, String yardId) {
+    private void processDeleteYard(String ownerId, String yardId)
+    {
         List<String> listYard = new ArrayList<>();
         listYard.add(yardId);
         List<String> subYardIdList = subYardRepository.getAllSubYardIdByListBigYardId(listYard);
-        if (subYardIdList != null)
-            for (String subYardId : subYardIdList) {
-                cancelAllBookingInSubYardAndSetParentActiveFalseForAllSlot(ownerId, subYardId, DELETE_YARD_REASON);
+        if(subYardIdList != null)
+            for(String subYardId : subYardIdList)
+            {
+                cancelAllBookingInSubYardAndSetParentActiveFalseForAllSlots(ownerId, subYardId, DELETE_YARD_REASON);
                 subYardService.setIsParentActiveFalseForSubYard(subYardId);
             }
 

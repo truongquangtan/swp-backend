@@ -11,7 +11,7 @@ import java.util.List;
 
 @Repository
 public interface SubYardRepository extends JpaRepository<SubYardEntity, String> {
-    public SubYardEntity getSubYardEntityByIdAndActive(String id, boolean isActive);
+    public SubYardEntity getSubYardEntityByIdAndActiveAndDeletedIsFalse(String id, boolean isActive);
 
     public SubYardEntity getSubYardEntitiesById(String id);
 

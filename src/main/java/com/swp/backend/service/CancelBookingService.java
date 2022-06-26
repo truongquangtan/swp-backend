@@ -87,7 +87,7 @@ public class CancelBookingService {
     }
 
     private SubYardEntity subYardIsActiveFilter(String subYardId) {
-        SubYardEntity subYard = subYardRepository.getSubYardEntityByIdAndActive(subYardId, true);
+        SubYardEntity subYard = subYardRepository.getSubYardEntityByIdAndActiveAndDeletedIsFalse(subYardId, true);
         if (subYard == null) {
             throw new CancelBookingProcessException("Your booking is canceled before, the sub-yard is inactivated by the owner. Or sub-yard not found.");
         }
