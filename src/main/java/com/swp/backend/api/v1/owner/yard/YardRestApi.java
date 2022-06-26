@@ -15,6 +15,7 @@ import com.swp.backend.model.MessageResponse;
 import com.swp.backend.service.InactivationService;
 import com.swp.backend.service.SecurityContextService;
 import com.swp.backend.service.YardService;
+import com.swp.backend.service.YardUpdateService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContext;
@@ -27,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping(value = "/api/v1/owners/me")
 public class YardRestApi {
     private YardService yardService;
+    private YardUpdateService yardUpdateService;
     private SecurityContextService securityContextService;
     private InactivationService inactivationService;
     private Gson gson;
@@ -119,7 +121,7 @@ public class YardRestApi {
         }
     }
     @PutMapping(value = "yards/{yardId}")
-    public ResponseEntity<String> updateyardById(@RequestParam(name = "yard") String yard, @RequestParam(name = "images", required = false) MultipartFile[] images)
+    public ResponseEntity<String> updateyardById(@RequestParam(name = "yard") String yard, @RequestParam(name = "newImages", required = false) MultipartFile[] images, @PathVariable String yardId)
     {
         UpdateYardRequest request;
         try {
@@ -132,7 +134,7 @@ public class YardRestApi {
             SecurityContext context = SecurityContextHolder.getContext();
             String userId = securityContextService.extractUsernameFromContext(context);
 
-            yardService.updateYard(userId, request, images);
+            yardUpdateService.updateYard(userId, request, images, yardId);
             MessageResponse response = new MessageResponse("Update successfully");
             return ResponseEntity.ok(gson.toJson(response));
         } catch (RuntimeException ex) {

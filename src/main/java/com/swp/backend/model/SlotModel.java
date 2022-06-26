@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter;
 @NoArgsConstructor
 @Data
 @Builder
-public class SlotModel {
+public class SlotModel implements Comparable<SlotModel> {
     private int id;
     private int price;
     private String startTime;
@@ -27,5 +27,10 @@ public class SlotModel {
                 .endTime(slotEntity.getEndTime().format(formatter))
                 .price(slotEntity.getPrice())
                 .build();
+    }
+    @Override
+    public int compareTo(SlotModel slotModel)
+    {
+        return this.startTime.compareTo(slotModel.startTime);
     }
 }
