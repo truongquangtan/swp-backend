@@ -22,7 +22,7 @@ public class InactivateYardApi {
     private ReactivationService reactivationService;
     private SecurityContextService securityContextService;
 
-    @PutMapping (value = "yards/{yardId}/inactivate")
+    @PutMapping (value = "yards/{yardId}/deactivate")
     public ResponseEntity<String> inactivateYard(@PathVariable String yardId)
     {
         try
@@ -32,7 +32,7 @@ public class InactivateYardApi {
 
             inactivationService.inactivateYard(ownerId, yardId);
 
-            MessageResponse response = new MessageResponse("Inactivate successfully");
+            MessageResponse response = new MessageResponse("Deactivate successfully");
             return ResponseEntity.ok().body(gson.toJson(response));
         } catch (InactivateProcessException inactivateProcessException)
         {
@@ -40,7 +40,7 @@ public class InactivateYardApi {
             return ResponseEntity.badRequest().body(gson.toJson(response));
         }
     }
-    @PutMapping (value = "yards/{yardId}/reactivate")
+    @PutMapping (value = "yards/{yardId}/activate")
     public ResponseEntity<String> reactivateYard(@PathVariable String yardId)
     {
         try
@@ -50,7 +50,7 @@ public class InactivateYardApi {
 
             reactivationService.reactiveYard(ownerId, yardId);
 
-            MessageResponse response = new MessageResponse("Reactivate successfully");
+            MessageResponse response = new MessageResponse("Activate successfully");
             return ResponseEntity.ok().body(gson.toJson(response));
         } catch (RuntimeException runtimeException)
         {

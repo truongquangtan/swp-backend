@@ -21,6 +21,7 @@ public class SubYardCustomRepository {
                 " FROM sub_yards s INNER JOIN yards y ON s.parent_yard = y.id" +
                 " WHERE s.parent_yard = ?1" +
                 " AND s.is_active = true" +
+                " AND s.is_deleted = false" +
                 " AND y.is_active = true" +
                 " AND y.is_deleted = false";
         try {

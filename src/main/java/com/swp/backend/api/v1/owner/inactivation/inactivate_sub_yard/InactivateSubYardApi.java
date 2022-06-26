@@ -26,7 +26,7 @@ public class InactivateSubYardApi {
     private SecurityContextService securityContextService;
     private SubYardService subYardService;
 
-    @DeleteMapping(value = "yards/{yardId}/sub-yards/{subYardId}")
+    @PutMapping(value = "yards/{yardId}/sub-yards/{subYardId}/deactivate")
     public ResponseEntity<String> inactivateSubYard(@PathVariable(name = "yardId") String yardId,
                                                     @PathVariable(name = "subYardId") String subYardId)
     {
@@ -43,7 +43,7 @@ public class InactivateSubYardApi {
             }
 
             inactivationService.inactivateSubYard(ownerId, subYardId);
-            MessageResponse response = new MessageResponse("Inactivate successfully");
+            MessageResponse response = new MessageResponse("Deactivate successfully");
             return ResponseEntity.ok().body(gson.toJson(response));
         } catch (InactivateProcessException inactivateProcessException)
         {
@@ -51,7 +51,7 @@ public class InactivateSubYardApi {
             return ResponseEntity.badRequest().body(gson.toJson(response));
         }
     }
-    @PostMapping(value = "/yards/{yardId}/sub-yards/{subYardId}")
+    @PutMapping(value = "/yards/{yardId}/sub-yards/{subYardId}/activate")
     public ResponseEntity<String> reactiveSubYard(@PathVariable(name = "yardId") String yardId,
                                                     @PathVariable(name = "subYardId") String subYardId)
     {
@@ -68,9 +68,35 @@ public class InactivateSubYardApi {
             }
 
             reactivationService.reactiveSubYard(ownerId, subYardId);
-            MessageResponse response = new MessageResponse("Reactivate successfully");
+            MessageResponse response = new MessageResponse("Activate successfully");
             return ResponseEntity.ok().body(gson.toJson(response));
         } catch (RuntimeException ex)
+        {
+            ex.printStackTrace();
+            ErrorResponse response = ErrorResponse.builder().message(ex.getMessage()).build();
+            return ResponseEntity.badRequest().body(gson.toJson(response));
+        }
+    }
+    @DeleteMapping(value = "/yards/{yardId}/sub-yards/{subYardId}")
+    public ResponseEntity<String> deleteSubYard(@PathVariable(name = "yardId") String yardId,
+                                                @PathVariable(name = "subYardId") String subYardId)
+    {
+        try
+        {
+            SecurityContext context = SecurityContextHolder.getContext();
+            String ownerId = securityContextService.extractUsernameFromContext(context);
+
+            String bigYardId = subYardService.getBigYardIdFromSubYard(subYardId);
+            if(!bigYardId.equals(yardId))
+            {
+                ErrorResponse error = ErrorResponse.builder().message("The sub-yard is not in yard.").build();
+                return ResponseEntity.badRequest().body(gson.toJson(error));
+            }
+
+            inactivationService.deleteSubYard(ownerId, subYardId);
+            MessageResponse response = new MessageResponse("Delete sub-yard successfully.");
+            return ResponseEntity.ok().body(gson.toJson(response));
+        } catch (InactivateProcessException ex)
         {
             ex.printStackTrace();
             ErrorResponse response = ErrorResponse.builder().message(ex.getMessage()).build();

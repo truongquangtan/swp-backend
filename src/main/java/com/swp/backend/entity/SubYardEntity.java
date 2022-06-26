@@ -35,4 +35,7 @@ public class SubYardEntity {
     @Column(name = "is_parent_active")
     @Builder.Default
     private boolean parentActive = true;
+    @Column(name = "is_deleted")
+    @Builder.Default
+    private boolean deleted = false;
 }

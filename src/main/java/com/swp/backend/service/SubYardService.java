@@ -88,7 +88,7 @@ public class SubYardService {
     }
 
     public boolean isActiveSubYard(String subYardId) {
-        SubYardEntity subYard = subYardRepository.getSubYardEntityByIdAndActive(subYardId, true);
+        SubYardEntity subYard = subYardRepository.getSubYardEntityByIdAndActiveAndDeletedIsFalse(subYardId, true);
         return subYard != null;
     }
 
@@ -122,6 +122,13 @@ public class SubYardService {
     {
         SubYardEntity subYardEntity = subYardRepository.getSubYardEntitiesById(subYardId);
         subYardEntity.setParentActive(true);
+        subYardRepository.save(subYardEntity);
+    }
+    @Transactional
+    public void setIsDeletedTrueForSubYard(String subYardId)
+    {
+        SubYardEntity subYardEntity = subYardRepository.getSubYardEntitiesById(subYardId);
+        subYardEntity.setDeleted(true);
         subYardRepository.save(subYardEntity);
     }
     public SubYardEntity getSubYardById(String subYardId)

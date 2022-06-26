@@ -229,7 +229,7 @@ public class YardService {
         int pageValue = (page != null && page >= 1) ? page : 1;
 
         Pageable pagination = PageRequest.of(pageValue - 1, ofSetValue);
-        List<YardEntity> result = yardRepository.findAllByOwnerIdAndDeleted(ownerId, false, pagination);
+        List<YardEntity> result = yardRepository.findAllByOwnerIdAndDeletedOrderByCreateAtDesc(ownerId, false, pagination);
 
         List<YardModel> listYard = result.stream().map(yard -> {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
