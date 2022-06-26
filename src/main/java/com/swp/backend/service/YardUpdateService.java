@@ -35,7 +35,11 @@ public class YardUpdateService {
 
 
     @Transactional(rollbackFor = RuntimeException.class)
-    public void updateYard(String ownerId, UpdateYardRequest updateYardRequest, MultipartFile[] images, String yardId)
+    public void updateYard(String ownerId,
+                           UpdateYardRequest updateYardRequest,
+                           List<String> images,
+                           MultipartFile[] newImages,
+                           String yardId)
     {
         YardEntity yard = yardRepository.findYardEntitiesById(yardId);
 
@@ -44,57 +48,66 @@ public class YardUpdateService {
             throw new RuntimeException("Owner is not author of this yard");
         }
 
-        updateImages(updateYardRequest, images, yardId);
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-        yard.setAddress(updateYardRequest.getAddress());
-        yard.setDistrictId(updateYardRequest.getDistrictId());
-        yard.setName(updateYardRequest.getName());
-        yard.setOpenAt(LocalTime.parse(updateYardRequest.getOpenAt(), formatter));
-        yard.setCloseAt(LocalTime.parse(updateYardRequest.getCloseAt(), formatter));
-        yard.setSlotDuration(getSlotDuration(updateYardRequest.getSlotDuration()));
-
-        List<UpdateSubYardRequest> subYards = updateYardRequest.getSubYards();
-        List<SubYardRequest> subYardToAdd = new ArrayList<>();
-        List<UpdateSubYardRequest> subYardToUpdate = new ArrayList<>();
-        for(UpdateSubYardRequest subYardRequest : subYards)
+        try
         {
-            if(subYardRequest.getId() == null || subYardRequest.getId().equals(""))
-            {
-                subYardToAdd.add(new SubYardRequest(subYardRequest.getName(), subYardRequest.getType(), subYardRequest.getSlots()));
-            }
-            else
-            {
-                subYardToUpdate.add(subYardRequest);
-            }
-        }
+            updateImages(images, newImages, yardId);
 
-        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+            yard.setAddress(updateYardRequest.getAddress());
+            yard.setDistrictId(updateYardRequest.getDistrictId());
+            yard.setName(updateYardRequest.getName());
+            yard.setOpenAt(LocalTime.parse(updateYardRequest.getOpenAt(), formatter));
+            yard.setCloseAt(LocalTime.parse(updateYardRequest.getCloseAt(), formatter));
+            yard.setSlotDuration(getSlotDuration(updateYardRequest.getSlotDuration()));
+
+            List<UpdateSubYardRequest> subYards = updateYardRequest.getSubYards();
+            List<SubYardRequest> subYardToAdd = new ArrayList<>();
+            List<UpdateSubYardRequest> subYardToUpdate = new ArrayList<>();
+            for(UpdateSubYardRequest subYardRequest : subYards)
+            {
+                if(subYardRequest.getId() == null || subYardRequest.getId().equals(""))
+                {
+                    subYardToAdd.add(new SubYardRequest(subYardRequest.getName(), subYardRequest.getType(), subYardRequest.getSlots()));
+                }
+                else
+                {
+                    subYardToUpdate.add(subYardRequest);
+                }
+            }
             yardService.addSubYard(subYardToAdd, yardId);
             updateSubYards(ownerId, subYardToUpdate);
         } catch (Exception ex) {
-            throw new RuntimeException("Error when update subyards");
+            ex.printStackTrace();
+            throw new RuntimeException(ex.getMessage());
         }
     }
-    private void updateImages(UpdateYardRequest updateYardRequest, MultipartFile[] images, String yardId)
+    private void updateImages(List<String> images, MultipartFile[] newImages, String yardId)
     {
-        if(updateYardRequest.getCurrentImages() == null || updateYardRequest.getCurrentImages().size() == 0)
+        if( images == null || images.size() == 0)
         {
             return;
         }
-        for(String image : updateYardRequest.getCurrentImages())
+
+        if(images.size() != newImages.length)
         {
-            try {
-                String name = image.split("[/?]")[7];
-                firebaseStoreService.deleteFile(name);
-                YardPictureEntity picture = yardPictureRepository.findYardPictureEntityByRefIdAndImage(yardId, image);
-                yardPictureRepository.delete(picture);
-            } catch (IOException ex)
-            {
-                throw new RuntimeException("Error when delete old image");
-            }
+            throw new RuntimeException("Image to update not match the current image request");
         }
-        yardService.addImages(images, yardId);
+
+        try
+        {
+            for(int i = 0; i < images.size(); ++i)
+            {
+                String currentImgUrl = images.get(i);
+                String currentImgName = currentImgUrl.split("[/?]")[7];
+                firebaseStoreService.deleteFile(currentImgName);
+                YardPictureEntity picture = yardPictureRepository.findTop1ByRefIdAndImage(yardId, currentImgUrl);
+                picture.setImage(firebaseStoreService.uploadFile(newImages[i]));
+                yardPictureRepository.save(picture);
+            }
+        } catch (IOException ex)
+        {
+            throw new RuntimeException(ex.getMessage());
+        }
     }
     private void updateSubYards(String ownerId, List<UpdateSubYardRequest> subYardRequests)
     {

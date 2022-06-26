@@ -16,11 +16,34 @@ public class SubYardCustomRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public List<SubYardEntity> getAllSubYardByBigYard(String bigYardId) {
+    public List<SubYardEntity> getAllActiveSubYardByBigYard(String bigYardId) {
         String nativeQuery = "SELECT s.*" +
                 " FROM sub_yards s INNER JOIN yards y ON s.parent_yard = y.id" +
                 " WHERE s.parent_yard = ?1" +
                 " AND s.is_active = true" +
+                " AND s.is_deleted = false" +
+                " AND y.is_active = true" +
+                " AND y.is_deleted = false";
+        try {
+
+            Query query = entityManager.createNativeQuery(nativeQuery, SubYardEntity.class);
+            query.setParameter(1, bigYardId);
+            List<?> result = query.getResultList();
+            if (result == null) {
+                return null;
+            }
+            return result.stream().map(subYard -> (subYard instanceof SubYardEntity) ? (SubYardEntity) subYard : null).collect(Collectors.toList());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public List<SubYardEntity> getAllSubYardByBigYard(String bigYardId) {
+        String nativeQuery = "SELECT s.*" +
+                " FROM sub_yards s INNER JOIN yards y ON s.parent_yard = y.id" +
+                " WHERE s.parent_yard = ?1" +
+                " AND s.is_deleted = false" +
                 " AND y.is_active = true" +
                 " AND y.is_deleted = false";
         try {

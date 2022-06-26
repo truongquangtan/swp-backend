@@ -20,6 +20,5 @@ public class UpdateYardRequest {
     private String openAt;
     private String closeAt;
     private String slotDuration;
-    private List<String> currentImages;
     private List<UpdateSubYardRequest> subYards;
 }

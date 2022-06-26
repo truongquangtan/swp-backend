@@ -60,7 +60,7 @@ public class ReactivationService {
         {
             throw new RuntimeException("The owner is not author of this sub-yard.");
         }
-        if(subYardRepository.getSubYardEntityByIdAndActive(subYardId, false) == null)
+        if(subYardRepository.getSubYardEntityByIdAndActiveAndDeletedIsFalse(subYardId, false) == null)
         {
             throw new RuntimeException("Cannot find inactive sub-yard.");
         }

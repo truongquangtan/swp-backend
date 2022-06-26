@@ -23,6 +23,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/api/v1/owners/me")
@@ -121,11 +123,16 @@ public class YardRestApi {
         }
     }
     @PutMapping(value = "yards/{yardId}")
-    public ResponseEntity<String> updateyardById(@RequestParam(name = "yard") String yard, @RequestParam(name = "newImages", required = false) MultipartFile[] images, @PathVariable String yardId)
+    public ResponseEntity<String> updateyardById(@RequestParam(name = "yard") String yard,
+                                                 @RequestParam(name = "newImages", required = false) MultipartFile[] newImages,
+                                                 @RequestParam(name = "images") String images,
+                                                 @PathVariable String yardId)
     {
         UpdateYardRequest request;
+        List<String> imagesConverted;
         try {
             request = gson.fromJson(yard, UpdateYardRequest.class);
+            imagesConverted = gson.fromJson(images, List.class);
         } catch (JsonParseException exception) {
             return ResponseEntity.badRequest().body("Cannot parse the request.");
         }
@@ -134,10 +141,11 @@ public class YardRestApi {
             SecurityContext context = SecurityContextHolder.getContext();
             String userId = securityContextService.extractUsernameFromContext(context);
 
-            yardUpdateService.updateYard(userId, request, images, yardId);
+            yardUpdateService.updateYard(userId, request, imagesConverted, newImages, yardId);
             MessageResponse response = new MessageResponse("Update successfully");
             return ResponseEntity.ok(gson.toJson(response));
         } catch (RuntimeException ex) {
+            ex.printStackTrace();
             return ResponseEntity.internalServerError().body(ex.getMessage());
         }
     }

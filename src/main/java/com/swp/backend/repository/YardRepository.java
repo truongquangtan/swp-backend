@@ -19,9 +19,10 @@ public interface YardRepository extends JpaRepository<YardEntity, String> {
     @Query("SELECT yard.id FROM YardEntity yard WHERE yard.ownerId = ?1")
     public List<String> getAllYardIdByOwnerId(String ownerId);
 
-    public List<YardEntity> findAllByOwnerIdAndDeleted(String ownerId, boolean deleted, Pageable pageable);
+    public List<YardEntity> findAllByOwnerIdAndDeletedOrderByCreateAtDesc(String ownerId, boolean deleted, Pageable pageable);
 
     public int countAllByOwnerIdAndDeleted(String ownerId, boolean deleted);
 
     public YardEntity findYardEntityByIdAndDeleted(String yardId, boolean isDeleted);
+    public YardEntity findYardEntityById(String yardId);
 }
