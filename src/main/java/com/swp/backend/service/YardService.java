@@ -127,8 +127,7 @@ public class YardService {
             }
         }
         int noImageCount = images == null ? 3 : YardService.MAX_IMAGE - images.length;
-        for(int i = 0; i < noImageCount; ++i)
-        {
+        for (int i = 0; i < noImageCount; ++i) {
             YardPictureEntity yardPictureEntity = YardPictureEntity.builder().refId(yardId)
                     .image(NoImageUrl.NO_IMAGE)
                     .build();
@@ -303,8 +302,7 @@ public class YardService {
                 .subYards(subYardDetailModels).build();
     }
 
-    public List<SubYardDetailModel> getSubYardDetailModelFromYardId(String yardId)
-    {
+    public List<SubYardDetailModel> getSubYardDetailModelFromYardId(String yardId) {
         List<SubYardModel> subYards = subYardService.getSubYardsByBigYard(yardId);
         List<SubYardDetailModel> subYardDetailModels = subYards.stream().map(subYardModel -> {
             List<SlotModel> slots = slotRepository.findSlotEntitiesByRefYardAndActiveIsTrue(subYardModel.getId()).stream().map(SlotModel::buildFromSlotEntity).collect(Collectors.toList());
@@ -317,8 +315,9 @@ public class YardService {
                     .typeYard(subYardModel.getTypeYard())
                     .slots(slots).build();
         }).collect(Collectors.toList());
-        return  subYardDetailModels;
+        return subYardDetailModels;
     }
+
     @Transactional
     public void setIsActiveFalseForYard(String yardId) {
         YardEntity yardEntity = yardRepository.findYardEntitiesById(yardId);

@@ -9,5 +9,6 @@ import java.util.List;
 @Repository
 public interface YardPictureRepository extends JpaRepository<YardPictureEntity, Integer> {
     List<YardPictureEntity> getAllByRefIdOrderById(String refId);
+
     YardPictureEntity findTop1ByRefIdAndImage(String refId, String image);
 }

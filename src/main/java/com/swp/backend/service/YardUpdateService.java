@@ -39,17 +39,14 @@ public class YardUpdateService {
                            UpdateYardRequest updateYardRequest,
                            List<String> images,
                            MultipartFile[] newImages,
-                           String yardId)
-    {
+                           String yardId) {
         YardEntity yard = yardRepository.findYardEntitiesById(yardId);
 
-        if(!ownerId.equals(yard.getOwnerId()))
-        {
+        if (!ownerId.equals(yard.getOwnerId())) {
             throw new RuntimeException("Owner is not author of this yard");
         }
 
-        try
-        {
+        try {
             updateImages(images, newImages, yardId);
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
@@ -63,14 +60,10 @@ public class YardUpdateService {
             List<UpdateSubYardRequest> subYards = updateYardRequest.getSubYards();
             List<SubYardRequest> subYardToAdd = new ArrayList<>();
             List<UpdateSubYardRequest> subYardToUpdate = new ArrayList<>();
-            for(UpdateSubYardRequest subYardRequest : subYards)
-            {
-                if(subYardRequest.getId() == null || subYardRequest.getId().equals(""))
-                {
+            for (UpdateSubYardRequest subYardRequest : subYards) {
+                if (subYardRequest.getId() == null || subYardRequest.getId().equals("")) {
                     subYardToAdd.add(new SubYardRequest(subYardRequest.getName(), subYardRequest.getType(), subYardRequest.getSlots()));
-                }
-                else
-                {
+                } else {
                     subYardToUpdate.add(subYardRequest);
                 }
             }
@@ -81,22 +74,18 @@ public class YardUpdateService {
             throw new RuntimeException(ex.getMessage());
         }
     }
-    private void updateImages(List<String> images, MultipartFile[] newImages, String yardId)
-    {
-        if( images == null || images.size() == 0)
-        {
+
+    private void updateImages(List<String> images, MultipartFile[] newImages, String yardId) {
+        if (images == null || images.size() == 0) {
             return;
         }
 
-        if(images.size() != newImages.length)
-        {
+        if (images.size() != newImages.length) {
             throw new RuntimeException("Image to update not match the current image request");
         }
 
-        try
-        {
-            for(int i = 0; i < images.size(); ++i)
-            {
+        try {
+            for (int i = 0; i < images.size(); ++i) {
                 String currentImgUrl = images.get(i);
                 String currentImgName = currentImgUrl.split("[/?]")[7];
                 firebaseStoreService.deleteFile(currentImgName);
@@ -104,17 +93,14 @@ public class YardUpdateService {
                 picture.setImage(firebaseStoreService.uploadFile(newImages[i]));
                 yardPictureRepository.save(picture);
             }
-        } catch (IOException ex)
-        {
+        } catch (IOException ex) {
             throw new RuntimeException(ex.getMessage());
         }
     }
-    private void updateSubYards(String ownerId, List<UpdateSubYardRequest> subYardRequests)
-    {
-        if(subYardRequests != null && subYardRequests.size() > 0)
-        {
-            for(UpdateSubYardRequest request : subYardRequests)
-            {
+
+    private void updateSubYards(String ownerId, List<UpdateSubYardRequest> subYardRequests) {
+        if (subYardRequests != null && subYardRequests.size() > 0) {
+            for (UpdateSubYardRequest request : subYardRequests) {
                 SubYardEntity subYardEntity = subYardService.getSubYardById(request.getId());
 
                 subYardEntity.setName(request.getName());
@@ -130,8 +116,8 @@ public class YardUpdateService {
             }
         }
     }
-    private void updateSlots(String ownerId, List<SlotRequest> slots, String subYardId)
-    {
+
+    private void updateSlots(String ownerId, List<SlotRequest> slots, String subYardId) {
         List<SlotEntity> slotEntities = slotRepository.findSlotEntitiesByRefYardAndActiveIsTrue(subYardId);
 
         List<SlotInfo> slotRequests = slots.stream().map(slot -> {
@@ -140,8 +126,7 @@ public class YardUpdateService {
 
         List<SlotInfo> slotEntitiesInfo = new ArrayList<>();
         HashMap<SlotInfo, SlotEntity> slotInfoToSlotEntityMapper = new HashMap<>();
-        for(SlotEntity slotEntity : slotEntities)
-        {
+        for (SlotEntity slotEntity : slotEntities) {
             SlotInfo slotInfo = SlotInfo.getSlotInfo(slotEntity);
             slotEntitiesInfo.add(slotInfo);
             slotInfoToSlotEntityMapper.put(slotInfo, slotEntity);
@@ -151,19 +136,14 @@ public class YardUpdateService {
         //neu giong het, ko update
         //neu khac gia, update gia
         //neu khac het (th còn lại), thêm slot request vào db, inactive slot entity
-        for(SlotInfo slotEntityInfo : slotEntitiesInfo)
-        {
+        for (SlotInfo slotEntityInfo : slotEntitiesInfo) {
             boolean isContainInRequests = false;
-            for(SlotInfo slotRequest : slotRequests)
-            {
-                if(slotEntityInfo.equals(slotRequest))
-                {
+            for (SlotInfo slotRequest : slotRequests) {
+                if (slotEntityInfo.equals(slotRequest)) {
                     slotRequest.setExistedInStorage(true);
                     isContainInRequests = true;
                     break;
-                }
-                else if(slotEntityInfo.isPriceChange(slotRequest))
-                {
+                } else if (slotEntityInfo.isPriceChange(slotRequest)) {
                     SlotEntity slotEntity = slotInfoToSlotEntityMapper.get(slotEntityInfo);
                     slotEntity.setPrice(slotRequest.getPrice());
                     slotRepository.save(slotEntity);
@@ -172,16 +152,13 @@ public class YardUpdateService {
                     break;
                 }
             }
-            if(!isContainInRequests)
-            {
+            if (!isContainInRequests) {
                 SlotEntity slotEntity = slotInfoToSlotEntityMapper.get(slotEntityInfo);
                 inactivationService.processInactivateSlot(ownerId, slotEntity.getId(), "The slot is inactivate by owner after update yard information");
             }
         }
-        for(SlotInfo slotInfo : slotRequests)
-        {
-            if(!slotInfo.isExistedInStorage())
-            {
+        for (SlotInfo slotInfo : slotRequests) {
+            if (!slotInfo.isExistedInStorage()) {
                 DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm");
                 SlotEntity slotEntity = SlotEntity.builder().startTime(LocalTime.parse(slotInfo.getStart(), dateTimeFormatter))
                         .endTime(LocalTime.parse(slotInfo.getEnd(), dateTimeFormatter))
@@ -193,11 +170,11 @@ public class YardUpdateService {
             }
         }
     }
-    private int getSlotDuration(String slotDurationRequest)
-    {
+
+    private int getSlotDuration(String slotDurationRequest) {
         String[] getHourAndMinute = slotDurationRequest.split(":");
         int hour = Integer.parseInt(getHourAndMinute[0]);
         int minute = Integer.parseInt(getHourAndMinute[1]);
-        return hour*60+minute;
+        return hour * 60 + minute;
     }
 }
