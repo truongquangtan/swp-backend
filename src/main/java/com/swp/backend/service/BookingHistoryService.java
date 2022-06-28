@@ -2,7 +2,6 @@ package com.swp.backend.service;
 
 import com.swp.backend.entity.BookingEntity;
 import com.swp.backend.entity.BookingHistoryEntity;
-import com.swp.backend.exception.CancelBookingProcessException;
 import com.swp.backend.model.BookingHistoryModel;
 import com.swp.backend.model.MatchModel;
 import com.swp.backend.model.model_builder.BookingHistoryEntityBuilder;

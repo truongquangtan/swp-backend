@@ -4,7 +4,6 @@ import com.swp.backend.constance.BookingStatus;
 import com.swp.backend.entity.BookingEntity;
 import com.swp.backend.utils.DateHelper;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -96,10 +95,8 @@ public class BookingCustomRepository {
         }
     }
 
-    public List<BookingEntity> getAllSuccessBookingEntitiesOfSlotInFuture(int slotId)
-    {
-        try
-        {
+    public List<BookingEntity> getAllSuccessBookingEntitiesOfSlotInFuture(int slotId) {
+        try {
             Timestamp today = Timestamp.valueOf(LocalDate.now(ZoneId.of(DateHelper.VIETNAM_ZONE)).toString() + " 00:00:00");
             Query query = null;
 
@@ -115,13 +112,11 @@ public class BookingCustomRepository {
 
             List<?> queriedList = query.getResultList();
             List<BookingEntity> result = queriedList.stream().map(queriedObject -> {
-                return (BookingEntity)queriedObject;
+                return (BookingEntity) queriedObject;
             }).collect(Collectors.toList());
 
             return result;
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             return null;
         }
     }

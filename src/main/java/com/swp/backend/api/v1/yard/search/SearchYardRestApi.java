@@ -28,6 +28,4 @@ public class SearchYardRestApi {
         YardResponse yardResponse = yardService.findYardByFilter(searchYardRequest.getProvinceId(), searchYardRequest.getDistrictId(), searchYardRequest.getItemsPerPage(), searchYardRequest.getPage());
         return ResponseEntity.ok().body(gson.toJson(yardResponse));
     }
-
-
 }

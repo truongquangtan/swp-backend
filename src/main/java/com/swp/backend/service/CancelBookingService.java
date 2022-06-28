@@ -1,12 +1,10 @@
 package com.swp.backend.service;
 
-import com.google.type.DateTime;
 import com.swp.backend.api.v1.book.cancel_booking.CancelBookingRequest;
 import com.swp.backend.constance.BookingStatus;
 import com.swp.backend.entity.*;
 import com.swp.backend.exception.CancelBookingProcessException;
 import com.swp.backend.model.MatchModel;
-import com.swp.backend.model.model_builder.BookingHistoryEntityBuilder;
 import com.swp.backend.myrepository.SlotCustomRepository;
 import com.swp.backend.repository.*;
 import com.swp.backend.utils.DateHelper;
@@ -165,8 +163,7 @@ public class CancelBookingService {
         emailService.sendHtmlTemplateMessage(destination, "Cancel booking from " + user.getFullName(), htmlTemplate);
     }
 
-    public void sendMailCancelToUser(BookingEntity booking, String reason)
-    {
+    public void sendMailCancelToUser(BookingEntity booking, String reason) {
         AccountEntity user = accountRepository.findUserEntityByUserId(booking.getAccountId());
         String destination = user.getEmail();
         MatchModel match = matchService.getMatchModelFromBookingEntity(booking);
@@ -226,8 +223,7 @@ public class CancelBookingService {
         return result;
     }
 
-    private static String getHtmlTemplateMailToUser(MatchModel matchModel, String reason)
-    {
+    private static String getHtmlTemplateMailToUser(MatchModel matchModel, String reason) {
         String result = "<img style=\"display: block; width: 60px; padding: 2px; height: 60px; margin: auto;\" src=\"https://firebasestorage.googleapis.com/v0/b/fu-swp391.appspot.com/o/mail-icon.png?alt=media\">" +
                 "<h1 style=\"font-family:open Sans Helvetica, Arial, sans-serif; margin: 0; font-size:18px; padding: 2px; text-align: center;\">Playground Basketball</h1>" +
                 "<hr>" +
@@ -259,7 +255,7 @@ public class CancelBookingService {
                 "</tr>" +
                 "<tr>" +
                 "<td>Date</td>" +
-                "<td>" + matchModel.getDate() +  "</td>" +
+                "<td>" + matchModel.getDate() + "</td>" +
                 "</tr>" +
                 "<tr>" +
                 "<td>Canceled At</td>" +

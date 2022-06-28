@@ -34,5 +34,6 @@ public interface SlotRepository extends JpaRepository<SlotEntity, Integer> {
     public List<Integer> getAllSlotIdsByListSubYardId(@Param("listSubYardId") Collection<String> listSubYardId);
 
     public SlotEntity findSlotEntityById(int slotId);
+
     public SlotEntity findSlotEntityByRefYardAndStartTimeAndEndTimeAndPriceAndActiveIsTrue(String refYard, LocalTime startTime, LocalTime endTime, int price);
 }

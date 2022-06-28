@@ -1,25 +1,29 @@
-package com.swp.backend.api.v1.voucher;
+package com.swp.backend.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class VoucherRequest {
+@Builder
+public class VoucherModel {
     private String id;
     private String type;
     private String title;
     private String description;
-    private Boolean delete;
-    private Integer maxQuantity;
-    private Integer remainder;
+    private Boolean isActive;
+    private String voucherCode;
+    private int maxQuantity;
+    private int remainder;
     private Integer percentDiscount;
-    private Integer percentDiscountUpto;
-    private Integer amountLeast;
     private Integer amountDiscount;
     private String startDate;
     private String endDate;
-    private String yardId;
+    private String createdByAccountId;
+    private String createdAt;
+    private String status;
+    private int reference;
 }

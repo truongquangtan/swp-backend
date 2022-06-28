@@ -25,29 +25,29 @@ public class VoucherEntity {
     private String title;
     @Column(name = "description")
     private String description;
-    @Column(name = "is_deleted")
+    @Column(name = "is_active")
     @Builder.Default
-    private boolean delete = false;
+    private boolean active = true;
+    @Column(name = "voucher_code")
+    private String voucherCode;
     @Column(name = "max_quantity")
     private int maxQuantity;
     @Column(name = "remainder_quantity")
     private int remainder;
     @Column(name = "percent_discount")
     private Integer percentDiscount;
-    @Column(name = "percent_amount_discount_upto")
-    private Integer percentDiscountUpto;
-    @Column(name = "amount_least")
-    private Integer amountLeast;
     @Column(name = "amount_discount")
     private Integer amountDiscount;
     @Column(name = "start_date")
     private Timestamp startDate;
     @Column(name = "end_date")
     private Timestamp endDate;
-    @Column(name = "ref_yard_id")
-    private String reference;
-    @Column(name = "created_by_account_id")
+    @Column(name = "created_by")
     private String createdByAccountId;
     @Column(name = "created_at")
     private Timestamp createdAt;
+    @Column(name = "status")
+    private String status;
+    @Column(name = "reference", insertable = false)
+    private int reference;
 }

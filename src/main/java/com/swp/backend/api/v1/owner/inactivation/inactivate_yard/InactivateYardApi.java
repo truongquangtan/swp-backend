@@ -11,7 +11,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @AllArgsConstructor
@@ -22,11 +25,9 @@ public class InactivateYardApi {
     private ReactivationService reactivationService;
     private SecurityContextService securityContextService;
 
-    @PutMapping (value = "yards/{yardId}/deactivate")
-    public ResponseEntity<String> inactivateYard(@PathVariable String yardId)
-    {
-        try
-        {
+    @PutMapping(value = "yards/{yardId}/deactivate")
+    public ResponseEntity<String> inactivateYard(@PathVariable String yardId) {
+        try {
             SecurityContext context = SecurityContextHolder.getContext();
             String ownerId = securityContextService.extractUsernameFromContext(context);
 
@@ -34,17 +35,15 @@ public class InactivateYardApi {
 
             MessageResponse response = new MessageResponse("Deactivate successfully");
             return ResponseEntity.ok().body(gson.toJson(response));
-        } catch (InactivateProcessException inactivateProcessException)
-        {
+        } catch (InactivateProcessException inactivateProcessException) {
             ErrorResponse response = ErrorResponse.builder().message(inactivateProcessException.getFilterMessage()).build();
             return ResponseEntity.badRequest().body(gson.toJson(response));
         }
     }
-    @PutMapping (value = "yards/{yardId}/activate")
-    public ResponseEntity<String> reactivateYard(@PathVariable String yardId)
-    {
-        try
-        {
+
+    @PutMapping(value = "yards/{yardId}/activate")
+    public ResponseEntity<String> reactivateYard(@PathVariable String yardId) {
+        try {
             SecurityContext context = SecurityContextHolder.getContext();
             String ownerId = securityContextService.extractUsernameFromContext(context);
 
@@ -52,8 +51,7 @@ public class InactivateYardApi {
 
             MessageResponse response = new MessageResponse("Activate successfully");
             return ResponseEntity.ok().body(gson.toJson(response));
-        } catch (RuntimeException runtimeException)
-        {
+        } catch (RuntimeException runtimeException) {
             ErrorResponse response = ErrorResponse.builder().message(runtimeException.getMessage()).build();
             return ResponseEntity.badRequest().body(gson.toJson(response));
         }

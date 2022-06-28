@@ -6,7 +6,6 @@ import com.swp.backend.entity.BookingHistoryEntity;
 import com.swp.backend.entity.SlotEntity;
 import com.swp.backend.entity.YardEntity;
 import com.swp.backend.model.BookingModel;
-import com.swp.backend.model.model_builder.BookingHistoryEntityBuilder;
 import com.swp.backend.myrepository.BookingCustomRepository;
 import com.swp.backend.myrepository.BookingHistoryCustomRepository;
 import com.swp.backend.repository.*;

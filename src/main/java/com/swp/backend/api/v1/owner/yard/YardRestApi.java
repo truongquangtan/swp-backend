@@ -3,11 +3,11 @@ package com.swp.backend.api.v1.owner.yard;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import com.swp.backend.api.v1.owner.yard.request.GetYardRequest;
-import com.swp.backend.api.v1.owner.yard.updateYardRequest.UpdateYardRequest;
 import com.swp.backend.api.v1.owner.yard.request.YardRequest;
 import com.swp.backend.api.v1.owner.yard.response.CreateYardSuccessResponse;
 import com.swp.backend.api.v1.owner.yard.response.GetYardDetailResponse;
 import com.swp.backend.api.v1.owner.yard.response.GetYardResponse;
+import com.swp.backend.api.v1.owner.yard.updateYardRequest.UpdateYardRequest;
 import com.swp.backend.entity.YardEntity;
 import com.swp.backend.exception.ErrorResponse;
 import com.swp.backend.exception.InactivateProcessException;
@@ -104,30 +104,27 @@ public class YardRestApi {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
+
     @DeleteMapping(value = "yards/{yardId}")
-    public ResponseEntity<String> deleteYardById(@PathVariable String yardId)
-    {
-        try
-        {
+    public ResponseEntity<String> deleteYardById(@PathVariable String yardId) {
+        try {
             SecurityContext securityContext = SecurityContextHolder.getContext();
             String ownerId = securityContextService.extractUsernameFromContext(securityContext);
 
             inactivationService.deleteYard(ownerId, yardId);
             MessageResponse response = new MessageResponse("Delete yard successfully");
             return ResponseEntity.ok().body(gson.toJson(response));
-        }
-        catch(InactivateProcessException inactivateProcessException)
-        {
+        } catch (InactivateProcessException inactivateProcessException) {
             ErrorResponse response = ErrorResponse.builder().message(inactivateProcessException.getFilterMessage()).build();
             return ResponseEntity.badRequest().body(gson.toJson(response));
         }
     }
+
     @PutMapping(value = "yards/{yardId}")
     public ResponseEntity<String> updateyardById(@RequestParam(name = "yard") String yard,
                                                  @RequestParam(name = "newImages", required = false) MultipartFile[] newImages,
                                                  @RequestParam(name = "images") String images,
-                                                 @PathVariable String yardId)
-    {
+                                                 @PathVariable String yardId) {
         UpdateYardRequest request;
         List<String> imagesConverted;
         try {

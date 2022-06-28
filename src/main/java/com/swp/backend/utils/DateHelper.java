@@ -25,6 +25,7 @@ public class DateHelper {
         return Timestamp.valueOf(localDateTime);
     }
 
+
     public static Timestamp parseFromStringToTimestamp(String input) {
         DateFormat format = new SimpleDateFormat("dd/MM/yyyy");
         format.setLenient(false);
@@ -85,6 +86,13 @@ public class DateHelper {
         LocalDateTime localDateTime = LocalDateTime.from(formatDateTime.parse(dateTime));
         return Timestamp.valueOf(localDateTime);
     }
+
+    public static Timestamp parseTimestampNonTimeAtZone(String dateInput) {
+        DateTimeFormatter formatDateTime = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        LocalDateTime localDateTime = LocalDateTime.from(formatDateTime.parse(dateInput + " 00:00:00"));
+        return Timestamp.valueOf(localDateTime);
+    }
+
 
     public static LocalDate parseFromTimestampToLocalDate(Timestamp timestamp) {
         LocalDate localDate = LocalDate.ofInstant(timestamp.toInstant(), ZoneId.of(VIETNAM_ZONE));

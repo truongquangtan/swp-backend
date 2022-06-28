@@ -31,8 +31,8 @@ public class SubYardService {
     private List<SubYardEntity> findAllSubYardByParentId(String bigYardId) {
         return subYardCustomRepository.getAllSubYardByBigYard(bigYardId);
     }
-    private List<SubYardEntity> findActiveSubYardByParentId(String bigYardId)
-    {
+
+    private List<SubYardEntity> findActiveSubYardByParentId(String bigYardId) {
         return subYardCustomRepository.getAllActiveSubYardByBigYard(bigYardId);
     }
 
@@ -47,8 +47,8 @@ public class SubYardService {
 
         return getListSubYardModelFromQueriedList(queriedSubYards);
     }
-    private List<SubYardModel> getListSubYardModelFromQueriedList(List<?> queriedSubYards)
-    {
+
+    private List<SubYardModel> getListSubYardModelFromQueriedList(List<?> queriedSubYards) {
         return queriedSubYards.stream().map(object -> {
             if (object instanceof SubYardEntity) {
                 SubYardEntity subYardEntity = (SubYardEntity) object;
@@ -67,6 +67,7 @@ public class SubYardService {
             }
         }).collect(Collectors.toList());
     }
+
     public GetSubYardDetailResponse getSubYardDetailResponse(String ownerId, String yardId, String subYardId) {
         YardEntity yardEntity = yardRepository.findYardEntityByIdAndDeleted(yardId, false);
 
@@ -110,42 +111,41 @@ public class SubYardService {
     }
 
     @Transactional
-    public void setIsActiveFalseForSubYard(String subYardId)
-    {
+    public void setIsActiveFalseForSubYard(String subYardId) {
         SubYardEntity subYardEntity = subYardRepository.getSubYardEntitiesById(subYardId);
         subYardEntity.setActive(false);
         subYardRepository.save(subYardEntity);
     }
+
     @Transactional
-    public void setIsParentActiveFalseForSubYard(String subYardId)
-    {
+    public void setIsParentActiveFalseForSubYard(String subYardId) {
         SubYardEntity subYardEntity = subYardRepository.getSubYardEntitiesById(subYardId);
         subYardEntity.setParentActive(false);
         subYardRepository.save(subYardEntity);
     }
+
     @Transactional
-    public void setIsActiveTrueForSubYard(String subYardId)
-    {
+    public void setIsActiveTrueForSubYard(String subYardId) {
         SubYardEntity subYardEntity = subYardRepository.getSubYardEntitiesById(subYardId);
         subYardEntity.setActive(true);
         subYardRepository.save(subYardEntity);
     }
+
     @Transactional
-    public void setIsParentActiveTrueForSubYard(String subYardId)
-    {
+    public void setIsParentActiveTrueForSubYard(String subYardId) {
         SubYardEntity subYardEntity = subYardRepository.getSubYardEntitiesById(subYardId);
         subYardEntity.setParentActive(true);
         subYardRepository.save(subYardEntity);
     }
+
     @Transactional
-    public void setIsDeletedTrueForSubYard(String subYardId)
-    {
+    public void setIsDeletedTrueForSubYard(String subYardId) {
         SubYardEntity subYardEntity = subYardRepository.getSubYardEntitiesById(subYardId);
         subYardEntity.setDeleted(true);
         subYardRepository.save(subYardEntity);
     }
-    public SubYardEntity getSubYardById(String subYardId)
-    {
+
+    public SubYardEntity getSubYardById(String subYardId) {
         return subYardRepository.getSubYardEntitiesById(subYardId);
     }
 }

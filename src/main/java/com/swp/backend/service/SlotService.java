@@ -2,7 +2,6 @@ package com.swp.backend.service;
 
 import com.swp.backend.constance.BookingStatus;
 import com.swp.backend.entity.SlotEntity;
-import com.swp.backend.exception.InactivateProcessException;
 import com.swp.backend.model.Slot;
 import com.swp.backend.model.model_builder.ListSlotBuilder;
 import com.swp.backend.myrepository.SlotCustomRepository;
@@ -88,33 +87,33 @@ public class SlotService {
     }
 
     @Transactional
-    public void inactivateSlot(int slotId)
-    {
+    public void inactivateSlot(int slotId) {
         SlotEntity slotEntity = slotRepository.findSlotEntityById(slotId);
         slotEntity.setActive(false);
         slotRepository.save(slotEntity);
     }
+
     @Transactional
-    public void reactivateSlot(int slotId)
-    {
+    public void reactivateSlot(int slotId) {
         SlotEntity slotEntity = slotRepository.findSlotEntityById(slotId);
         slotEntity.setActive(true);
         slotRepository.save(slotEntity);
     }
+
     @Transactional
-    public void setIsParentActiveFalse(int slotId)
-    {
+    public void setIsParentActiveFalse(int slotId) {
         SlotEntity slotEntity = slotRepository.findSlotEntityById(slotId);
         slotEntity.setParentActive(false);
         slotRepository.save(slotEntity);
     }
+
     @Transactional
-    public void setIsParentActiveTrue(int slotId)
-    {
+    public void setIsParentActiveTrue(int slotId) {
         SlotEntity slotEntity = slotRepository.findSlotEntityById(slotId);
         slotEntity.setParentActive(true);
         slotRepository.save(slotEntity);
     }
+
     public boolean isSlotAvailableFromBooking(int slotId, Timestamp timestamp) {
         LocalDate localDate = DateHelper.parseFromTimestampToLocalDate(timestamp);
         Timestamp startTime = Timestamp.valueOf(localDate.toString() + " 00:00:00");
