@@ -87,7 +87,6 @@ public class VoucherService {
     }
 
     private VoucherModel convertVoucherModelFromVoucherEntity(VoucherEntity voucherEntity) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss a");
         String status = voucherEntity.getStatus();
         if (!status.equalsIgnoreCase(VoucherProperties.INACTIVE)) {
             status = voucherEntity.getEndDate().before(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE)) ? VoucherProperties.EXPIRED : status;
@@ -95,9 +94,9 @@ public class VoucherService {
 
         return VoucherModel.builder()
                 .id(voucherEntity.getId())
-                .createdAt(voucherEntity.getCreatedAt().toLocalDateTime().format(formatter))
-                .startDate(voucherEntity.getStartDate().toLocalDateTime().format(formatter))
-                .endDate(voucherEntity.getEndDate().toLocalDateTime().format(formatter))
+                .createdAt(voucherEntity.getCreatedAt().toString())
+                .startDate(voucherEntity.getStartDate().toString())
+                .endDate(voucherEntity.getEndDate().toString())
                 .voucherCode(voucherEntity.getVoucherCode())
                 .title(voucherEntity.getTitle())
                 .description(voucherEntity.getDescription())
@@ -114,7 +113,6 @@ public class VoucherService {
 
     public void updateVoucher(VoucherModel voucher) throws DataAccessException {
         VoucherEntity voucherEntity = voucherRepository.getVoucherEntityById(voucher.getId());
-
         voucherEntity.setActive(voucher.getIsActive() != null ? voucher.getIsActive() : voucherEntity.isActive());
         voucherRepository.save(voucherEntity);
     }
