@@ -338,4 +338,9 @@ public class YardService {
         yardEntity.setDeleted(true);
         yardRepository.save(yardEntity);
     }
+
+    public String getOwnerIdOfYard(String yardId)
+    {
+        return yardRepository.findYardEntityById(yardId).getOwnerId();
+    }
 }
