@@ -101,7 +101,6 @@ public class VoucherService {
                 .voucherCode(voucherEntity.getVoucherCode())
                 .title(voucherEntity.getTitle())
                 .description(voucherEntity.getDescription())
-                .isActive(voucherEntity.isActive())
                 .reference(voucherEntity.getReference())
                 .usages(voucherEntity.getUsages())
                 .type(voucherEntity.getType())
