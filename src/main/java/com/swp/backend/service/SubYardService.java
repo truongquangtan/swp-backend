@@ -16,6 +16,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,27 +28,6 @@ public class SubYardService {
     private TypeYardRepository typeYardRepository;
     private SlotRepository slotRepository;
     private YardRepository yardRepository;
-
-    private List<SubYardEntity> findAllSubYardByParentId(String bigYardId) {
-        return subYardCustomRepository.getAllSubYardByBigYard(bigYardId);
-    }
-
-    private List<SubYardEntity> findActiveSubYardByParentId(String bigYardId) {
-        return subYardCustomRepository.getAllActiveSubYardByBigYard(bigYardId);
-    }
-
-    public List<SubYardModel> getSubYardsByBigYard(String bigYardId) {
-        List<?> queriedSubYards = findAllSubYardByParentId(bigYardId);
-
-        return getListSubYardModelFromQueriedList(queriedSubYards);
-    }
-
-    public List<SubYardModel> getActiveSubYardsByBigYard(String bigYardId) {
-        List<?> queriedSubYards = findActiveSubYardByParentId(bigYardId);
-
-        return getListSubYardModelFromQueriedList(queriedSubYards);
-    }
-
     private List<SubYardModel> getListSubYardModelFromQueriedList(List<?> queriedSubYards) {
         return queriedSubYards.stream().map(object -> {
             if (object instanceof SubYardEntity) {
@@ -66,6 +46,37 @@ public class SubYardService {
                 return null;
             }
         }).collect(Collectors.toList());
+    }
+
+    public List<GetSubYardDetailResponse> getAllSubYardDetailOfYard(String yardId)
+    {
+        List<GetSubYardDetailResponse> subYardDetailResponses = new ArrayList<>();
+        List<SubYardEntity> subYardEntities = findAllSubYardByParentId(yardId);
+        for(SubYardEntity subYardEntity : subYardEntities)
+        {
+            subYardDetailResponses.add(processGetSubYardDetailResponseByOwner(subYardEntity.getId()));
+        }
+        return subYardDetailResponses;
+    }
+
+    public List<SubYardModel> getSubYardsByBigYard(String bigYardId) {
+        List<?> queriedSubYards = findAllSubYardByParentId(bigYardId);
+
+        return getListSubYardModelFromQueriedList(queriedSubYards);
+    }
+
+    public List<SubYardModel> getActiveSubYardsByBigYard(String bigYardId) {
+        List<?> queriedSubYards = findActiveSubYardByParentId(bigYardId);
+
+        return getListSubYardModelFromQueriedList(queriedSubYards);
+    }
+
+    private List<SubYardEntity> findAllSubYardByParentId(String bigYardId) {
+        return subYardCustomRepository.getAllSubYardByBigYard(bigYardId);
+    }
+
+    private List<SubYardEntity> findActiveSubYardByParentId(String bigYardId) {
+        return subYardCustomRepository.getAllActiveSubYardByBigYard(bigYardId);
     }
 
     public GetSubYardDetailResponse getSubYardDetailResponse(String ownerId, String yardId, String subYardId) {
