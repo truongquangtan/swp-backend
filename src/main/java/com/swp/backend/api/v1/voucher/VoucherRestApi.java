@@ -21,9 +21,9 @@ public class VoucherRestApi {
         try {
             VoucherResponse response;
             if (requestPageModel == null) {
-                response = voucherService.getAllVoucherByOwnerId(ownerId, null, null);
+                response = voucherService.getAllVoucherForYard(ownerId, null, null);
             } else {
-                response = voucherService.getAllVoucherByOwnerId(ownerId, requestPageModel.getItemsPerPage(), requestPageModel.getPage());
+                response = voucherService.getAllVoucherForYard(ownerId, requestPageModel.getItemsPerPage(), requestPageModel.getPage());
             }
             return ResponseEntity.ok().body(gson.toJson(response));
         } catch (Exception exception) {

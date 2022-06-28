@@ -16,8 +16,8 @@ public class VoucherModel {
     private String description;
     private Boolean isActive;
     private String voucherCode;
-    private int maxQuantity;
-    private int remainder;
+    private Integer maxQuantity;
+    private Integer remainder;
     private Integer percentDiscount;
     private Integer amountDiscount;
     private String startDate;
