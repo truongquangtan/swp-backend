@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 public class VoucherService {
     private VoucherRepository voucherRepository;
 
-    public VoucherEntity createVoucher(VoucherModel voucher, String ownerId) throws DataAccessException {
+    public void createVoucher(VoucherModel voucher, String ownerId) throws DataAccessException {
         String voucherCode;
         do {
             voucherCode = RandomStringUtils.random(10, true, true);
@@ -56,7 +56,6 @@ public class VoucherService {
             voucherEntity.setPercentDiscount(voucher.getPercentDiscount());
         }
         voucherRepository.save(voucherEntity);
-        return voucherEntity;
     }
 
     public VoucherResponse getAllVoucherByOwnerId(String ownerId, Integer offSet, Integer page) {
@@ -66,7 +65,7 @@ public class VoucherService {
         if ((pageValue - 1) * offSetValue >= maxResult) {
             pageValue = 1;
         }
-        Pageable pageable = PageRequest.of((pageValue - 1), offSetValue, Sort.by("createdAt").ascending());
+        Pageable pageable = PageRequest.of((pageValue - 1), offSetValue, Sort.by("createdAt").descending());
         List<VoucherEntity> voucherResults = voucherRepository.findVoucherEntitiesByCreatedByAccountId(ownerId, pageable);
         List<VoucherModel> voucherModels = voucherResults.stream().map((this::convertVoucherModelFromVoucherEntity)).collect(Collectors.toList());
         return VoucherResponse.builder().voucher(voucherModels).maxResult(maxResult).page(pageValue).build();
@@ -75,12 +74,13 @@ public class VoucherService {
     public VoucherResponse getAllVoucherForYard(String ownerId, Integer offSet, Integer page) {
         int offSetValue = offSet != null ? offSet : 10;
         int pageValue = page != null ? page : 1;
-        int maxResult = voucherRepository.countAllByCreatedByAccountIdAndActive(ownerId, true);
+        Timestamp now = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
+        int maxResult = voucherRepository.countAllByCreatedByAccountIdAndEndDateAfterAndActive(ownerId, now, true);
         if ((pageValue - 1) * offSetValue >= maxResult) {
             pageValue = 1;
         }
         Pageable pageable = PageRequest.of((pageValue - 1), offSetValue, Sort.by("createdAt").ascending());
-        List<VoucherEntity> voucherResults = voucherRepository.findVoucherEntitiesByCreatedByAccountIdAndActive(ownerId, true, pageable);
+        List<VoucherEntity> voucherResults = voucherRepository.findVoucherEntitiesByCreatedByAccountIdAndEndDateAfterAndActive(ownerId, now, true, pageable);
         List<VoucherModel> voucherModels = voucherResults.stream().map((this::convertVoucherModelFromVoucherEntity)).collect(Collectors.toList());
         return VoucherResponse.builder().voucher(voucherModels).maxResult(maxResult).page(pageValue).build();
     }
@@ -112,9 +112,11 @@ public class VoucherService {
                 .build();
     }
 
-    public VoucherEntity updateVoucher(VoucherEntity voucher) throws DataAccessException {
-        voucherRepository.save(voucher);
-        return voucher;
+    public void updateVoucher(VoucherModel voucher) throws DataAccessException {
+        VoucherEntity voucherEntity = voucherRepository.getVoucherEntityById(voucher.getId());
+
+        voucherEntity.setActive(voucher.getIsActive() != null ? voucher.getIsActive() : voucherEntity.isActive());
+        voucherRepository.save(voucherEntity);
     }
 
 }
