@@ -90,7 +90,7 @@ public class InactivationService {
 
     private void processInactivateSubYard(String ownerId, String subYardId, String message) {
         cancelAllBookingInSubYardAndSetParentActiveFalseForAllSlots(ownerId, subYardId, message);
-        subYardService.setIsActiveFalseForSubYard(subYardId);
+        subYardService.setInactivationInfoToSubYardEntity(subYardId);
     }
 
     private void cancelAllBookingInSubYardAndSetParentActiveFalseForAllSlots(String ownerId, String subYardId, String message) {
@@ -106,10 +106,13 @@ public class InactivationService {
 
     @Transactional(rollbackFor = InactivateProcessException.class)
     public void deleteSubYard(String ownerId, String subYardId) {
-        subYardFilter(ownerId, subYardId);
+        if (!subYardCustomRepository.getOwnerIdOfSubYard(subYardId).equals(ownerId)) {
+            throw new InactivateProcessException("The owner is not author of this sub-yard.");
+        }
+
         try {
             cancelAllBookingInSubYardAndSetParentActiveFalseForAllSlots(ownerId, subYardId, DELETE_SUB_YARD_REASON);
-            subYardService.setIsDeletedTrueForSubYard(subYardId);
+            subYardService.setDeletedInfoToSubYardEntity(subYardId);
         } catch (Exception ex) {
             throw new InactivateProcessException(ex.getMessage());
         }

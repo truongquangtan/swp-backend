@@ -1,9 +1,12 @@
 package com.swp.backend.api.v1.sub_yard.get_by_owner;
 
 import com.google.gson.Gson;
+import com.swp.backend.entity.YardEntity;
 import com.swp.backend.exception.ErrorResponse;
+import com.swp.backend.repository.YardRepository;
 import com.swp.backend.service.SecurityContextService;
 import com.swp.backend.service.SubYardService;
+import com.swp.backend.service.YardService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContext;
@@ -13,6 +16,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @AllArgsConstructor
 @RestController
 @RequestMapping(value = "api/v1/owners")
@@ -20,6 +25,8 @@ public class GetSubYardDetailApi {
     private Gson gson;
     private SecurityContextService securityContextService;
     private SubYardService subYardService;
+    private YardService yardService;
+    private YardRepository yardRepository;
 
     @GetMapping(value = "/me/yards/{yardId}/sub-yards/{subYardId}")
     public ResponseEntity<String> getSubYardDetailById(@PathVariable("yardId") String yardId, @PathVariable("subYardId") String subYardId) {
@@ -37,6 +44,37 @@ public class GetSubYardDetailApi {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+    @GetMapping(value = "me/yards/{yardId}/sub-yards")
+    public ResponseEntity<String> getSubYardsOfYard(@PathVariable String yardId)
+    {
+        try
+        {
+            SecurityContext context = SecurityContextHolder.getContext();
+            String ownerId = securityContextService.extractUsernameFromContext(context);
+            if(!yardService.getOwnerIdOfYard(yardId).equals(ownerId))
+            {
+                ErrorResponse error = ErrorResponse.builder().message("The owner is not author of this yard").build();
+                return ResponseEntity.badRequest().body(gson.toJson(error));
+            }
+
+            YardEntity yardEntity = yardRepository.findYardEntityByIdAndDeleted(yardId, false);
+            if (yardEntity == null) {
+                ErrorResponse error = ErrorResponse.builder().message("The yard is deleted or not existed").build();
+                return ResponseEntity.badRequest().body(gson.toJson(error));
+            }
+
+            List<GetSubYardDetailResponse> subYardDetailResponses = subYardService.getAllSubYardDetailOfYard(yardId);
+            GetAllSubYardResponse response = GetAllSubYardResponse.builder().message("Get sub-yards successfully")
+                    .subYards(subYardDetailResponses)
+                    .build();
+            return ResponseEntity.ok().body(gson.toJson(response));
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+            return ResponseEntity.internalServerError().body("Error in server: " + ex.getMessage());
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.swp.backend.api.v1.owner.inactivation.inactivate_sub_yard;
+package com.swp.backend.api.v1.sub_yard.get_by_owner;
 
 import com.swp.backend.model.SubYardDetailModel;
 import lombok.AllArgsConstructor;
@@ -8,11 +8,11 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @Data
-public class SubYardsResponse {
+public class GetAllSubYardResponse {
     private String message;
-    private List<SubYardDetailModel> subYards;
+    private List<GetSubYardDetailResponse> subYards;
 }

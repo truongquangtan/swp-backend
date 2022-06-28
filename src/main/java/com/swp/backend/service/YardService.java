@@ -90,6 +90,7 @@ public class YardService {
                         .typeYard(type)
                         .active(true)
                         .createAt(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE))
+                        .updatedAt(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE))
                         .build();
                 subYardEntities.add(subYardEntity);
 
@@ -337,5 +338,10 @@ public class YardService {
         YardEntity yardEntity = yardRepository.findYardEntitiesById(yardId);
         yardEntity.setDeleted(true);
         yardRepository.save(yardEntity);
+    }
+
+    public String getOwnerIdOfYard(String yardId)
+    {
+        return yardRepository.findYardEntityById(yardId).getOwnerId();
     }
 }
