@@ -28,7 +28,7 @@ public class VoucherService {
     public void createVoucher(VoucherModel voucher, String ownerId) throws DataAccessException {
         String voucherCode;
         do {
-            voucherCode = RandomStringUtils.random(10, true, true);
+            voucherCode = RandomStringUtils.random(15, true, true);
         } while (voucherRepository.findVoucherEntityByVoucherCode(voucherCode) != null);
         Timestamp startDate = DateHelper.parseTimestampNonTimeAtZone(voucher.getStartDate());
         Timestamp endDate = DateHelper.parseTimestampNonTimeAtZone(voucher.getEndDate());
