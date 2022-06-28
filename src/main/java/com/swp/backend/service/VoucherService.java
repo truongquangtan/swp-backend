@@ -41,7 +41,7 @@ public class VoucherService {
                 .startDate(startDate)
                 .endDate(endDate)
                 .maxQuantity(voucher.getMaxQuantity())
-                .remainder(voucher.getMaxQuantity())
+                .usages(0)
                 .title(voucher.getTitle())
                 .description(voucher.getDescription())
                 .active(true)
@@ -68,7 +68,7 @@ public class VoucherService {
         Pageable pageable = PageRequest.of((pageValue - 1), offSetValue, Sort.by("createdAt").descending());
         List<VoucherEntity> voucherResults = voucherRepository.findVoucherEntitiesByCreatedByAccountId(ownerId, pageable);
         List<VoucherModel> voucherModels = voucherResults.stream().map((this::convertVoucherModelFromVoucherEntity)).collect(Collectors.toList());
-        return VoucherResponse.builder().voucher(voucherModels).maxResult(maxResult).page(pageValue).build();
+        return VoucherResponse.builder().vouchers(voucherModels).maxResult(maxResult).page(pageValue).build();
     }
 
     public VoucherResponse getAllVoucherForYard(String ownerId, Integer offSet, Integer page) {
@@ -82,7 +82,8 @@ public class VoucherService {
         Pageable pageable = PageRequest.of((pageValue - 1), offSetValue, Sort.by("createdAt").ascending());
         List<VoucherEntity> voucherResults = voucherRepository.findVoucherEntitiesByCreatedByAccountIdAndEndDateAfterAndActive(ownerId, now, true, pageable);
         List<VoucherModel> voucherModels = voucherResults.stream().map((this::convertVoucherModelFromVoucherEntity)).collect(Collectors.toList());
-        return VoucherResponse.builder().voucher(voucherModels).maxResult(maxResult).page(pageValue).build();
+        voucherModels = voucherModels.stream().filter(voucherModel -> voucherModel.getMaxQuantity() > voucherModel.getUsages()).collect(Collectors.toList());
+        return VoucherResponse.builder().vouchers(voucherModels).maxResult(maxResult).page(pageValue).build();
     }
 
     private VoucherModel convertVoucherModelFromVoucherEntity(VoucherEntity voucherEntity) {
@@ -102,7 +103,7 @@ public class VoucherService {
                 .description(voucherEntity.getDescription())
                 .isActive(voucherEntity.isActive())
                 .reference(voucherEntity.getReference())
-                .remainder(voucherEntity.getRemainder())
+                .usages(voucherEntity.getUsages())
                 .type(voucherEntity.getType())
                 .status(status)
                 .maxQuantity(voucherEntity.getMaxQuantity())

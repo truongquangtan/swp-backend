@@ -13,5 +13,5 @@ import java.util.List;
 public class VoucherResponse {
     private int page;
     private int maxResult;
-    private List<VoucherModel> voucher;
+    private List<VoucherModel> vouchers;
 }

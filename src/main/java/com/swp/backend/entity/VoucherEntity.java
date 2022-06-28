@@ -32,8 +32,8 @@ public class VoucherEntity {
     private String voucherCode;
     @Column(name = "max_quantity")
     private int maxQuantity;
-    @Column(name = "remainder_quantity")
-    private int remainder;
+    @Column(name = "usages")
+    private int usages;
     @Column(name = "percent_discount")
     private Integer percentDiscount;
     @Column(name = "amount_discount")
