@@ -27,7 +27,7 @@ public class GetSubYardsOfYardApi {
     private SubYardService subYardService;
     private YardService yardService;
 
-    @GetMapping(value = "yards/{yardId}/subYards")
+    @GetMapping(value = "yards/{yardId}/sub-yards")
     public ResponseEntity<String> getSubYardsOfYard(@PathVariable String yardId)
     {
         try
