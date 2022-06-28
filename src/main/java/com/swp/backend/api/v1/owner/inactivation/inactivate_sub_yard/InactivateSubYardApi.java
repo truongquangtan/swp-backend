@@ -4,15 +4,12 @@ import com.google.gson.Gson;
 import com.swp.backend.exception.ErrorResponse;
 import com.swp.backend.exception.InactivateProcessException;
 import com.swp.backend.model.MessageResponse;
-import com.swp.backend.model.SubYardDetailModel;
 import com.swp.backend.service.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @AllArgsConstructor

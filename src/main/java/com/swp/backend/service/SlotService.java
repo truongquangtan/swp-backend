@@ -18,6 +18,7 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -38,7 +39,10 @@ public class SlotService {
             List<Slot> allSlots = getAllSlotsInSubYardByDate(subYardId, queryDate);
             List<Slot> bookedSlots = getBookedSlotsInSubYardByDate(subYardId, queryDate);
 
-            return updateBookedStateOfAllSlots(allSlots, bookedSlots);
+            allSlots = updateBookedStateOfAllSlots(allSlots, bookedSlots);
+            Collections.sort(allSlots);
+
+            return allSlots;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
