@@ -168,15 +168,12 @@ public class CancelBookingService {
         String destination = user.getEmail();
         MatchModel match = matchService.getMatchModelFromBookingEntity(booking);
         String reasonForUser = "";
-        if(reason.equals(InactivationService.INACTIVE_SUB_YARD_REASON)
-        || reason.equals(InactivationService.INACTIVE_YARD_REASON)
-        || reason.equals(InactivationService.DELETE_SUB_YARD_REASON)
-        || reason.equals(InactivationService.DELETE_YARD_REASON))
-        {
+        if (reason.equals(InactivationService.INACTIVE_SUB_YARD_REASON)
+                || reason.equals(InactivationService.INACTIVE_YARD_REASON)
+                || reason.equals(InactivationService.DELETE_SUB_YARD_REASON)
+                || reason.equals(InactivationService.DELETE_YARD_REASON)) {
             reasonForUser = "The yard is not available";
-        }
-        else if(reason.equals(InactivationService.INACTIVE_SLOT_REASON))
-        {
+        } else if (reason.equals(InactivationService.INACTIVE_SLOT_REASON)) {
             reasonForUser = "The slot is not available";
         }
         emailService.sendHtmlTemplateMessage(destination, "Your booking is canceled", getHtmlTemplateMailToUser(match, reasonForUser));

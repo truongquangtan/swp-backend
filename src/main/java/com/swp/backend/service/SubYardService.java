@@ -29,6 +29,7 @@ public class SubYardService {
     private TypeYardRepository typeYardRepository;
     private SlotRepository slotRepository;
     private YardRepository yardRepository;
+
     private List<SubYardModel> getListSubYardModelFromQueriedList(List<?> queriedSubYards) {
         return queriedSubYards.stream().map(object -> {
             if (object instanceof SubYardEntity) {
@@ -49,12 +50,10 @@ public class SubYardService {
         }).collect(Collectors.toList());
     }
 
-    public List<GetSubYardDetailResponse> getAllSubYardDetailOfYard(String yardId)
-    {
+    public List<GetSubYardDetailResponse> getAllSubYardDetailOfYard(String yardId) {
         List<GetSubYardDetailResponse> subYardDetailResponses = new ArrayList<>();
         List<SubYardEntity> subYardEntities = findAllSubYardByParentId(yardId);
-        for(SubYardEntity subYardEntity : subYardEntities)
-        {
+        for (SubYardEntity subYardEntity : subYardEntities) {
             subYardDetailResponses.add(processGetSubYardDetailResponseByOwner(subYardEntity.getId()));
         }
         return subYardDetailResponses;

@@ -15,8 +15,7 @@ public class Slot implements Comparable<Slot> {
     private boolean isBooked = true;
 
     @Override
-    public int compareTo(Slot anotherSlot)
-    {
+    public int compareTo(Slot anotherSlot) {
         return this.startTime.compareTo(anotherSlot.getStartTime());
     }
 

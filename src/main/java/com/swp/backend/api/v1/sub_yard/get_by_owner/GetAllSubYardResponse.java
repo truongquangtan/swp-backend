@@ -1,6 +1,5 @@
 package com.swp.backend.api.v1.sub_yard.get_by_owner;
 
-import com.swp.backend.model.SubYardDetailModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

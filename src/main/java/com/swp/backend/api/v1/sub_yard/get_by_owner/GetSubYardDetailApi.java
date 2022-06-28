@@ -46,15 +46,13 @@ public class GetSubYardDetailApi {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
+
     @GetMapping(value = "me/yards/{yardId}/sub-yards")
-    public ResponseEntity<String> getSubYardsOfYard(@PathVariable String yardId)
-    {
-        try
-        {
+    public ResponseEntity<String> getSubYardsOfYard(@PathVariable String yardId) {
+        try {
             SecurityContext context = SecurityContextHolder.getContext();
             String ownerId = securityContextService.extractUsernameFromContext(context);
-            if(!yardService.getOwnerIdOfYard(yardId).equals(ownerId))
-            {
+            if (!yardService.getOwnerIdOfYard(yardId).equals(ownerId)) {
                 ErrorResponse error = ErrorResponse.builder().message("The owner is not author of this yard").build();
                 return ResponseEntity.badRequest().body(gson.toJson(error));
             }
@@ -70,9 +68,7 @@ public class GetSubYardDetailApi {
                     .subYards(subYardDetailResponses)
                     .build();
             return ResponseEntity.ok().body(gson.toJson(response));
-        }
-        catch(Exception ex)
-        {
+        } catch (Exception ex) {
             ex.printStackTrace();
             return ResponseEntity.internalServerError().body("Error in server: " + ex.getMessage());
         }

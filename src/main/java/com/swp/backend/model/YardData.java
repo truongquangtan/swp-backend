@@ -17,10 +17,12 @@ public class YardData {
     private String openAt;
     private String closeAt;
     private Integer score;
+    private String ownerId;
     private List<String> images;
     private List<SubYardModel> subYards;
 
     public YardData(YardModel yardModel, List<SubYardModel> subYards) {
+        this.ownerId = yardModel.getOwnerId();
         this.id = yardModel.getId();
         this.address = yardModel.getAddress();
         this.closeAt = yardModel.getCloseAt();
