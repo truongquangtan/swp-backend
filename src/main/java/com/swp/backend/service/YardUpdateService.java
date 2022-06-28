@@ -104,8 +104,9 @@ public class YardUpdateService {
                 picture.setImage(firebaseStoreService.uploadFile(newImages[i]));
                 yardPictureRepository.save(picture);
             }
-        } catch (IOException ex)
+        } catch (Exception ex)
         {
+            ex.printStackTrace();
             throw new RuntimeException(ex.getMessage());
         }
     }
