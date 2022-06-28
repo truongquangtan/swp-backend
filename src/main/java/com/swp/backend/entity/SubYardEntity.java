@@ -25,7 +25,7 @@ public class SubYardEntity {
     private String parentYard;
     @Column(name = "type_yard")
     private int typeYard;
-    @Column(name = "create_at")
+    @Column(name = "created_at")
     private Timestamp createAt;
     @Column(name = "is_active")
     @Builder.Default
@@ -38,4 +38,6 @@ public class SubYardEntity {
     @Column(name = "is_deleted")
     @Builder.Default
     private boolean deleted = false;
+    @Column(name = "updated_at")
+    private Timestamp updatedAt;
 }

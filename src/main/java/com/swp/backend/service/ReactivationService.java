@@ -64,7 +64,7 @@ public class ReactivationService {
 
     private void processReactivateSubYard(String subYardId) {
         setParentActiveForAllSlotsInSubYard(subYardId);
-        subYardService.setIsActiveTrueForSubYard(subYardId);
+        subYardService.setActivatationInfoToSubYardEntity(subYardId);
     }
 
     private void setParentActiveForAllSlotsInSubYard(String subYardId) {

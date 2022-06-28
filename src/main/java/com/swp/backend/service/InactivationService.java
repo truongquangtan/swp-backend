@@ -90,7 +90,7 @@ public class InactivationService {
 
     private void processInactivateSubYard(String ownerId, String subYardId, String message) {
         cancelAllBookingInSubYardAndSetParentActiveFalseForAllSlots(ownerId, subYardId, message);
-        subYardService.setIsActiveFalseForSubYard(subYardId);
+        subYardService.setInactivationInfoToSubYardEntity(subYardId);
     }
 
     private void cancelAllBookingInSubYardAndSetParentActiveFalseForAllSlots(String ownerId, String subYardId, String message) {
@@ -112,7 +112,7 @@ public class InactivationService {
 
         try {
             cancelAllBookingInSubYardAndSetParentActiveFalseForAllSlots(ownerId, subYardId, DELETE_SUB_YARD_REASON);
-            subYardService.setIsDeletedTrueForSubYard(subYardId);
+            subYardService.setDeletedInfoToSubYardEntity(subYardId);
         } catch (Exception ex) {
             throw new InactivateProcessException(ex.getMessage());
         }

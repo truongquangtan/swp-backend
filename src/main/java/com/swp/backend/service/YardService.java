@@ -90,6 +90,7 @@ public class YardService {
                         .typeYard(type)
                         .active(true)
                         .createAt(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE))
+                        .updatedAt(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE))
                         .build();
                 subYardEntities.add(subYardEntity);
 

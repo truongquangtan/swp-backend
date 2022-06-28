@@ -12,6 +12,7 @@ import com.swp.backend.repository.SlotRepository;
 import com.swp.backend.repository.SubYardRepository;
 import com.swp.backend.repository.TypeYardRepository;
 import com.swp.backend.repository.YardRepository;
+import com.swp.backend.utils.DateHelper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -122,9 +123,10 @@ public class SubYardService {
     }
 
     @Transactional
-    public void setIsActiveFalseForSubYard(String subYardId) {
+    public void setInactivationInfoToSubYardEntity(String subYardId) {
         SubYardEntity subYardEntity = subYardRepository.getSubYardEntitiesById(subYardId);
         subYardEntity.setActive(false);
+        subYardEntity.setUpdatedAt(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE));
         subYardRepository.save(subYardEntity);
     }
 
@@ -136,9 +138,10 @@ public class SubYardService {
     }
 
     @Transactional
-    public void setIsActiveTrueForSubYard(String subYardId) {
+    public void setActivatationInfoToSubYardEntity(String subYardId) {
         SubYardEntity subYardEntity = subYardRepository.getSubYardEntitiesById(subYardId);
         subYardEntity.setActive(true);
+        subYardEntity.setUpdatedAt(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE));
         subYardRepository.save(subYardEntity);
     }
 
@@ -150,9 +153,10 @@ public class SubYardService {
     }
 
     @Transactional
-    public void setIsDeletedTrueForSubYard(String subYardId) {
+    public void setDeletedInfoToSubYardEntity(String subYardId) {
         SubYardEntity subYardEntity = subYardRepository.getSubYardEntitiesById(subYardId);
         subYardEntity.setDeleted(true);
+        subYardEntity.setUpdatedAt(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE));
         subYardRepository.save(subYardEntity);
     }
 

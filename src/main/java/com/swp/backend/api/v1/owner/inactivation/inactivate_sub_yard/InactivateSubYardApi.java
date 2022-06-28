@@ -19,8 +19,6 @@ public class InactivateSubYardApi {
     private ReactivationService reactivationService;
     private InactivationService inactivationService;
     private SecurityContextService securityContextService;
-    private SubYardService subYardService;
-    private YardService yardService;
 
     @PutMapping(value = "sub-yards/{subYardId}/deactivate")
     public ResponseEntity<String> inactivateSubYard(@PathVariable(name = "subYardId") String subYardId) {
