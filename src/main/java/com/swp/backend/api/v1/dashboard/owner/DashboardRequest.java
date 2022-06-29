@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class dashboardRequest {
+public class DashboardRequest {
     private String startTime;
     private String endTime;
 }
