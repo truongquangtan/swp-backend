@@ -1,6 +1,7 @@
 package com.swp.backend.myrepository;
 
-import com.swp.backend.api.v1.dashboard.owner.YardBookingStatistic;
+import com.swp.backend.constance.BookingStatus;
+import com.swp.backend.constance.RoleProperties;
 import com.swp.backend.model.YardStatisticModel;
 import com.swp.backend.utils.DateHelper;
 import org.springframework.stereotype.Repository;
@@ -35,27 +36,29 @@ public class DashboardRepository {
             {
                 nativeQuery = "SELECT b.big_yard_id, y.name, SUM(b.price)" +
                         " FROM booking b INNER JOIN yards y ON b.big_yard_id = y.id" +
-                        " WHERE b.status = 'SUCCESS' AND (b.date >= ?1 AND b.date <= ?2)" +
-                        " GROUP BY b.big_yard_id, y.name" +
-                        " HAVING b.big_yard_id IN (SELECT id FROM yards WHERE owner_id = ?3)";
+                        " WHERE b.status = ?1 AND (b.date >= ?2 AND b.date <= ?3) AND y.owner_id=?4" +
+                        " GROUP BY b.big_yard_id, y.name";
                 query = entityManager.createNativeQuery(nativeQuery);
-                query.setParameter(1, startDate);
-                query.setParameter(2, endDate);
-                query.setParameter(3, ownerId);
+                query.setParameter(1, BookingStatus.SUCCESS);
+                query.setParameter(2, startDate);
+                query.setParameter(3, endDate);
+                query.setParameter(4, ownerId);
             }
             else
             {
                 nativeQuery = "SELECT b.big_yard_id, y.name, SUM(b.price)" +
                         " FROM booking b INNER JOIN slots s ON b.slot_id = s.id INNER JOIN yards y ON b.big_yard_id = y.id" +
-                        " WHERE b.status = 'SUCCESS' AND (b.date >= ?1 AND (b.date < ?2 OR (b.date = ?2 AND s.end_time < ?3)))" +
-                        " GROUP BY b.big_yard_id, y.name" +
-                        " HAVING b.big_yard_id IN (SELECT id FROM yards WHERE owner_id = ?4)";
+                        " WHERE b.status = ?1 AND (b.date >= ?2 AND (b.date < ?3 OR (b.date = ?3 AND s.end_time < ?4)))" +
+                                                    " AND y.owner_id = ?5" +
+                        " GROUP BY b.big_yard_id, y.name";
                 query = entityManager.createNativeQuery(nativeQuery);
-                query.setParameter(1, startDate);
-                query.setParameter(2, endDate);
-                query.setParameter(3, timeNow);
-                query.setParameter(4, ownerId);
+                query.setParameter(1, BookingStatus.SUCCESS);
+                query.setParameter(2, startDate);
+                query.setParameter(3, today);
+                query.setParameter(4, timeNow);
+                query.setParameter(5, ownerId);
             }
+
             List<?> queriedList = query.getResultList();
             if(queriedList == null)
             {
@@ -72,46 +75,28 @@ public class DashboardRepository {
             return yardStatisticModels;
         } catch (Exception ex)
         {
+            ex.printStackTrace();
             return null;
         }
     }
 
-    //Not implemented
     public List<YardStatisticModel> getNumberOfYardBookingsForOwner(String ownerId, Timestamp startDate, Timestamp endDate)
     {
         Query query = null;
         try
         {
-            LocalDate today = LocalDate.now(ZoneId.of(DateHelper.VIETNAM_ZONE));
-            Timestamp todayInTimestamp = Timestamp.valueOf(today.toString() + " 00:00:00");
-            LocalTime timeNow = LocalTime.now(ZoneId.of(DateHelper.VIETNAM_ZONE));
-
-            String nativeQuery;
-            if(endDate.compareTo(todayInTimestamp) < 0)
-            {
-                nativeQuery = "SELECT b.big_yard_id, y.name, SUM(b.price)" +
-                        " FROM booking b INNER JOIN yards y ON b.big_yard_id = y.id" +
-                        " WHERE b.status = 'SUCCESS' AND (b.date >= ?1 AND b.date <= ?2)" +
-                        " GROUP BY b.big_yard_id, y.name" +
-                        " HAVING b.big_yard_id IN (SELECT id FROM yards WHERE owner_id = ?3)";
-                query = entityManager.createNativeQuery(nativeQuery);
-                query.setParameter(1, startDate);
-                query.setParameter(2, endDate);
-                query.setParameter(3, ownerId);
-            }
-            else
-            {
-                nativeQuery = "SELECT b.big_yard_id, y.name, SUM(b.price)" +
-                        " FROM booking b INNER JOIN slots s ON b.slot_id = s.id INNER JOIN yards y ON b.big_yard_id = y.id" +
-                        " WHERE b.status = 'SUCCESS' AND (b.date >= ?1 AND (b.date < ?2 OR (b.date = ?2 AND s.end_time < ?3)))" +
-                        " GROUP BY b.big_yard_id, y.name" +
-                        " HAVING b.big_yard_id IN (SELECT id FROM yards WHERE owner_id = ?4)";
-                query = entityManager.createNativeQuery(nativeQuery);
-                query.setParameter(1, startDate);
-                query.setParameter(2, endDate);
-                query.setParameter(3, timeNow);
-                query.setParameter(4, ownerId);
-            }
+            String nativeQuery = "SELECT b.big_yard_id, y.name, COUNT(*) " +
+                    "FROM booking_history INNER JOIN booking b ON booking_history.booking_id = b.id " +
+                    "                     INNER JOIN yards y ON b.big_yard_id = y.id " +
+                    "WHERE booking_history.booking_status = ?1 " +
+                    "    AND (b.date >= ?2 AND b.date <= ?3) " +
+                    "    AND y.owner_id = ?4 " +
+                    "GROUP BY b.big_yard_id, y.name";
+            query = entityManager.createNativeQuery(nativeQuery);
+            query.setParameter(1, BookingStatus.SUCCESS);
+            query.setParameter(2, startDate);
+            query.setParameter(3, endDate);
+            query.setParameter(4, ownerId);
             List<?> queriedList = query.getResultList();
             if(queriedList == null)
             {
@@ -122,18 +107,62 @@ public class DashboardRepository {
                 Object[] objects = (Object[]) queriedObject;
                 return YardStatisticModel.builder().yardId((String) objects[0])
                         .yardName((String) objects[1])
-                        .totalIncome(((BigInteger) objects[2]).longValue())
+                        .numberOfBooking(((BigInteger) objects[2]).longValue())
                         .build();
             }).collect(Collectors.toList());
             return yardStatisticModels;
         } catch (Exception ex)
         {
+            ex.printStackTrace();
             return null;
         }
     }
 
-    //Not implemented
     public List<YardStatisticModel> getNumberOfYardBookingCanceledForOwner(String ownerId, Timestamp startDate, Timestamp endDate)
+    {
+        Query query = null;
+        try
+        {
+            String nativeQuery;
+            nativeQuery = "SELECT b.big_yard_id, y.name, COUNT(*) " +
+                    "FROM booking_history INNER JOIN booking b ON booking_history.booking_id = b.id " +
+                    "                     INNER JOIN yards y ON b.big_yard_id = y.id " +
+                    "                     INNER JOIN accounts ON booking_history.created_by = accounts.id " +
+                    "                     INNER JOIN roles r on accounts.role_id = r.id " +
+                    "WHERE booking_history.booking_status = ?1" +
+                            " AND y.owner_id = ?2" +
+                            " AND r.role_name = ?3" +
+                            " AND b.date >= ?4 AND b.date <= ?5 " +
+                    "GROUP BY b.big_yard_id, y.name";
+            query = entityManager.createNativeQuery(nativeQuery);
+            query.setParameter(1, BookingStatus.CANCELED);
+            query.setParameter(2, ownerId);
+            query.setParameter(3, RoleProperties.ROLE_USER);
+            query.setParameter(4, startDate);
+            query.setParameter(5, endDate);
+
+            List<?> queriedList = query.getResultList();
+            if(queriedList == null)
+            {
+                return null;
+            }
+
+            List<YardStatisticModel> yardStatisticModels = queriedList.stream().map(queriedObject -> {
+                Object[] objects = (Object[]) queriedObject;
+                return YardStatisticModel.builder().yardId((String) objects[0])
+                        .yardName((String) objects[1])
+                        .numberOfBookingCanceled(((BigInteger) objects[2]).longValue())
+                        .build();
+            }).collect(Collectors.toList());
+            return yardStatisticModels;
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    public List<YardStatisticModel> getNumberOfYardBookingPlayedForOwner(String ownerId, Timestamp startDate, Timestamp endDate)
     {
         Query query = null;
         try
@@ -145,29 +174,33 @@ public class DashboardRepository {
             String nativeQuery;
             if(endDate.compareTo(todayInTimestamp) < 0)
             {
-                nativeQuery = "SELECT b.big_yard_id, y.name, SUM(b.price)" +
-                        " FROM booking b INNER JOIN yards y ON b.big_yard_id = y.id" +
-                        " WHERE b.status = 'SUCCESS' AND (b.date >= ?1 AND b.date <= ?2)" +
-                        " GROUP BY b.big_yard_id, y.name" +
-                        " HAVING b.big_yard_id IN (SELECT id FROM yards WHERE owner_id = ?3)";
+                nativeQuery = "SELECT b.big_yard_id, y.name, COUNT(*) " +
+                        "FROM booking b INNER JOIN yards y ON b.big_yard_id = y.id " +
+                        " WHERE b.status = ?1 " +
+                        "        AND (b.date >= ?2 AND b.date <= ?3) " +
+                        "        AND y.owner_id = ?4 " +
+                        "GROUP BY b.big_yard_id, y.name;";
                 query = entityManager.createNativeQuery(nativeQuery);
-                query.setParameter(1, startDate);
-                query.setParameter(2, endDate);
-                query.setParameter(3, ownerId);
+                query.setParameter(1, BookingStatus.SUCCESS);
+                query.setParameter(2, startDate);
+                query.setParameter(3, endDate);
+                query.setParameter(4, ownerId);
             }
             else
             {
-                nativeQuery = "SELECT b.big_yard_id, y.name, SUM(b.price)" +
+                nativeQuery = "SELECT b.big_yard_id, y.name, COUNT(*)" +
                         " FROM booking b INNER JOIN slots s ON b.slot_id = s.id INNER JOIN yards y ON b.big_yard_id = y.id" +
-                        " WHERE b.status = 'SUCCESS' AND (b.date >= ?1 AND (b.date < ?2 OR (b.date = ?2 AND s.end_time < ?3)))" +
-                        " GROUP BY b.big_yard_id, y.name" +
-                        " HAVING b.big_yard_id IN (SELECT id FROM yards WHERE owner_id = ?4)";
+                        " WHERE b.status = ?1 AND (b.date >= ?2 AND (b.date < ?3 OR (b.date = ?3 AND s.end_time < ?4)))" +
+                        " AND y.owner_id = ?5" +
+                        " GROUP BY b.big_yard_id, y.name";
                 query = entityManager.createNativeQuery(nativeQuery);
-                query.setParameter(1, startDate);
-                query.setParameter(2, endDate);
-                query.setParameter(3, timeNow);
-                query.setParameter(4, ownerId);
+                query.setParameter(1, BookingStatus.SUCCESS);
+                query.setParameter(2, startDate);
+                query.setParameter(3, todayInTimestamp);
+                query.setParameter(4, timeNow);
+                query.setParameter(5, ownerId);
             }
+
             List<?> queriedList = query.getResultList();
             if(queriedList == null)
             {
@@ -177,13 +210,15 @@ public class DashboardRepository {
             List<YardStatisticModel> yardStatisticModels = queriedList.stream().map(queriedObject -> {
                 Object[] objects = (Object[]) queriedObject;
                 return YardStatisticModel.builder().yardId((String) objects[0])
-                        .yardName((String) objects[1])
-                        .totalIncome(((BigInteger) objects[2]).longValue())
-                        .build();
+                                                    .yardName((String) objects[1])
+                                                    .numberOfBookingPlayed(((BigInteger) objects[2]).longValue())
+                                                    .build();
             }).collect(Collectors.toList());
+
             return yardStatisticModels;
         } catch (Exception ex)
         {
+            ex.printStackTrace();
             return null;
         }
     }

@@ -13,8 +13,9 @@ public class YardStatisticModel {
     private String yardId;
     private String ownerId;
     private String yardName;
-    private int numberOfBooking;
-    private int numberOfBookingCanceled;
+    private long numberOfBooking;
+    private long numberOfBookingCanceled;
+    private long numberOfBookingPlayed;
     @Builder.Default
     private int businessContributionPercentage = 0;
     @Builder.Default
