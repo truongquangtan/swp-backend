@@ -23,6 +23,7 @@ public class DashboardApi {
     private Gson gson;
     private DashboardService dashboardService;
     private SecurityContextService securityContextService;
+    public static final int ADD_IN_MAX_BOOKING_FOR_BETTER_DISPLAY = 15;
 
     @PostMapping("dashboard")
     public ResponseEntity<String> getDashboardStatistic(@RequestBody(required = false) DashboardRequest request)
@@ -42,7 +43,7 @@ public class DashboardApi {
         response = DashboardResponse.builder().message("Get statistic successfully")
                 .yardStatistic(yardStatistic)
                 .bookingStatisticByTime(numberOfBookingsByTime)
-                .maxOfBooking(maxOfBookings)
+                .maxOfBooking(maxOfBookings + ADD_IN_MAX_BOOKING_FOR_BETTER_DISPLAY)
                 .build();
         return ResponseEntity.ok().body(gson.toJson(response));
     }
