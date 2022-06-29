@@ -2,12 +2,17 @@ package com.swp.backend.api.v1.voucher;
 
 import com.google.gson.Gson;
 import com.swp.backend.api.v1.owner.voucher.VoucherResponse;
+import com.swp.backend.entity.VoucherEntity;
+import com.swp.backend.exception.ApplyVoucherException;
 import com.swp.backend.exception.ErrorResponse;
+import com.swp.backend.model.BookingApplyVoucherModel;
 import com.swp.backend.model.RequestPageModel;
 import com.swp.backend.service.VoucherService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1")
@@ -29,6 +34,23 @@ public class VoucherRestApi {
         } catch (Exception exception) {
             ErrorResponse errorResponse = ErrorResponse.builder().stack(exception.getMessage()).message("Server busy temp can't create voucher.").build();
             return ResponseEntity.internalServerError().body(gson.toJson(errorResponse));
+        }
+    }
+
+    @PostMapping("vouchers/yard/{yardId}")
+    public ResponseEntity<String> applyVoucherForBooking(@RequestBody(required = false) ApplyVoucherRequest applyVoucherRequest, @PathVariable String yardId)  {
+        try {
+            if(applyVoucherRequest == null){
+                ErrorResponse errorResponse = ErrorResponse.builder().message("Missing body.").build();
+                return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
+            }
+            VoucherEntity voucherApply = voucherService.getValidVoucherByVoucherCodeAndYardId(applyVoucherRequest.getVoucherCode(), yardId);
+            List<BookingApplyVoucherModel> bookingApplyVoucherList = voucherService.calculationPriceApplyVoucher(applyVoucherRequest.getBookingList(), voucherApply);
+            ApplyVoucherResponse applyVoucherResponse = ApplyVoucherResponse.builder().voucherId(voucherApply.getId()).voucherCode(voucherApply.getVoucherCode()).bookingList(bookingApplyVoucherList).build();
+            return ResponseEntity.ok(gson.toJson(applyVoucherResponse));
+        }catch (ApplyVoucherException applyVoucherException){
+            ErrorResponse errorResponse = ErrorResponse.builder().message(applyVoucherException.getErrorMessage()).stack(applyVoucherException.getStack()).build();
+            return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
         }
     }
 }
