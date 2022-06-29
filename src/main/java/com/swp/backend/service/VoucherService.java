@@ -141,13 +141,15 @@ public class VoucherService {
         }
         if(typeVoucher.equalsIgnoreCase(CASH)){
             return listBooking.stream().map(booking -> {
+                int oldPrice = booking.getPrice();
+                int newPrice = oldPrice - voucherApply.getAmountDiscount();
                 return BookingApplyVoucherModel.builder()
                         .slotId(booking.getSlotId())
                         .date(booking.getDate())
                         .refSubYard(booking.getRefSubYard())
                         .price(booking.getPrice())
-                        .newPrice(booking.getPrice() - voucherApply.getAmountDiscount())
-                        .discountPrice(voucherApply.getAmountDiscount())
+                        .newPrice(Math.max(newPrice, 0))
+                        .discountPrice(Math.max(oldPrice, voucherApply.getAmountDiscount()))
                         .refSubYard(booking.getRefSubYard())
                         .build();
             }).collect(Collectors.toList());
