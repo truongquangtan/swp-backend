@@ -3,6 +3,7 @@ package com.swp.backend.api.v1.dashboard.owner;
 import com.google.gson.Gson;
 import com.swp.backend.model.YardStatisticModel;
 import com.swp.backend.myrepository.DashboardRepository;
+import com.swp.backend.service.DashboardService;
 import com.swp.backend.service.SecurityContextService;
 import com.swp.backend.utils.DateHelper;
 import lombok.AllArgsConstructor;
@@ -20,20 +21,25 @@ import java.util.List;
 @AllArgsConstructor
 public class DashboardApi {
     private Gson gson;
-    private DashboardRepository dashboardRepository;
+    private DashboardService dashboardService;
     private SecurityContextService securityContextService;
 
     @PostMapping("dashboard")
     public ResponseEntity<String> getDashboardStatistic(@RequestBody(required = false) DashboardRequest request)
     {
-        List<YardStatisticModel> result;
+        DashboardResponse response;
         Timestamp startDate = Timestamp.valueOf(request.getStartTime() + " 00:00:00");
         Timestamp endDate = Timestamp.valueOf(request.getEndTime() + " 00:00:00");
 
         SecurityContext context = SecurityContextHolder.getContext();
         String ownerId = securityContextService.extractUsernameFromContext(context);
 
-        result = dashboardRepository.getYardBookingTotalIncomeForOwner(ownerId, startDate, endDate);
-        return ResponseEntity.ok().body(gson.toJson(result));
+        var yardStatistic = dashboardService.processGetAllInformationOfYardStatisticModel(ownerId, startDate, endDate);
+        var numberOfBookingsByTime = dashboardService.getBookingByTimeStatistic(ownerId, startDate, endDate).values();
+        response = DashboardResponse.builder().message("Get statistic successfully")
+                .yardStatistic(yardStatistic)
+                .bookingStatisticByTime(numberOfBookingsByTime)
+                .build();
+        return ResponseEntity.ok().body(gson.toJson(response));
     }
 }

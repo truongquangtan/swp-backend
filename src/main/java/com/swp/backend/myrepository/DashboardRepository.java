@@ -2,6 +2,7 @@ package com.swp.backend.myrepository;
 
 import com.swp.backend.constance.BookingStatus;
 import com.swp.backend.constance.RoleProperties;
+import com.swp.backend.model.SlotStatistic;
 import com.swp.backend.model.YardStatisticModel;
 import com.swp.backend.utils.DateHelper;
 import org.springframework.stereotype.Repository;
@@ -12,8 +13,10 @@ import javax.persistence.Query;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.sql.Time;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -107,7 +110,7 @@ public class DashboardRepository {
                 Object[] objects = (Object[]) queriedObject;
                 return YardStatisticModel.builder().yardId((String) objects[0])
                         .yardName((String) objects[1])
-                        .numberOfBooking(((BigInteger) objects[2]).longValue())
+                        .numberOfBookings(((BigInteger) objects[2]).longValue())
                         .build();
             }).collect(Collectors.toList());
             return yardStatisticModels;
@@ -216,6 +219,48 @@ public class DashboardRepository {
             }).collect(Collectors.toList());
 
             return yardStatisticModels;
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+    public List<SlotStatistic> getNumberOfBookingInSlotForOwner(String ownerId, Timestamp startDate, Timestamp endDate)
+    {
+        Query query = null;
+        try
+        {
+            String nativeQuery = "SELECT start_time, end_time, COUNT(*)" +
+                    " FROM booking INNER JOIN slots ON booking.slot_id = slots.id " +
+                    "            INNER JOIN yards y ON booking.big_yard_id = y.id " +
+                    " WHERE booking.status = ?1" +
+                    "        AND (booking.date >= ?2 AND booking.date <= ?3) " +
+                    "        AND y.owner_id = ?4 " +
+                    " GROUP BY slots.start_time, slots.end_time" +
+                    " ORDER BY start_time";
+
+            query = entityManager.createNativeQuery(nativeQuery);
+            query.setParameter(1, BookingStatus.SUCCESS);
+            query.setParameter(2, startDate);
+            query.setParameter(3, endDate);
+            query.setParameter(4, ownerId);
+
+            List<?> queriedList = query.getResultList();
+            if(queriedList == null)
+            {
+                return null;
+            }
+
+            List<SlotStatistic> slots = queriedList.stream().map(queriedObject -> {
+                Object[] objects = (Object[]) queriedObject;
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+                return SlotStatistic.builder().startTime(((Time) objects[0]).toLocalTime().format(formatter))
+                                            .endTime(((Time) objects[1]).toLocalTime().format(formatter))
+                                            .numberOfBooking(((BigInteger) objects[2]).longValue())
+                                            .build();
+            }).collect(Collectors.toList());
+
+            return slots;
         } catch (Exception ex)
         {
             ex.printStackTrace();

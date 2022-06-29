@@ -13,7 +13,7 @@ public class YardStatisticModel {
     private String yardId;
     private String ownerId;
     private String yardName;
-    private long numberOfBooking;
+    private long numberOfBookings;
     private long numberOfBookingCanceled;
     private long numberOfBookingPlayed;
     @Builder.Default
