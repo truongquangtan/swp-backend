@@ -36,9 +36,13 @@ public class DashboardApi {
 
         var yardStatistic = dashboardService.processGetAllInformationOfYardStatisticModel(ownerId, startDate, endDate);
         var numberOfBookingsByTime = dashboardService.getBookingByTimeStatistic(ownerId, startDate, endDate).values();
+        long maxOfBookings = 0;
+        for(YardStatisticModel yardStatisticModel : yardStatistic)
+            maxOfBookings = maxOfBookings > yardStatisticModel.getNumberOfBookings() ? maxOfBookings : yardStatisticModel.getNumberOfBookings();
         response = DashboardResponse.builder().message("Get statistic successfully")
                 .yardStatistic(yardStatistic)
                 .bookingStatisticByTime(numberOfBookingsByTime)
+                .maxOfBooking(maxOfBookings)
                 .build();
         return ResponseEntity.ok().body(gson.toJson(response));
     }

@@ -17,4 +17,5 @@ public class DashboardResponse {
     private String message;
     private List<YardStatisticModel> yardStatistic;
     private Collection bookingStatisticByTime;
+    private long maxOfBooking;
 }
