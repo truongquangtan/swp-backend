@@ -22,6 +22,7 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
 import static com.swp.backend.constance.VoucherProperties.*;
 
 @Service
@@ -122,34 +123,41 @@ public class VoucherService {
         voucherRepository.save(voucherEntity);
     }
 
-    public List<BookingApplyVoucherModel> calculationPriceApplyVoucher(List<BookingModel> listBooking, VoucherEntity voucherApply) throws ApplyVoucherException{
+    public List<BookingApplyVoucherModel> calculationPriceApplyVoucher(List<BookingModel> listBooking, VoucherEntity voucherApply) throws ApplyVoucherException {
         String typeVoucher = voucherApply.getType();
-        if(voucherApply.getType().equalsIgnoreCase(PERCENT)){
-                return listBooking.stream().map(booking -> {
-                    float newPrice = ((voucherApply.getPercentDiscount().floatValue()) * booking.getPrice() ) / 100;
-                    int newPriceValue = Math.round(newPrice);
-                    return BookingApplyVoucherModel.builder()
-                            .slotId(booking.getSlotId())
-                            .date(booking.getDate())
-                            .refSubYard(booking.getRefSubYard())
-                            .price(booking.getPrice())
-                            .newPrice(newPriceValue)
-                            .discountPrice(booking.getPrice() - newPriceValue)
-                            .refSubYard(booking.getRefSubYard())
-                            .build();
-                }).collect(Collectors.toList());
-        }
-        if(typeVoucher.equalsIgnoreCase(CASH)){
+        if (voucherApply.getType().equalsIgnoreCase(PERCENT)) {
+            int numberOfBooking = listBooking.size();
+            float discountPercentPerBooking = voucherApply.getPercentDiscount().floatValue() / numberOfBooking;
+
             return listBooking.stream().map(booking -> {
-                int oldPrice = booking.getPrice();
-                int newPrice = oldPrice - voucherApply.getAmountDiscount();
+
+                float discountAmount = booking.getPrice() * discountPercentPerBooking / 100;
+                float newPrice = booking.getPrice() - discountAmount;
                 return BookingApplyVoucherModel.builder()
                         .slotId(booking.getSlotId())
                         .date(booking.getDate())
                         .refSubYard(booking.getRefSubYard())
                         .price(booking.getPrice())
                         .newPrice(Math.max(newPrice, 0))
-                        .discountPrice(Math.max(oldPrice, voucherApply.getAmountDiscount()))
+                        .discountPrice(discountAmount)
+                        .refSubYard(booking.getRefSubYard())
+                        .build();
+            }).collect(Collectors.toList());
+        }
+        if (typeVoucher.equalsIgnoreCase(CASH)) {
+            int numberOfBooking = listBooking.size();
+            float discountPerBooking = voucherApply.getAmountDiscount().floatValue() / numberOfBooking;
+            return listBooking.stream().map(booking -> {
+                float oldPrice = booking.getPrice();
+                float newPrice = oldPrice - discountPerBooking;
+
+                return BookingApplyVoucherModel.builder()
+                        .slotId(booking.getSlotId())
+                        .date(booking.getDate())
+                        .refSubYard(booking.getRefSubYard())
+                        .price(booking.getPrice())
+                        .newPrice(Math.max(newPrice, 0))
+                        .discountPrice(Math.min(oldPrice, discountPerBooking))
                         .refSubYard(booking.getRefSubYard())
                         .build();
             }).collect(Collectors.toList());
@@ -158,20 +166,20 @@ public class VoucherService {
     }
 
     public VoucherEntity getValidVoucherByVoucherCodeAndYardId(String voucherCode, String yardId) throws ApplyVoucherException {
-        if(voucherCode == null || voucherCode.trim().length() == 0){
+        if (voucherCode == null || voucherCode.trim().length() == 0) {
             throw ApplyVoucherException.builder().errorMessage("Voucher code is not valid.").build();
         }
         VoucherEntity voucherApply = voucherRepository.findVoucherEntityByVoucherCode(voucherCode);
         YardEntity yard = yardRepository.findYardEntitiesById(yardId);
-        if(voucherApply == null || !voucherApply.getStatus().equalsIgnoreCase(ACTIVE)){
+        if (voucherApply == null || !voucherApply.getStatus().equalsIgnoreCase(ACTIVE)) {
             throw ApplyVoucherException.builder().errorMessage("Voucher is not available.").build();
         }
 
-        if(voucherApply.getMaxQuantity() <= voucherApply.getUsages()){
+        if (voucherApply.getMaxQuantity() <= voucherApply.getUsages()) {
             throw ApplyVoucherException.builder().errorMessage("Voucher it's over").build();
         }
 
-        if(yard == null || !yard.getOwnerId().equalsIgnoreCase(voucherApply.getCreatedByAccountId())){
+        if (yard == null || !yard.getOwnerId().equalsIgnoreCase(voucherApply.getCreatedByAccountId())) {
             throw ApplyVoucherException.builder().errorMessage("Voucher isn't apply for this yard.").build();
         }
 

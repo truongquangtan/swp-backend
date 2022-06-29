@@ -38,9 +38,9 @@ public class VoucherRestApi {
     }
 
     @PostMapping("vouchers/yard/{yardId}")
-    public ResponseEntity<String> applyVoucherForBooking(@RequestBody(required = false) ApplyVoucherRequest applyVoucherRequest, @PathVariable String yardId)  {
+    public ResponseEntity<String> applyVoucherForBooking(@RequestBody(required = false) ApplyVoucherRequest applyVoucherRequest, @PathVariable String yardId) {
         try {
-            if(applyVoucherRequest == null){
+            if (applyVoucherRequest == null) {
                 ErrorResponse errorResponse = ErrorResponse.builder().message("Missing body.").build();
                 return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
             }
@@ -48,7 +48,7 @@ public class VoucherRestApi {
             List<BookingApplyVoucherModel> bookingApplyVoucherList = voucherService.calculationPriceApplyVoucher(applyVoucherRequest.getBookingList(), voucherApply);
             ApplyVoucherResponse applyVoucherResponse = ApplyVoucherResponse.builder().voucherId(voucherApply.getId()).voucherCode(voucherApply.getVoucherCode()).bookingList(bookingApplyVoucherList).build();
             return ResponseEntity.ok(gson.toJson(applyVoucherResponse));
-        }catch (ApplyVoucherException applyVoucherException){
+        } catch (ApplyVoucherException applyVoucherException) {
             ErrorResponse errorResponse = ErrorResponse.builder().message(applyVoucherException.getErrorMessage()).stack(applyVoucherException.getStack()).build();
             return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
         }
