@@ -4,10 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Data
-public class dashboardRequest {
-    private String startTime;
-    private String endTime;
+public class YardBusinessContribution {
+    private String yardId;
+    private String yardName;
+    private int percentage;
 }
