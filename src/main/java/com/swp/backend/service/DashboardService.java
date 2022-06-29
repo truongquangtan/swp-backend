@@ -137,6 +137,7 @@ public class DashboardService {
                 {
                     double percentage = ((double) newModel.getTotalIncome())/totalIncome*100;
                     preModel.setBusinessContributionPercentage((int) Math.round(percentage));
+                    preModel.setTotalIncome(newModel.getTotalIncome());
                     break;
                 }
             }
