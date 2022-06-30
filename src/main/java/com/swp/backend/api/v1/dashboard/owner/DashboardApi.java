@@ -2,19 +2,18 @@ package com.swp.backend.api.v1.dashboard.owner;
 
 import com.google.gson.Gson;
 import com.swp.backend.model.YardStatisticModel;
-import com.swp.backend.myrepository.DashboardRepository;
 import com.swp.backend.service.DashboardService;
 import com.swp.backend.service.SecurityContextService;
-import com.swp.backend.utils.DateHelper;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @RequestMapping(value = "api/v1/owners/me")

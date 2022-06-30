@@ -2,7 +2,6 @@ package com.swp.backend.service;
 
 import com.swp.backend.api.v1.owner.voucher.VoucherResponse;
 import com.swp.backend.entity.VoucherEntity;
-import com.swp.backend.entity.YardEntity;
 import com.swp.backend.exception.ApplyVoucherException;
 import com.swp.backend.model.BookingApplyVoucherModel;
 import com.swp.backend.model.BookingModel;
