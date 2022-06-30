@@ -6,6 +6,7 @@ import com.swp.backend.entity.VoucherEntity;
 import com.swp.backend.exception.ApplyVoucherException;
 import com.swp.backend.exception.ErrorResponse;
 import com.swp.backend.model.BookingApplyVoucherModel;
+import com.swp.backend.model.BookingModel;
 import com.swp.backend.model.RequestPageModel;
 import com.swp.backend.service.VoucherService;
 import lombok.AllArgsConstructor;
@@ -37,14 +38,20 @@ public class VoucherRestApi {
         }
     }
 
-    @PostMapping("vouchers/yard/{yardId}")
-    public ResponseEntity<String> applyVoucherForBooking(@RequestBody(required = false) ApplyVoucherRequest applyVoucherRequest, @PathVariable String yardId) {
+    @PostMapping("vouchers/{voucherCode}/calculate")
+    public ResponseEntity<String> applyVoucherForBooking(@RequestBody(required = false) ApplyVoucherRequest applyVoucherRequest, @PathVariable String voucherCode) {
         try {
             if (applyVoucherRequest == null) {
                 ErrorResponse errorResponse = ErrorResponse.builder().message("Missing body.").build();
                 return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
             }
-            VoucherEntity voucherApply = voucherService.getValidVoucherByVoucherCodeAndYardId(applyVoucherRequest.getVoucherCode(), yardId);
+            List<BookingModel> listBooking = applyVoucherRequest.getBookingList();
+            if(listBooking == null || listBooking.size() == 0){
+                ErrorResponse errorResponse = ErrorResponse.builder().message("List booking is empty").build();
+                return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
+            }
+            int slotId = listBooking.get(0).getSlotId();
+            VoucherEntity voucherApply = voucherService.getValidVoucherByVoucherCodeAndSlotId(voucherCode, slotId);
             List<BookingApplyVoucherModel> bookingApplyVoucherList = voucherService.calculationPriceApplyVoucher(applyVoucherRequest.getBookingList(), voucherApply);
             ApplyVoucherResponse applyVoucherResponse = ApplyVoucherResponse.builder().voucherId(voucherApply.getId()).voucherCode(voucherApply.getVoucherCode()).bookingList(bookingApplyVoucherList).build();
             return ResponseEntity.ok(gson.toJson(applyVoucherResponse));
