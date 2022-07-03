@@ -2,12 +2,15 @@ package com.swp.backend.api.v1.yard_report;
 
 import com.google.gson.Gson;
 import com.swp.backend.model.MessageResponse;
+import com.swp.backend.model.YardReportModel;
 import com.swp.backend.service.SecurityContextService;
 import com.swp.backend.service.YardReportService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -16,6 +19,8 @@ public class YardReportApi {
     private SecurityContextService securityContextService;
     private YardReportService yardReportService;
     private Gson gson;
+    private static final int ITEMS_PER_PAGE_DEFAULT = 5;
+    private static final int PAGE_DEFAULT = 1;
 
 
     @PostMapping(value = "yards/{yardId}/report")
@@ -38,14 +43,32 @@ public class YardReportApi {
     }
 
     @PostMapping(value = "admin/reports")
-    public ResponseEntity<String> getReport()
+    public ResponseEntity<String> getReport(@RequestBody(required = false) GetYardReportForAdminRequest request)
     {
-        return ResponseEntity.ok().body("admin/report-information");
+        int itemsPerPage = ITEMS_PER_PAGE_DEFAULT;
+        int page = PAGE_DEFAULT;
+        if (request != null) {
+            page = request.getPage() > 0 ? request.getPage() : page;
+            itemsPerPage = request.getItemsPerPage() > 0 ? request.getItemsPerPage() : itemsPerPage;
+        }
+
+        List<YardReportModel> yardReportModels = yardReportService.getYardReportsDetail(page, itemsPerPage);
+        int maxResult = yardReportService.getNumberOfYardReports();
+        GetYardReportForAdminResponse response = new GetYardReportForAdminResponse("Get reports success fully", page, maxResult, yardReportModels);
+        return ResponseEntity.ok().body(gson.toJson(response));
     }
 
     @PutMapping(value = "admin/reports/{reportId}")
     public ResponseEntity<String> markAsResolvedReportInformation(@PathVariable String reportId)
     {
-        return ResponseEntity.ok().body("");
+        try
+        {
+            yardReportService.maskAsResolvedReport(reportId);
+            MessageResponse response = new MessageResponse("Masked as resolve successfully.");
+            return ResponseEntity.ok().body(gson.toJson(response));
+        } catch (Exception ex)
+        {
+            return ResponseEntity.internalServerError().body("Error when process masked as resolve.");
+        }
     }
 }

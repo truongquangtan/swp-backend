@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface YardReportRepository extends JpaRepository<YardReportEntity, String> {
-
+    YardReportEntity findYardReportEntityById(String id);
 }

@@ -33,9 +33,20 @@ public class YardReportService {
         yardReportRepository.save(yardReportEntity);
     }
 
-    public List<YardReportModel> getYardReportDetail(int page, int itemsPerPage)
+    public List<YardReportModel> getYardReportsDetail(int page, int itemsPerPage)
     {
         PaginationHelper paginationHelper = new PaginationHelper(itemsPerPage, yardReportCustomRepository.countAllYardReports());
         return yardReportCustomRepository.getYardReportModelByPage(paginationHelper.getStartIndex(page), paginationHelper.getEndIndex(page));
+    }
+    public int getNumberOfYardReports()
+    {
+        return yardReportCustomRepository.countAllYardReports();
+    }
+    public void maskAsResolvedReport(String reportId)
+    {
+        YardReportEntity yardReportEntity = yardReportRepository.findYardReportEntityById(reportId);
+        yardReportEntity.setStatus(REPORT_HANDLED);
+        yardReportEntity.setUpdatedAt(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE));
+        yardReportRepository.save(yardReportEntity);
     }
 }

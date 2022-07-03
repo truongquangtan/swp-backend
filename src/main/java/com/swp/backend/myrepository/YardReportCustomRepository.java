@@ -25,12 +25,13 @@ public class YardReportCustomRepository {
                     " FROM yard_report yr INNER JOIN yards y ON yr.yard_id = y.id" +
                     "                     INNER JOIN accounts a ON yr.yard_id = a.id" +
                     "                     INNER JOIN accounts account_owner ON y.owner_id = account_owner.id" +
-                    " ORDER BY yr.updated_date DESC";
+                    " ORDER BY yr.updated_at DESC";
 
             query = entityManager.createNativeQuery(nativeQuery);
             query.setFirstResult(startIndex);
             query.setMaxResults(endIndex-startIndex+1);
-
+            System.out.println(startIndex);
+            System.out.println(endIndex);
             List<?> queriedList = query.getResultList();
 
             if(queriedList == null)
@@ -55,6 +56,7 @@ public class YardReportCustomRepository {
         }
         catch (Exception ex)
         {
+            ex.printStackTrace();
             return null;
         }
     }
