@@ -10,6 +10,7 @@ import com.swp.backend.myrepository.BookingCustomRepository;
 import com.swp.backend.myrepository.BookingHistoryCustomRepository;
 import com.swp.backend.repository.*;
 import com.swp.backend.utils.DateHelper;
+import com.swp.backend.utils.PaginationHelper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +34,6 @@ public class BookingService {
     private YardRepository yardRepository;
     private SlotRepository slotRepository;
     private SubYardRepository subYardRepository;
-    private BookingHistoryRepository bookingHistoryRepository;
     private BookingHistoryCustomRepository bookingHistoryCustomRepository;
     private BookingHistoryService bookingHistoryService;
 
@@ -135,10 +135,9 @@ public class BookingService {
         List<BookingEntity> incomingMatches = getIncomingMatches(userId);
         List<BookingEntity> result = new ArrayList<>();
 
-        int startIndex = itemsPerPage * (page - 1);
-        int maxIndex = incomingMatches.size() - 1;
-        int endIndex = startIndex + itemsPerPage - 1;
-        endIndex = Math.min(endIndex, maxIndex);
+        PaginationHelper paginationHelper = new PaginationHelper(itemsPerPage, incomingMatches.size());
+        int startIndex = paginationHelper.getStartIndex(page);
+        int endIndex = paginationHelper.getEndIndex(page);
 
         if (startIndex > endIndex) return result;
 
@@ -168,24 +167,14 @@ public class BookingService {
     }
 
     public List<BookingHistoryEntity> getBookingHistoryOfUser(String userId, int itemsPerPage, int page) {
-        int startIndex = (page - 1) * itemsPerPage;
-        int endIndex = startIndex + itemsPerPage - 1;
-        int maxIndex = countAllHistoryBookingsOfUser(userId);
-        endIndex = endIndex < maxIndex ? endIndex : maxIndex;
-        if (startIndex > endIndex) return new ArrayList<>();
-
-        List<BookingHistoryEntity> result = bookingHistoryCustomRepository.getAllBookingHistoryOfUser(userId, startIndex, endIndex);
+        PaginationHelper paginationHelper = new PaginationHelper(itemsPerPage, countAllHistoryBookingsOfUser(userId));
+        List<BookingHistoryEntity> result = bookingHistoryCustomRepository.getAllBookingHistoryOfUser(userId, paginationHelper.getStartIndex(page), paginationHelper.getEndIndex(page));
         return result == null ? new ArrayList<>() : result;
     }
 
     public List<BookingHistoryEntity> getBookingHistoryOfOwner(String ownerId, int itemsPerPage, int page) {
-        int startIndex = (page - 1) * itemsPerPage;
-        int endIndex = startIndex + itemsPerPage - 1;
-        int maxIndex = countAllHistoryBookingsOfOwner(ownerId);
-        endIndex = endIndex < maxIndex ? endIndex : maxIndex;
-        if (startIndex > endIndex) return new ArrayList<>();
-
-        List<BookingHistoryEntity> result = bookingHistoryCustomRepository.getAllBookingHistoryOfOwner(ownerId, startIndex, endIndex);
+        PaginationHelper paginationHelper = new PaginationHelper(itemsPerPage, countAllHistoryBookingsOfOwner(ownerId));
+        List<BookingHistoryEntity> result = bookingHistoryCustomRepository.getAllBookingHistoryOfOwner(ownerId, paginationHelper.getStartIndex(page), paginationHelper.getEndIndex(page));
         return result == null ? new ArrayList<>() : result;
     }
 
