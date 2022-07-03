@@ -115,6 +115,7 @@ public class BookingService {
                 .note(errorNote)
                 .voucherCode(bookingModel.getVoucherCode())
                 .price(bookingModel.getPrice())
+                .originalPrice(bookingModel.getOriginalPrice())
                 .bookAt(now)
                 .bigYardId(yardId)
                 .subYardId(bookingModel.getRefSubYard())

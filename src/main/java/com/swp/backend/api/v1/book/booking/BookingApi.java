@@ -83,6 +83,11 @@ public class BookingApi {
             if (isAllError) {
                 response = new BookingResponse("All of your booking slot is error", isError, bookingEntities);
                 return ResponseEntity.ok().body(gson.toJson(response));
+            }else {
+                if(isApplyVoucher){
+                    voucher.setUsages(voucher.getUsages() + 1);
+                    voucherService.updateUsesVoucher(voucher);
+                }
             }
             response = new BookingResponse(isError ? "There were some booking slot error." : "Booking all slot successfully", isError, bookingEntities);
             return ResponseEntity.ok().body(gson.toJson(response));

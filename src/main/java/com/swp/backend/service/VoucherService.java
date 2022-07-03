@@ -213,4 +213,8 @@ public class VoucherService {
         }
         return voucher;
     }
+
+    public void updateUsesVoucher(VoucherEntity voucher){
+        voucherRepository.save(voucher);
+    }
 }
