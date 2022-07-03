@@ -40,5 +40,7 @@ public class BookingEntity {
     @Column(name = "big_yard_id")
     private String bigYardId;
     @Column(name = "original_price")
-    private int originalPrice;
+    private Integer originalPrice;
+    @Column(name = "voucher_code")
+    private String voucherCode;
 }

@@ -10,8 +10,8 @@ public class BookingApplyVoucherModel extends BookingModel {
     private int discountPrice;
 
     @Builder
-    public BookingApplyVoucherModel(int slotId, String refSubYard, int price, String date, int discountPrice, int originalPrice) {
-        super(slotId, refSubYard, price, originalPrice, date);
+    public BookingApplyVoucherModel(int slotId, String refSubYard, int price, String date, int discountPrice, int originalPrice, String voucherCode) {
+        super(slotId, refSubYard, price, originalPrice, voucherCode, date);
         this.discountPrice = discountPrice;
     }
 }

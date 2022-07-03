@@ -38,10 +38,14 @@ public class BookingService {
     private BookingHistoryService bookingHistoryService;
 
     @Transactional
-    public BookingEntity book(String userId, String yardId, BookingModel bookingModel) {
+    public BookingEntity book(String userId, String yardId, BookingModel bookingModel, boolean isNonValidVoucher) {
         String errorNote = "";
         int slotId = bookingModel.getSlotId();
 
+        if(isNonValidVoucher){
+            errorNote = "Booking failed booking use invalid voucher";
+            return processBooking(userId, yardId, bookingModel, errorNote, BookingStatus.FAILED);
+        }
         //Booking date in past filter
         LocalDate bookingDate = LocalDate.parse(bookingModel.getDate(), DateTimeFormatter.ofPattern("d/M/yyyy"));
         LocalDate now = LocalDate.now(ZoneId.of(DateHelper.VIETNAM_ZONE));
@@ -109,7 +113,9 @@ public class BookingService {
                 .date(timestamp)
                 .status(status)
                 .note(errorNote)
+                .voucherCode(bookingModel.getVoucherCode())
                 .price(bookingModel.getPrice())
+                .originalPrice(bookingModel.getOriginalPrice())
                 .bookAt(now)
                 .bigYardId(yardId)
                 .subYardId(bookingModel.getRefSubYard())
@@ -171,7 +177,7 @@ public class BookingService {
         int startIndex = (page - 1) * itemsPerPage;
         int endIndex = startIndex + itemsPerPage - 1;
         int maxIndex = countAllHistoryBookingsOfUser(userId);
-        endIndex = endIndex < maxIndex ? endIndex : maxIndex;
+        endIndex = Math.min(endIndex, maxIndex);
         if (startIndex > endIndex) return new ArrayList<>();
 
         List<BookingHistoryEntity> result = bookingHistoryCustomRepository.getAllBookingHistoryOfUser(userId, startIndex, endIndex);
