@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,7 +15,7 @@ public class YardReportCustomRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public List<YardReportModel> getYardReportModelFromReportId(String reportId)
+    public List<YardReportModel> getYardReportModelByPage(int startIndex, int endIndex)
     {
         Query query = null;
 
@@ -24,11 +25,13 @@ public class YardReportCustomRepository {
                     " FROM yard_report yr INNER JOIN yards y ON yr.yard_id = y.id" +
                     "                     INNER JOIN accounts a ON yr.yard_id = a.id" +
                     "                     INNER JOIN accounts account_owner ON y.owner_id = account_owner.id" +
-                    " WHERE yr.id = ?1";
+                    " ORDER BY yr.updated_at DESC";
 
             query = entityManager.createNativeQuery(nativeQuery);
-            query.setParameter(1, reportId);
-
+            query.setFirstResult(startIndex);
+            query.setMaxResults(endIndex-startIndex+1);
+            System.out.println(startIndex);
+            System.out.println(endIndex);
             List<?> queriedList = query.getResultList();
 
             if(queriedList == null)
@@ -53,7 +56,34 @@ public class YardReportCustomRepository {
         }
         catch (Exception ex)
         {
+            ex.printStackTrace();
             return null;
+        }
+    }
+
+    public int countAllYardReports()
+    {
+        Query query = null;
+
+        try
+        {
+            String nativeQuery = "SELECT count(*)" +
+                    " FROM yard_report";
+
+            query = entityManager.createNativeQuery(nativeQuery);
+
+            Object queriedObject = query.getSingleResult();
+
+            if(queriedObject == null)
+            {
+                return 0;
+            }
+
+            return ((BigInteger) queriedObject).intValue();
+        }
+        catch (Exception ex)
+        {
+            return 0;
         }
     }
 }
