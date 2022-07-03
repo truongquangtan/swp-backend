@@ -34,6 +34,7 @@ public class BookingService {
     private YardRepository yardRepository;
     private SlotRepository slotRepository;
     private SubYardRepository subYardRepository;
+    private BookingHistoryRepository bookingHistoryRepository;
     private BookingHistoryCustomRepository bookingHistoryCustomRepository;
     private BookingHistoryService bookingHistoryService;
 
