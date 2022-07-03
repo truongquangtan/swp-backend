@@ -36,7 +36,7 @@ public class ApiEndpointProperties {
             "/api/v1/sub-yards/**",
             "/api/v1/vote/yards/**",
             "/api/v1/owners/{ownerId}/vouchers",
-            "/api/v1/vouchers/yard/{yardId}"
+            "/api/v1/vouchers/{voucherCode}/calculate"
     };
     public static String[] ownerOnlyEndpoint = {
             "/api/v1/owners/me/**"

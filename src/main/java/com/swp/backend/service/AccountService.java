@@ -281,10 +281,10 @@ public class AccountService {
         return accountCustomRepository.countMaxResultSearchAccount(role, keyword, status);
     }
 
-    public boolean updateAccount(MultipartFile avatar, String userId, String email, String oldPassword, String password, String phone) throws IOException, DataAccessException {
+    public AccountModel updateAccount(MultipartFile avatar, String userId, String fullName, String phone) throws IOException, DataAccessException {
         AccountEntity account = findAccountByUsername(userId);
         if (account == null) {
-            return false;
+            return null;
         }
 
         if (avatar != null) {
@@ -292,23 +292,49 @@ public class AccountService {
             account.setAvatar(url);
         }
 
-        if (oldPassword != null && password != null) {
-            if (passwordEncoder.matches(oldPassword, account.getPassword()) && password.trim().length() >= 8) {
-                account.setPassword(passwordEncoder.encode(password));
-            } else {
-                return false;
-            }
-        }
-
         if (phone != null && phone.matches(RegexHelper.PHONE_REGEX_LOCAL)) {
             account.setPhone(phone);
         }
 
-        if (email != null && email.matches(RegexHelper.EMAIL_REGEX)) {
-            account.setEmail(email);
+        if(fullName  != null && fullName.trim().length() > 0){
+            account.setFullName(fullName.trim());
         }
 
         accountRepository.save(account);
-        return true;
+        RoleEntity role = roleService.getRoleById(account.getRoleId());
+        return AccountModel.builder()
+                .role(role.getRoleName())
+                .userId(account.getUserId())
+                .fullName(account.getFullName())
+                .avatar(account.getAvatar())
+                .createAt(account.getCreateAt().toString())
+                .phone(account.getPhone())
+                .isConfirmed(account.isConfirmed())
+                .email(account.getEmail())
+                .build();
+    }
+
+    public AccountModel verifyCurrentPassword(String userId, String password) throws DataAccessException{
+        if(userId == null || password == null){
+            return null;
+        }
+        AccountEntity account = accountRepository.findUserEntityByUserId(userId);
+        if(account == null){
+            return null;
+        }
+        if(passwordEncoder.matches(password, account.getPassword())){
+            RoleEntity role = roleService.getRoleById(account.getRoleId());
+            return AccountModel.builder()
+                    .role(role.getRoleName())
+                    .userId(account.getUserId())
+                    .fullName(account.getFullName())
+                    .avatar(account.getAvatar())
+                    .createAt(account.getCreateAt().toString())
+                    .phone(account.getPhone())
+                    .isConfirmed(account.isConfirmed())
+                    .email(account.getEmail())
+                    .build();
+        }
+        return null;
     }
 }

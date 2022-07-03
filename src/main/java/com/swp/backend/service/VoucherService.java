@@ -2,11 +2,11 @@ package com.swp.backend.service;
 
 import com.swp.backend.api.v1.owner.voucher.VoucherResponse;
 import com.swp.backend.entity.VoucherEntity;
-import com.swp.backend.entity.YardEntity;
 import com.swp.backend.exception.ApplyVoucherException;
 import com.swp.backend.model.BookingApplyVoucherModel;
 import com.swp.backend.model.BookingModel;
 import com.swp.backend.model.VoucherModel;
+import com.swp.backend.myrepository.SlotCustomRepository;
 import com.swp.backend.repository.VoucherRepository;
 import com.swp.backend.repository.YardRepository;
 import com.swp.backend.utils.DateHelper;
@@ -30,6 +30,7 @@ import static com.swp.backend.constance.VoucherProperties.*;
 public class VoucherService {
     private VoucherRepository voucherRepository;
     private YardRepository yardRepository;
+    private SlotCustomRepository slotCustomRepository;
 
     public void createVoucher(VoucherModel voucher, String ownerId) throws DataAccessException {
         String voucherCode;
@@ -165,12 +166,11 @@ public class VoucherService {
         return null;
     }
 
-    public VoucherEntity getValidVoucherByVoucherCodeAndYardId(String voucherCode, String yardId) throws ApplyVoucherException {
+    public VoucherEntity getValidVoucherByVoucherCodeAndSlotId(String voucherCode, int slotId) throws ApplyVoucherException {
         if (voucherCode == null || voucherCode.trim().length() == 0) {
             throw ApplyVoucherException.builder().errorMessage("Voucher code is not valid.").build();
         }
         VoucherEntity voucherApply = voucherRepository.findVoucherEntityByVoucherCode(voucherCode);
-        YardEntity yard = yardRepository.findYardEntitiesById(yardId);
         if (voucherApply == null || !voucherApply.getStatus().equalsIgnoreCase(ACTIVE)) {
             throw ApplyVoucherException.builder().errorMessage("Voucher is not available.").build();
         }
@@ -178,8 +178,8 @@ public class VoucherService {
         if (voucherApply.getMaxQuantity() <= voucherApply.getUsages()) {
             throw ApplyVoucherException.builder().errorMessage("Voucher it's over").build();
         }
-
-        if (yard == null || !yard.getOwnerId().equalsIgnoreCase(voucherApply.getCreatedByAccountId())) {
+        String ownerId = slotCustomRepository.findOwnerIdFromSlotId(slotId);
+        if (ownerId == null || !ownerId.equalsIgnoreCase(voucherApply.getCreatedByAccountId())) {
             throw ApplyVoucherException.builder().errorMessage("Voucher isn't apply for this yard.").build();
         }
 
