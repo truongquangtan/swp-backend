@@ -137,7 +137,7 @@ public class SubYardService {
     }
 
     @Transactional
-    public void setActivatationInfoToSubYardEntity(String subYardId) {
+    public void setActivationInfoToSubYardEntity(String subYardId) {
         SubYardEntity subYardEntity = subYardRepository.getSubYardEntitiesById(subYardId);
         subYardEntity.setActive(true);
         subYardEntity.setUpdatedAt(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE));
