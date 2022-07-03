@@ -90,20 +90,24 @@ public class ReactivationService {
         }
 
         try {
-            List<String> listYard = new ArrayList<>();
-            listYard.add(yardId);
-            List<String> subYardIdList = subYardRepository.getAllSubYardIdByListBigYardId(listYard);
-
-            if (subYardIdList != null) {
-                for (String subYardId : subYardIdList) {
-                    setParentActiveForAllSlotsInSubYard(subYardId);
-                    subYardService.setIsParentActiveTrueForSubYard(subYardId);
-                }
-            }
-
-            yardService.setIsActiveTrueForYard(yardId);
+            processReactiveYard(yardId);
         } catch (Exception ex) {
             throw new RuntimeException("Error when process inactivate yard.");
         }
+    }
+    public void processReactiveYard(String yardId)
+    {
+        List<String> listYard = new ArrayList<>();
+        listYard.add(yardId);
+        List<String> subYardIdList = subYardRepository.getAllSubYardIdByListBigYardId(listYard);
+
+        if (subYardIdList != null) {
+            for (String subYardId : subYardIdList) {
+                setParentActiveForAllSlotsInSubYard(subYardId);
+                subYardService.setIsParentActiveTrueForSubYard(subYardId);
+            }
+        }
+
+        yardService.setIsActiveTrueForYard(yardId);
     }
 }

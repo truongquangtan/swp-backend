@@ -39,4 +39,6 @@ public class BookingEntity {
     private String subYardId;
     @Column(name = "big_yard_id")
     private String bigYardId;
+    @Column(name = "original_price")
+    private int originalPrice;
 }

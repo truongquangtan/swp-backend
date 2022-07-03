@@ -31,6 +31,8 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class AccountService {
+    public static final String DISABLED_USER_REASON = "The owner is disabled by admin";
+
     private final AccountRepository accountRepository;
     private final RoleService roleService;
     private final BCryptPasswordEncoder passwordEncoder;
@@ -39,7 +41,8 @@ public class AccountService {
     private final RoleRepository roleRepository;
     private final YardService yardService;
     private final FirebaseStoreService firebaseStoreService;
-
+    private final InactivationService inactivationService;
+    private final ReactivationService reactivationService;
     private final AccountCustomRepository accountCustomRepository;
 
     public AccountEntity updatePassword(String username, String password) throws DataAccessException {
@@ -171,6 +174,10 @@ public class AccountService {
             new Thread(() -> {
                 try {
                     yardService.reactiveAllYardsOfOwner(userId);
+                    yardService.getAllYardEntityOfOwner(userId).stream().forEach(yard -> {
+                        if(!yard.isActive())
+                            reactivationService.processReactiveYard(yard.getId());
+                    });
                 } catch (Exception exception) {
                     exception.printStackTrace();
                 }
@@ -180,7 +187,10 @@ public class AccountService {
             new Thread(() -> {
                 try {
                     accountLoginService.deleteAllLogin(userId);
-                    yardService.inactiveAllYardsOfOwner(userId);
+                    yardService.getAllYardEntityOfOwner(userId).stream().forEach(yard -> {
+                        if(yard.isActive())
+                            inactivationService.processInactivateYard(userId, yard.getId(), DISABLED_USER_REASON);
+                    });
                 } catch (Exception exception) {
                     exception.printStackTrace();
                 }

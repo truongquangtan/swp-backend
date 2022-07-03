@@ -122,7 +122,7 @@ public class InactivationService {
     public void inactivateYard(String ownerId, String yardId) {
         yardFilter(ownerId, yardId);
         try {
-            processInactivateYard(ownerId, yardId);
+            processInactivateYard(ownerId, yardId, INACTIVE_YARD_REASON);
         } catch (Exception ex) {
             throw new InactivateProcessException("Error when process inactivate yard.");
         }
@@ -141,14 +141,15 @@ public class InactivationService {
         }
     }
 
-    private void processInactivateYard(String ownerId, String yardId) {
+    @Transactional
+    public void processInactivateYard(String ownerId, String yardId, String reason) {
         List<String> listYard = new ArrayList<>();
         listYard.add(yardId);
         List<String> subYardIdList = subYardRepository.getAllSubYardIdByListBigYardId(listYard);
 
         if (subYardIdList != null) {
             for (String subYardId : subYardIdList) {
-                cancelAllBookingInSubYardAndSetParentActiveFalseForAllSlots(ownerId, subYardId, INACTIVE_YARD_REASON);
+                cancelAllBookingInSubYardAndSetParentActiveFalseForAllSlots(ownerId, subYardId, reason);
                 subYardService.setIsParentActiveFalseForSubYard(subYardId);
             }
         }

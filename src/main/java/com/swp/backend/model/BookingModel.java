@@ -12,9 +12,10 @@ public class BookingModel {
     protected int slotId;
     protected String refSubYard;
     protected int price;
+    protected int originalPrice;
     protected String date;
 
     public boolean isValid() {
-        return DateHelper.parseFromStringToTimestamp(date) != null && price > 0;
+        return DateHelper.parseFromStringToTimestamp(date) != null && price > 0 && originalPrice > 0;
     }
 }
