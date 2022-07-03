@@ -127,41 +127,45 @@ public class VoucherService {
     public List<BookingApplyVoucherModel> calculationPriceApplyVoucher(List<BookingModel> listBooking, VoucherEntity voucherApply) throws ApplyVoucherException {
         String typeVoucher = voucherApply.getType();
         if (voucherApply.getType().equalsIgnoreCase(PERCENT)) {
-            int numberOfBooking = listBooking.size();
-            float discountPercentPerBooking = voucherApply.getPercentDiscount().floatValue() / numberOfBooking;
-
             return listBooking.stream().map(booking -> {
-
-                float discountAmount = booking.getPrice() * discountPercentPerBooking / 100;
-                float newPrice = booking.getPrice() - discountAmount;
+                int discountAmount = booking.getPrice() * voucherApply.getPercentDiscount() / 100;
+                int newPrice = booking.getPrice() - discountAmount;
                 return BookingApplyVoucherModel.builder()
                         .slotId(booking.getSlotId())
                         .date(booking.getDate())
                         .refSubYard(booking.getRefSubYard())
-                        .price(booking.getPrice())
-                        .newPrice(Math.max(newPrice, 0))
-                        .discountPrice(discountAmount)
+                        .originalPrice(booking.getPrice())
+                        .price(newPrice)
+                        .discountPrice(booking.getPrice() - newPrice)
                         .refSubYard(booking.getRefSubYard())
                         .build();
             }).collect(Collectors.toList());
         }
         if (typeVoucher.equalsIgnoreCase(CASH)) {
             int numberOfBooking = listBooking.size();
-            float discountPerBooking = voucherApply.getAmountDiscount().floatValue() / numberOfBooking;
-            return listBooking.stream().map(booking -> {
-                float oldPrice = booking.getPrice();
-                float newPrice = oldPrice - discountPerBooking;
-
+            int discountPerBooking = voucherApply.getAmountDiscount() / numberOfBooking;
+            int remainderPercentDiscount = voucherApply.getAmountDiscount() % numberOfBooking;
+            List<BookingApplyVoucherModel> bookingApplyVoucherModels = listBooking.stream().map(booking -> {
+                int oldPrice = booking.getPrice();
+                int newPrice = oldPrice - discountPerBooking;
                 return BookingApplyVoucherModel.builder()
                         .slotId(booking.getSlotId())
                         .date(booking.getDate())
                         .refSubYard(booking.getRefSubYard())
-                        .price(booking.getPrice())
-                        .newPrice(Math.max(newPrice, 0))
+                        .originalPrice(booking.getPrice())
+                        .price(Math.max(newPrice, 0))
                         .discountPrice(Math.min(oldPrice, discountPerBooking))
                         .refSubYard(booking.getRefSubYard())
                         .build();
             }).collect(Collectors.toList());
+
+            if(remainderPercentDiscount != 0){
+                BookingApplyVoucherModel lastBooking = bookingApplyVoucherModels.get(bookingApplyVoucherModels.size() - 1);
+                int lastBookingDiscountPrice = lastBooking.getPrice() + remainderPercentDiscount;
+                lastBooking.setPrice(lastBookingDiscountPrice);
+                lastBooking.setDiscountPrice(lastBooking.getDiscountPrice() + remainderPercentDiscount);
+            }
+            return bookingApplyVoucherModels;
         }
         return null;
     }

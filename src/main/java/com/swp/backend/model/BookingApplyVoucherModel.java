@@ -7,13 +7,13 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BookingApplyVoucherModel extends BookingModel {
-    private float newPrice;
-    private float discountPrice;
+    private int originalPrice;
+    private int discountPrice;
 
     @Builder
-    public BookingApplyVoucherModel(int slotId, String refSubYard, int price, String date, float newPrice, float discountPrice) {
+    public BookingApplyVoucherModel(int slotId, String refSubYard, int price, String date, int originalPrice, int discountPrice) {
         super(slotId, refSubYard, price, date);
-        this.newPrice = newPrice;
+        this.originalPrice = originalPrice;
         this.discountPrice = discountPrice;
     }
 }
