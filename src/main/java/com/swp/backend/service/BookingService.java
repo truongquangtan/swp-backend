@@ -39,9 +39,14 @@ public class BookingService {
     private BookingHistoryService bookingHistoryService;
 
     @Transactional
-    public BookingEntity book(String userId, String yardId, BookingModel bookingModel) {
+    public BookingEntity book(String userId, String yardId, BookingModel bookingModel, boolean isNonValidVoucher) {
         String errorNote = "";
         int slotId = bookingModel.getSlotId();
+
+        if(isNonValidVoucher){
+            errorNote = "Booking failed booking use invalid voucher";
+            return processBooking(userId, yardId, bookingModel, errorNote, BookingStatus.FAILED);
+        }
 
         //Booking date in past filter
         LocalDate bookingDate = LocalDate.parse(bookingModel.getDate(), DateTimeFormatter.ofPattern("d/M/yyyy"));
@@ -111,6 +116,7 @@ public class BookingService {
                 .status(status)
                 .note(errorNote)
                 .price(bookingModel.getPrice())
+                .voucherCode(bookingModel.getVoucherCode())
                 .bookAt(now)
                 .bigYardId(yardId)
                 .subYardId(bookingModel.getRefSubYard())
