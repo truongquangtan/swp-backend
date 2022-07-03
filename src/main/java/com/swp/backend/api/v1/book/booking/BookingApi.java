@@ -3,9 +3,11 @@ package com.swp.backend.api.v1.book.booking;
 import com.google.gson.Gson;
 import com.swp.backend.constance.BookingStatus;
 import com.swp.backend.entity.BookingEntity;
+import com.swp.backend.entity.VoucherEntity;
 import com.swp.backend.model.BookingModel;
 import com.swp.backend.service.BookingService;
 import com.swp.backend.service.SecurityContextService;
+import com.swp.backend.service.VoucherService;
 import com.swp.backend.service.YardService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +26,7 @@ public class BookingApi {
     private YardService yardService;
     private Gson gson;
     private BookingService bookingService;
+    private VoucherService voucherService;
 
 
     @PostMapping(value = "{yardId}/booking")
@@ -54,8 +57,22 @@ public class BookingApi {
         //Booking process
         try {
             boolean isError = false, isAllError = true;
+            boolean isNonValidVoucher = false;
+            boolean isApplyVoucher = false;
+            VoucherEntity voucher = null;
+            if(request.getVoucherCode() != null){
+                voucher = voucherService.getValidApplyVoucherForBookingByVoucherCode(request.getVoucherCode());
+                if(voucher != null){
+                    isApplyVoucher = true;
+                }else {
+                    isNonValidVoucher = true;
+                }
+            }
             for (BookingModel bookingModel : request.getBookingList()) {
-                BookingEntity booking = bookingService.book(userId, yardId, bookingModel);
+                if(isApplyVoucher){
+                    bookingModel.setVoucherCode(voucher.getVoucherCode());
+                }
+                BookingEntity booking = bookingService.book(userId, yardId, bookingModel, isNonValidVoucher);
                 bookingEntities.add(booking);
                 if (booking.getStatus().equals(BookingStatus.FAILED)) {
                     isError = true;

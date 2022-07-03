@@ -1,6 +1,7 @@
 package com.swp.backend.service;
 
 import com.swp.backend.api.v1.owner.voucher.VoucherResponse;
+import com.swp.backend.constance.VoucherProperties;
 import com.swp.backend.entity.VoucherEntity;
 import com.swp.backend.exception.ApplyVoucherException;
 import com.swp.backend.model.BookingApplyVoucherModel;
@@ -188,5 +189,28 @@ public class VoucherService {
         }
 
         return voucherApply;
+    }
+
+    public VoucherEntity getValidApplyVoucherForBookingByVoucherCode(String voucherCode){
+        if(voucherCode == null || voucherCode.trim().length() == 0){
+            return null;
+        }
+        VoucherEntity voucher = voucherRepository.findVoucherEntityByVoucherCode(voucherCode.trim());
+        Timestamp today = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
+
+        if(voucher == null){
+            return null;
+        }
+
+        if(!voucher.getStatus().equals(ACTIVE)){
+            return null;
+        }
+
+        if(voucher.getMaxQuantity() - voucher.getUsages() <= 0){
+            voucher.setStatus(EXPIRED);
+            voucherRepository.save(voucher);
+            return null;
+        }
+        return voucher;
     }
 }

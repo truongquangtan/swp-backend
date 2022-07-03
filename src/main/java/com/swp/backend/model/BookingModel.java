@@ -13,6 +13,7 @@ public class BookingModel {
     protected String refSubYard;
     protected int price;
     protected int originalPrice;
+    protected String voucherCode;
     protected String date;
 
     public boolean isValid() {
