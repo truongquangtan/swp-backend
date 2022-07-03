@@ -7,6 +7,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,17 +23,15 @@ public class YardReportCustomRepository {
 
         try
         {
-            String nativeQuery = "SELECT yr.id, yr.user_id, yr.yard_id, y.owner_id, a.full_name, y.name, y.address, account_owner.email" +
+            String nativeQuery = "SELECT yr.id, yr.user_id, yr.yard_id, y.owner_id, a.full_name, y.name, y.address, account_owner.email, yr.status, yr.created_at, yr.updated_at" +
                     " FROM yard_report yr INNER JOIN yards y ON yr.yard_id = y.id" +
-                    "                     INNER JOIN accounts a ON yr.yard_id = a.id" +
+                    "                     INNER JOIN accounts a ON yr.user_id = a.id" +
                     "                     INNER JOIN accounts account_owner ON y.owner_id = account_owner.id" +
                     " ORDER BY yr.updated_at DESC";
 
             query = entityManager.createNativeQuery(nativeQuery);
             query.setFirstResult(startIndex);
             query.setMaxResults(endIndex-startIndex+1);
-            System.out.println(startIndex);
-            System.out.println(endIndex);
             List<?> queriedList = query.getResultList();
 
             if(queriedList == null)
@@ -49,6 +49,9 @@ public class YardReportCustomRepository {
                         .yardName((String) objects[5])
                         .yardAddress((String) objects[6])
                         .ownerEmail((String) objects[7])
+                        .status((String) objects[8])
+                        .createdAt(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format((Timestamp) objects[9]))
+                        .updatedAt(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format((Timestamp) objects[10]))
                         .build();
             }).collect(Collectors.toList());
 
