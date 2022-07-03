@@ -18,4 +18,5 @@ public class DashboardResponse {
     private List<YardStatisticModel> yardStatistic;
     private Collection bookingStatisticByTime;
     private long maxOfBooking;
+    private long totalIncome;
 }
