@@ -23,7 +23,7 @@ public class YardReportApi {
     private static final int PAGE_DEFAULT = 1;
 
 
-    @PostMapping(value = "yards/{yardId}/report")
+    @PostMapping(value = "me/report/yards/{yardId}")
     public ResponseEntity<String> report(@PathVariable String yardId, @RequestBody YardReportOfUserRequest request)
     {
         try
