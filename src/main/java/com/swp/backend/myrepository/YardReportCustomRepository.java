@@ -27,7 +27,7 @@ public class YardReportCustomRepository {
                     " FROM yard_report yr INNER JOIN yards y ON yr.yard_id = y.id" +
                     "                     INNER JOIN accounts a ON yr.user_id = a.id" +
                     "                     INNER JOIN accounts account_owner ON y.owner_id = account_owner.id" +
-                    " ORDER BY yr.updated_at DESC";
+                    " ORDER BY yr.status DESC, yr.updated_at DESC";
 
             query = entityManager.createNativeQuery(nativeQuery);
             query.setFirstResult(startIndex);
