@@ -33,4 +33,6 @@ public class YardReportEntity {
     private Timestamp updatedAt;
     @Column(name = "status")
     private String status;
+    @Column(name = "reference", insertable = false)
+    private int reference;
 }

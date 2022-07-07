@@ -23,7 +23,7 @@ public class YardReportCustomRepository {
 
         try
         {
-            String nativeQuery = "SELECT yr.id, yr.user_id, yr.yard_id, y.owner_id, a.full_name, y.name, y.address, account_owner.email, yr.status, yr.created_at, yr.updated_at, yr.reason" +
+            String nativeQuery = "SELECT yr.id, yr.user_id, yr.yard_id, y.owner_id, a.full_name, y.name, y.address, account_owner.email, yr.status, yr.created_at, yr.updated_at, yr.reason, yr.reference, a.email, account_owner.name" +
                     " FROM yard_report yr INNER JOIN yards y ON yr.yard_id = y.id" +
                     "                     INNER JOIN accounts a ON yr.user_id = a.id" +
                     "                     INNER JOIN accounts account_owner ON y.owner_id = account_owner.id" +
@@ -53,6 +53,9 @@ public class YardReportCustomRepository {
                         .createdAt(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format((Timestamp) objects[9]))
                         .updatedAt(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format((Timestamp) objects[10]))
                         .reason((String) objects[11])
+                        .reference((Integer) objects[12])
+                        .userEmail((String) objects[13])
+                        .ownerName((String) objects[14])
                         .build();
             }).collect(Collectors.toList());
 

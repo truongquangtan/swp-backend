@@ -1,5 +1,6 @@
 package com.swp.backend.service;
 
+import com.swp.backend.constance.YardReportStatus;
 import com.swp.backend.entity.YardReportEntity;
 import com.swp.backend.model.YardReportModel;
 import com.swp.backend.myrepository.YardReportCustomRepository;
@@ -15,8 +16,6 @@ import java.util.UUID;
 @Service
 @AllArgsConstructor
 public class YardReportService {
-    public static final String REPORT_NOT_HANDLED = "NOT HANDLED YET";
-    public static final String REPORT_HANDLED = "HANDLED";
     private YardReportRepository yardReportRepository;
     private YardReportCustomRepository yardReportCustomRepository;
 
@@ -28,7 +27,7 @@ public class YardReportService {
                 .reason(reason)
                 .createdAt(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE))
                 .updatedAt(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE))
-                .status(REPORT_NOT_HANDLED)
+                .status(YardReportStatus.REPORT_PENDING)
                 .build();
         yardReportRepository.save(yardReportEntity);
     }
@@ -45,7 +44,14 @@ public class YardReportService {
     public void maskAsResolvedReport(String reportId)
     {
         YardReportEntity yardReportEntity = yardReportRepository.findYardReportEntityById(reportId);
-        yardReportEntity.setStatus(REPORT_HANDLED);
+        yardReportEntity.setStatus(YardReportStatus.REPORT_HANDLED);
+        yardReportEntity.setUpdatedAt(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE));
+        yardReportRepository.save(yardReportEntity);
+    }
+    public void rejectReport(String reportId)
+    {
+        YardReportEntity yardReportEntity = yardReportRepository.findYardReportEntityById(reportId);
+        yardReportEntity.setStatus(YardReportStatus.REPORT_REJECTED);
         yardReportEntity.setUpdatedAt(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE));
         yardReportRepository.save(yardReportEntity);
     }

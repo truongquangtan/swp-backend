@@ -50,7 +50,9 @@ public class ApiEndpointProperties {
             "/api/v1/filter-accounts",
             "/api/v1/admin/accounts/{accountId}",
             "/api/v1/admin/reports",
-            "/api/v1/admin/reports/{reportId}"
+            "/api/v1/admin/reports/{reportId}",
+            "/api/v1/admin/reports/{reportId}/handle",
+            "/api/v1/admin/reports/{reportId}/reject"
     };
 
     public static String[] userOnlyEndpoint = {

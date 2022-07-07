@@ -18,8 +18,11 @@ public class YardReportModel {
     private String yardName;
     private String yardAddress;
     private String ownerEmail;
+    private String userEmail;
+    private String ownerName;
     private String status;
     private String createdAt;
     private String updatedAt;
     private String reason;
+    private Integer reference;
 }

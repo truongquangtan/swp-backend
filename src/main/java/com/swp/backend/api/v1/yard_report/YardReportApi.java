@@ -58,7 +58,7 @@ public class YardReportApi {
         return ResponseEntity.ok().body(gson.toJson(response));
     }
 
-    @PutMapping(value = "admin/reports/{reportId}")
+    @PutMapping(value = "admin/reports/{reportId}/handle")
     public ResponseEntity<String> markAsResolvedReportInformation(@PathVariable String reportId)
     {
         try
@@ -69,6 +69,19 @@ public class YardReportApi {
         } catch (Exception ex)
         {
             return ResponseEntity.internalServerError().body("Error when process masked as resolve.");
+        }
+    }
+    @PutMapping(value = "admin/reports/{reportId}/reject")
+    public ResponseEntity<String> rejectReportInformation(@PathVariable String reportId)
+    {
+        try
+        {
+            yardReportService.rejectReport(reportId);
+            MessageResponse response = new MessageResponse("Reject successfully.");
+            return ResponseEntity.ok().body(gson.toJson(response));
+        } catch (Exception ex)
+        {
+            return ResponseEntity.internalServerError().body("Error when process reject report.");
         }
     }
 }
