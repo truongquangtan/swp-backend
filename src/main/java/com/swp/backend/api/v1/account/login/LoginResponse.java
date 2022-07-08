@@ -1,9 +1,10 @@
 package com.swp.backend.api.v1.account.login;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Data
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 public class LoginResponse {

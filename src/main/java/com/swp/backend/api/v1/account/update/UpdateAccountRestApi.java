@@ -53,16 +53,17 @@ public class UpdateAccountRestApi {
                 );
                 accountLoginService.saveLogin(currentAccount.getUserId(), token);
                 UpdateProfileSuccessResponse updateProfileSuccessResponse = UpdateProfileSuccessResponse.builder()
-                        .token(token)
+                        .message("Update account success!")
                         .userId(currentAccount.getUserId())
                         .avatar(currentAccount.getAvatar())
                         .email(currentAccount.getEmail())
                         .phone(currentAccount.getPhone())
                         .role(currentAccount.getRole())
+                        .token(token)
                         .fullName(currentAccount.getFullName())
                         .isConfirm(currentAccount.isConfirmed())
-                        .message("Update account success!")
                         .build();
+
                 return ResponseEntity.ok(gson.toJson(updateProfileSuccessResponse));
             } else {
                 ErrorResponse errorResponse = ErrorResponse.builder().message("Update failed").build();
