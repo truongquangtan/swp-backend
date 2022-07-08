@@ -1,6 +1,7 @@
 package com.swp.backend.api.v1.account.update;
 
 import com.google.gson.Gson;
+import com.swp.backend.api.v1.account.login.LoginResponse;
 import com.swp.backend.exception.ErrorResponse;
 import com.swp.backend.model.AccountModel;
 import com.swp.backend.model.SuccessResponseModel;
@@ -41,8 +42,28 @@ public class UpdateAccountRestApi {
             }
 
             if (currentAccount != null) {
-                new Thread(() -> accountLoginService.deleteAllLogin(userId)).start();
-                return ResponseEntity.ok(gson.toJson(SuccessResponseModel.builder().message("Update account success!").build()));
+                accountLoginService.deleteAllLogin(userId);
+                String token = jwtTokenUtils.doGenerateToken(
+                        currentAccount.getUserId(),
+                        currentAccount.getFullName(),
+                        currentAccount.getEmail(),
+                        currentAccount.getPhone(),
+                        currentAccount.getRole(),
+                        currentAccount.isConfirmed()
+                );
+                accountLoginService.saveLogin(currentAccount.getUserId(), token);
+                UpdateProfileSuccessResponse updateProfileSuccessResponse = UpdateProfileSuccessResponse.builder()
+                        .token(token)
+                        .userId(currentAccount.getUserId())
+                        .avatar(currentAccount.getAvatar())
+                        .email(currentAccount.getEmail())
+                        .phone(currentAccount.getPhone())
+                        .role(currentAccount.getRole())
+                        .fullName(currentAccount.getFullName())
+                        .isConfirm(currentAccount.isConfirmed())
+                        .message("Update account success!")
+                        .build();
+                return ResponseEntity.ok(gson.toJson(updateProfileSuccessResponse));
             } else {
                 ErrorResponse errorResponse = ErrorResponse.builder().message("Update failed").build();
                 return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
