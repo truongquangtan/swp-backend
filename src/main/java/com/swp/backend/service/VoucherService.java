@@ -52,17 +52,12 @@ public class VoucherService {
                 .usages(0)
                 .title(voucher.getTitle())
                 .description(voucher.getDescription())
+                .discount(voucher.getDiscount())
                 .active(true)
                 .status(ACTIVE)
                 .type(voucher.getType())
                 .createdAt(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE))
                 .build();
-        if (voucherEntity.getType().equalsIgnoreCase(CASH)) {
-            voucherEntity.setAmountDiscount(voucher.getAmountDiscount());
-        }
-        if (voucherEntity.getType().equalsIgnoreCase(PERCENT)) {
-            voucherEntity.setPercentDiscount(voucher.getPercentDiscount());
-        }
         voucherRepository.save(voucherEntity);
     }
 
@@ -114,8 +109,7 @@ public class VoucherService {
                 .status(status)
                 .maxQuantity(voucherEntity.getMaxQuantity())
                 .createdByAccountId(voucherEntity.getCreatedByAccountId())
-                .percentDiscount(voucherEntity.getPercentDiscount())
-                .amountDiscount(voucherEntity.getAmountDiscount())
+                .discount(voucherEntity.getDiscount())
                 .build();
     }
 
@@ -129,7 +123,7 @@ public class VoucherService {
         String typeVoucher = voucherApply.getType();
         if (voucherApply.getType().equalsIgnoreCase(PERCENT)) {
             return listBooking.stream().map(booking -> {
-                int discountAmount = booking.getPrice() * voucherApply.getPercentDiscount() / 100;
+                int discountAmount = Math.round(booking.getPrice() * voucherApply.getDiscount() / 100);
                 int newPrice = booking.getPrice() - discountAmount;
                 return BookingApplyVoucherModel.builder()
                         .slotId(booking.getSlotId())
@@ -142,10 +136,11 @@ public class VoucherService {
                         .build();
             }).collect(Collectors.toList());
         }
+
         if (typeVoucher.equalsIgnoreCase(CASH)) {
             int numberOfBooking = listBooking.size();
-            int discountPerBooking = voucherApply.getAmountDiscount() / numberOfBooking;
-            int remainderPercentDiscount = voucherApply.getAmountDiscount() % numberOfBooking;
+            int discountPerBooking =  (int)voucherApply.getDiscount() / numberOfBooking;
+            int remainderPercentDiscount = (int) voucherApply.getDiscount() % numberOfBooking;
             List<BookingApplyVoucherModel> bookingApplyVoucherModels = listBooking.stream().map(booking -> {
                 int oldPrice = booking.getPrice();
                 int newPrice = oldPrice - discountPerBooking;

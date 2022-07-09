@@ -34,10 +34,8 @@ public class VoucherEntity {
     private int maxQuantity;
     @Column(name = "usages")
     private int usages;
-    @Column(name = "percent_discount")
-    private Integer percentDiscount;
-    @Column(name = "amount_discount")
-    private Integer amountDiscount;
+    @Column(name = "discount")
+    private float discount;
     @Column(name = "start_date")
     private Timestamp startDate;
     @Column(name = "end_date")

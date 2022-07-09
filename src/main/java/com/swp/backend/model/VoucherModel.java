@@ -18,8 +18,7 @@ public class VoucherModel {
     private String voucherCode;
     private Integer maxQuantity;
     private Integer usages;
-    private Integer percentDiscount;
-    private Integer amountDiscount;
+    private float discount;
     private String startDate;
     private String endDate;
     private String createdByAccountId;
