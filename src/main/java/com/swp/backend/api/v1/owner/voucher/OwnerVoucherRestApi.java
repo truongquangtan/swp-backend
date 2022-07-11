@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.swp.backend.exception.ErrorResponse;
 import com.swp.backend.model.MessageResponse;
 import com.swp.backend.model.RequestPageModel;
+import com.swp.backend.model.SearchModel;
 import com.swp.backend.model.VoucherModel;
 import com.swp.backend.service.SecurityContextService;
 import com.swp.backend.service.VoucherService;
@@ -37,6 +38,16 @@ public class OwnerVoucherRestApi {
             MessageResponse response = MessageResponse.builder().message("Created voucher success!").build();
             return ResponseEntity.ok(gson.toJson(response));
         } catch (Exception exception) {
+            ErrorResponse errorResponse = ErrorResponse.builder().stack(exception.getMessage()).message("Server busy temp can't create voucher.").build();
+            return ResponseEntity.internalServerError().body(gson.toJson(errorResponse));
+        }
+    }
+
+    @PostMapping("search")
+    public ResponseEntity<String> searchAndFilterVoucher(@RequestBody(required = false) SearchModel search){
+        try {
+            return ResponseEntity.ok().build();
+        }catch (Exception exception){
             ErrorResponse errorResponse = ErrorResponse.builder().stack(exception.getMessage()).message("Server busy temp can't create voucher.").build();
             return ResponseEntity.internalServerError().body(gson.toJson(errorResponse));
         }
