@@ -17,12 +17,10 @@ public class YardReportCustomRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public List<YardReportModel> getYardReportModelByPage(int startIndex, int endIndex)
-    {
+    public List<YardReportModel> getYardReportModelByPage(int startIndex, int endIndex) {
         Query query = null;
 
-        try
-        {
+        try {
             String nativeQuery = "SELECT yr.id, yr.user_id, yr.yard_id, y.owner_id, a.full_name as userFullname, y.name, y.address, account_owner.email, yr.status, yr.created_at, yr.updated_at, yr.reason, yr.reference, a.email as userEmail, account_owner.full_name" +
                     " FROM yard_report yr INNER JOIN yards y ON yr.yard_id = y.id" +
                     "                     INNER JOIN accounts a ON yr.user_id = a.id" +
@@ -31,11 +29,10 @@ public class YardReportCustomRepository {
 
             query = entityManager.createNativeQuery(nativeQuery);
             query.setFirstResult(startIndex);
-            query.setMaxResults(endIndex-startIndex+1);
+            query.setMaxResults(endIndex - startIndex + 1);
             List<?> queriedList = query.getResultList();
 
-            if(queriedList == null)
-            {
+            if (queriedList == null) {
                 return null;
             }
 
@@ -60,20 +57,16 @@ public class YardReportCustomRepository {
             }).collect(Collectors.toList());
 
             return yardReportModels;
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             ex.printStackTrace();
             return null;
         }
     }
 
-    public int countAllYardReports()
-    {
+    public int countAllYardReports() {
         Query query = null;
 
-        try
-        {
+        try {
             String nativeQuery = "SELECT count(*)" +
                     " FROM yard_report";
 
@@ -81,15 +74,12 @@ public class YardReportCustomRepository {
 
             Object queriedObject = query.getSingleResult();
 
-            if(queriedObject == null)
-            {
+            if (queriedObject == null) {
                 return 0;
             }
 
             return ((BigInteger) queriedObject).intValue();
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             return 0;
         }
     }

@@ -43,7 +43,7 @@ public class BookingService {
         String errorNote = "";
         int slotId = bookingModel.getSlotId();
 
-        if(isNonValidVoucher){
+        if (isNonValidVoucher) {
             errorNote = "Booking failed booking use invalid voucher";
             return processBooking(userId, yardId, bookingModel, errorNote, BookingStatus.FAILED);
         }

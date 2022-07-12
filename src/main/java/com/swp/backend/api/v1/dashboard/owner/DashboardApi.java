@@ -24,8 +24,7 @@ public class DashboardApi {
     private SecurityContextService securityContextService;
 
     @PostMapping("dashboard")
-    public ResponseEntity<String> getDashboardStatistic(@RequestBody(required = false) DashboardRequest request)
-    {
+    public ResponseEntity<String> getDashboardStatistic(@RequestBody(required = false) DashboardRequest request) {
         DashboardResponse response;
         Timestamp startDate = Timestamp.valueOf(request.getStartTime() + " 00:00:00");
         Timestamp endDate = Timestamp.valueOf(request.getEndTime() + " 00:00:00");
@@ -37,8 +36,7 @@ public class DashboardApi {
         var numberOfBookingsByTime = dashboardService.getBookingByTimeStatistic(ownerId, startDate, endDate).values();
         long maxOfBookings = 0;
         long totalIncome = 0;
-        for(YardStatisticModel yardStatisticModel : yardStatistic)
-        {
+        for (YardStatisticModel yardStatisticModel : yardStatistic) {
             maxOfBookings = maxOfBookings > yardStatisticModel.getNumberOfBookings() ? maxOfBookings : yardStatisticModel.getNumberOfBookings();
             totalIncome += yardStatisticModel.getTotalIncome();
         }

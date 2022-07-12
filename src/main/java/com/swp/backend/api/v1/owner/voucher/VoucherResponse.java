@@ -13,5 +13,6 @@ import java.util.List;
 public class VoucherResponse {
     private int page;
     private int maxResult;
+    private String message;
     private List<VoucherModel> vouchers;
 }

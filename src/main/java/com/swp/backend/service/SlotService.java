@@ -1,18 +1,19 @@
 package com.swp.backend.service;
 
 import com.swp.backend.constance.BookingStatus;
-import com.swp.backend.entity.SlotEntity;
+import com.swp.backend.entity.*;
+import com.swp.backend.model.BookedSlotModel;
 import com.swp.backend.model.Slot;
 import com.swp.backend.model.model_builder.ListSlotBuilder;
 import com.swp.backend.myrepository.SlotCustomRepository;
-import com.swp.backend.repository.BookingRepository;
-import com.swp.backend.repository.SlotRepository;
+import com.swp.backend.repository.*;
 import com.swp.backend.utils.DateHelper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -27,6 +28,9 @@ public class SlotService {
     private SlotCustomRepository slotCustomRepository;
     private SlotRepository slotRepository;
     private BookingRepository bookingRepository;
+    private AccountRepository accountRepository;
+    private YardRepository yardRepository;
+    private SubYardRepository subYardRepository;
 
     public List<Slot> getAllSlotInSubYardByDate(String subYardId, String date) {
         try {
@@ -45,6 +49,24 @@ public class SlotService {
             return allSlots;
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
+        }
+    }
+    public List<Slot> getAllSlotInSubYardByDateFromOwner(String subYardId, String date)
+    {
+        try
+        {
+            List<SlotEntity> allSlotEntities = getAllSlotsInSubYardByFutureDate(subYardId);
+            List<Slot> allSlots = ListSlotBuilder.getAvailableSlotsFromSlotEntities(allSlotEntities);
+            List<?> queriedBookedSlots = slotCustomRepository.getAllBookedSlotInSubYardByFutureDate(subYardId, LocalDate.parse(date, DateTimeFormatter.ofPattern("d/M/yyyy")));
+            List<Slot> bookedSlots = ListSlotBuilder.getBookedSlotsFromQueriedSlotEntities(queriedBookedSlots);
+            allSlots = updateBookedStateOfAllSlots(allSlots, bookedSlots);
+            Collections.sort(allSlots);
+
+            return allSlots;
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
             return null;
         }
     }
@@ -133,5 +155,30 @@ public class SlotService {
         LocalTime localTimeToday = LocalTime.now(ZoneId.of(DateHelper.VIETNAM_ZONE));
         SlotEntity slotEntity = slotRepository.findSlotEntityByIdAndStartTimeGreaterThanAndActive(slotId, localTimeToday, true);
         return slotEntity != null;
+    }
+
+    public BookedSlotModel getBookedSlotModel(int slotId, String date)
+    {
+        LocalDate queryDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("d/M/yyyy"));
+        Timestamp queryDateInTimestamp = Timestamp.valueOf(queryDate + " 00:00:00");
+        BookingEntity bookingEntity = bookingRepository.findBookingEntityBySlotIdAndStatusAndDate(slotId, BookingStatus.SUCCESS, queryDateInTimestamp);
+        AccountEntity account = accountRepository.findUserEntityByUserId(bookingEntity.getAccountId());
+        YardEntity yard = yardRepository.findYardEntitiesById(bookingEntity.getBigYardId());
+        SubYardEntity subYard;
+        subYard = subYardRepository.getSubYardEntitiesById(bookingEntity.getSubYardId());
+        SlotEntity slot = slotRepository.findSlotEntityById(slotId);
+        if(bookingEntity == null) return null;
+        return BookedSlotModel.builder()
+                .userId(bookingEntity.getAccountId())
+                .userName(account.getFullName())
+                .email(account.getEmail())
+                .phone(account.getPhone())
+                .yardName(yard.getName())
+                .subYardName(subYard.getName())
+                .startTime(slot.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")))
+                .endTime(slot.getEndTime().format(DateTimeFormatter.ofPattern("HH:mm")))
+                .bookedTime(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(bookingEntity.getBookAt()))
+                .price(Integer.toString(bookingEntity.getPrice()))
+                .build();
     }
 }

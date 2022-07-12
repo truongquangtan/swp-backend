@@ -12,6 +12,8 @@ import java.util.List;
 public interface VoucherRepository extends JpaRepository<VoucherEntity, String> {
     public List<VoucherEntity> findVoucherEntitiesByCreatedByAccountId(String accountId, Pageable pageable);
 
+    public List<VoucherEntity> findVoucherEntitiesByCreatedByAccountId(String accountId);
+
     public List<VoucherEntity> findVoucherEntitiesByCreatedByAccountIdAndEndDateAfterAndActive(String accountId, Timestamp now, boolean active, Pageable pageable);
 
     public VoucherEntity findVoucherEntityByVoucherCode(String voucherCode);

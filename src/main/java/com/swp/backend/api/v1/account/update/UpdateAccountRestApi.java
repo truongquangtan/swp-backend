@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.swp.backend.api.v1.account.login.LoginResponse;
 import com.swp.backend.exception.ErrorResponse;
 import com.swp.backend.model.AccountModel;
-import com.swp.backend.model.SuccessResponseModel;
 import com.swp.backend.service.AccountLoginService;
 import com.swp.backend.service.AccountService;
 import com.swp.backend.service.SecurityContextService;

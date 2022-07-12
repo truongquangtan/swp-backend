@@ -19,8 +19,7 @@ public class YardReportService {
     private YardReportRepository yardReportRepository;
     private YardReportCustomRepository yardReportCustomRepository;
 
-    public void reportYard(String userId, String yardId, String reason)
-    {
+    public void reportYard(String userId, String yardId, String reason) {
         YardReportEntity yardReportEntity = YardReportEntity.builder().yardId(yardId)
                 .id(UUID.randomUUID().toString())
                 .userId(userId)
@@ -32,24 +31,23 @@ public class YardReportService {
         yardReportRepository.save(yardReportEntity);
     }
 
-    public List<YardReportModel> getYardReportsDetail(int page, int itemsPerPage)
-    {
+    public List<YardReportModel> getYardReportsDetail(int page, int itemsPerPage) {
         PaginationHelper paginationHelper = new PaginationHelper(itemsPerPage, yardReportCustomRepository.countAllYardReports());
         return yardReportCustomRepository.getYardReportModelByPage(paginationHelper.getStartIndex(page), paginationHelper.getEndIndex(page));
     }
-    public int getNumberOfYardReports()
-    {
+
+    public int getNumberOfYardReports() {
         return yardReportCustomRepository.countAllYardReports();
     }
-    public void maskAsResolvedReport(String reportId)
-    {
+
+    public void maskAsResolvedReport(String reportId) {
         YardReportEntity yardReportEntity = yardReportRepository.findYardReportEntityById(reportId);
         yardReportEntity.setStatus(YardReportStatus.REPORT_HANDLED);
         yardReportEntity.setUpdatedAt(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE));
         yardReportRepository.save(yardReportEntity);
     }
-    public void rejectReport(String reportId)
-    {
+
+    public void rejectReport(String reportId) {
         YardReportEntity yardReportEntity = yardReportRepository.findYardReportEntityById(reportId);
         yardReportEntity.setStatus(YardReportStatus.REPORT_REJECTED);
         yardReportEntity.setUpdatedAt(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE));

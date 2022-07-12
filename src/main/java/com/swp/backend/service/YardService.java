@@ -338,8 +338,8 @@ public class YardService {
     public String getOwnerIdOfYard(String yardId) {
         return yardRepository.findYardEntityById(yardId).getOwnerId();
     }
-    public List<YardEntity> getAllYardEntityOfOwner(String ownerId)
-    {
+
+    public List<YardEntity> getAllYardEntityOfOwner(String ownerId) {
         return yardRepository.findYardEntitiesByOwnerIdOrderByReferenceAsc(ownerId);
     }
 }
