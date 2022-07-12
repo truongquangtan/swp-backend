@@ -12,7 +12,6 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 public class GetSlotRequest {
     private String date;
-
     public boolean isValid() {
         Timestamp dateParsed = DateHelper.parseFromStringToTimestamp(date);
         return dateParsed != null;
