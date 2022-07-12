@@ -88,14 +88,13 @@ public class DateHelper {
     }
 
     public static Timestamp parseTimestampNonTimeAtZone(String dateInput) {
-        DateTimeFormatter formatDateTime = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        DateTimeFormatter formatDateTime = DateTimeFormatter.ofPattern("d/M/yyyy HH:mm:ss");
         LocalDateTime localDateTime = LocalDateTime.from(formatDateTime.parse(dateInput + " 00:00:00"));
         return Timestamp.valueOf(localDateTime);
     }
 
 
     public static LocalDate parseFromTimestampToLocalDate(Timestamp timestamp) {
-        LocalDate localDate = LocalDate.ofInstant(timestamp.toInstant(), ZoneId.of(VIETNAM_ZONE));
-        return localDate;
+        return LocalDate.ofInstant(timestamp.toInstant(), ZoneId.of(VIETNAM_ZONE));
     }
 }

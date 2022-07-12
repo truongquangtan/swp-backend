@@ -43,12 +43,19 @@ public class OwnerVoucherRestApi {
         }
     }
 
-    @PostMapping("search")
-    public ResponseEntity<String> searchAndFilterVoucher(@RequestBody(required = false) SearchModel search){
+    @PostMapping("vouchers/search")
+    public ResponseEntity<String> searchAndFilterVoucher(@RequestBody(required = false) SearchModel search) {
         try {
-            return ResponseEntity.ok().build();
-        }catch (Exception exception){
-            ErrorResponse errorResponse = ErrorResponse.builder().stack(exception.getMessage()).message("Server busy temp can't create voucher.").build();
+            if (search == null) {
+                return ResponseEntity.badRequest().body(gson.toJson(ErrorResponse.builder().message("Missing body!").build()));
+            }
+            SecurityContext securityContext = SecurityContextHolder.getContext();
+            String ownerId = securityContextService.extractUsernameFromContext(securityContext);
+            VoucherResponse searchResult = voucherService.SearchVoucherByOwnerId(ownerId, search);
+            return ResponseEntity.ok().body(gson.toJson(searchResult));
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            ErrorResponse errorResponse = ErrorResponse.builder().stack(exception.getMessage()).message("Server busy temp can't search voucher.").build();
             return ResponseEntity.internalServerError().body(gson.toJson(errorResponse));
         }
     }
@@ -61,7 +68,7 @@ public class OwnerVoucherRestApi {
             String accountId = securityContextService.extractUsernameFromContext(securityContext);
             if (pageModel == null) {
                 response = voucherService.getAllVoucherByOwnerId(accountId, null, null);
-                return ResponseEntity.badRequest().body(gson.toJson(response));
+                return ResponseEntity.ok().body(gson.toJson(response));
             } else {
                 response = voucherService.getAllVoucherByOwnerId(accountId, pageModel.getItemsPerPage(), pageModel.getPage());
             }

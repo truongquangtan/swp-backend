@@ -95,8 +95,8 @@ public class ReactivationService {
             throw new RuntimeException("Error when process inactivate yard.");
         }
     }
-    public void processReactiveYard(String yardId)
-    {
+
+    public void processReactiveYard(String yardId) {
         List<String> listYard = new ArrayList<>();
         listYard.add(yardId);
         List<String> subYardIdList = subYardRepository.getAllSubYardIdByListBigYardId(listYard);

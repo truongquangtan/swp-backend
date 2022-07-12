@@ -26,8 +26,7 @@ public class DashboardService {
     private YardService yardService;
     private DashboardRepository dashboardRepository;
 
-    public List<YardStatisticModel> processGetAllInformationOfYardStatisticModel(String ownerId, Timestamp startDate, Timestamp endDate)
-    {
+    public List<YardStatisticModel> processGetAllInformationOfYardStatisticModel(String ownerId, Timestamp startDate, Timestamp endDate) {
         List<YardStatisticModel> resultList = initializeYardStatisticModelsOfOwner(ownerId);
         resultList = updateNumberOfBookingStatisticForModels(resultList, ownerId, startDate, endDate);
         resultList = updateNumberOfBookingCanceledStatisticForModels(resultList, ownerId, startDate, endDate);
@@ -37,12 +36,10 @@ public class DashboardService {
         return resultList;
     }
 
-    public List<YardStatisticModel> initializeYardStatisticModelsOfOwner(String ownerId)
-    {
+    public List<YardStatisticModel> initializeYardStatisticModelsOfOwner(String ownerId) {
         List<YardEntity> yardEntities = yardService.getAllYardEntityOfOwner(ownerId);
         List<YardStatisticModel> yardStatisticModelsInitialization = new ArrayList<>();
-        for(YardEntity yard : yardEntities)
-        {
+        for (YardEntity yard : yardEntities) {
             YardStatisticModel yardStatisticModel = YardStatisticModel.builder().yardId(yard.getId())
                     .yardName(yard.getName())
                     .build();
@@ -54,17 +51,13 @@ public class DashboardService {
     public List<YardStatisticModel> updateNumberOfBookingStatisticForModels(List<YardStatisticModel> preList,
                                                                             String ownerId,
                                                                             Timestamp startDate,
-                                                                            Timestamp endDate)
-    {
+                                                                            Timestamp endDate) {
         List<YardStatisticModel> yardsContainNumberOfBookingStatistic = dashboardRepository.getNumberOfYardBookingsForOwner(ownerId, startDate, endDate);
 
         //Với mỗi thông số trong list mới, tìm trong list cũ để update thông số
-        for(YardStatisticModel newModel : yardsContainNumberOfBookingStatistic)
-        {
-            for(YardStatisticModel preModel : preList)
-            {
-                if(newModel.getYardId().equals(preModel.getYardId()))
-                {
+        for (YardStatisticModel newModel : yardsContainNumberOfBookingStatistic) {
+            for (YardStatisticModel preModel : preList) {
+                if (newModel.getYardId().equals(preModel.getYardId())) {
                     preModel.setNumberOfBookings(newModel.getNumberOfBookings());
                     break;
                 }
@@ -73,20 +66,17 @@ public class DashboardService {
 
         return preList;
     }
+
     public List<YardStatisticModel> updateNumberOfBookingCanceledStatisticForModels(List<YardStatisticModel> preList,
-                                                                            String ownerId,
-                                                                            Timestamp startDate,
-                                                                            Timestamp endDate)
-    {
+                                                                                    String ownerId,
+                                                                                    Timestamp startDate,
+                                                                                    Timestamp endDate) {
         List<YardStatisticModel> yardsContainNumberOfBookingCanceledStatistic = dashboardRepository.getNumberOfYardBookingCanceledForOwner(ownerId, startDate, endDate);
 
         //Với mỗi thông số trong list mới, tìm trong list cũ để update thông số
-        for(YardStatisticModel newModel : yardsContainNumberOfBookingCanceledStatistic)
-        {
-            for(YardStatisticModel preModel : preList)
-            {
-                if(newModel.getYardId().equals(preModel.getYardId()))
-                {
+        for (YardStatisticModel newModel : yardsContainNumberOfBookingCanceledStatistic) {
+            for (YardStatisticModel preModel : preList) {
+                if (newModel.getYardId().equals(preModel.getYardId())) {
                     preModel.setNumberOfBookingCanceled(newModel.getNumberOfBookingCanceled());
                     break;
                 }
@@ -95,20 +85,17 @@ public class DashboardService {
 
         return preList;
     }
+
     public List<YardStatisticModel> updateNumberOfBookingPlayedStatisticForModels(List<YardStatisticModel> preList,
-                                                                            String ownerId,
-                                                                            Timestamp startDate,
-                                                                            Timestamp endDate)
-    {
+                                                                                  String ownerId,
+                                                                                  Timestamp startDate,
+                                                                                  Timestamp endDate) {
         List<YardStatisticModel> yardsContainNumberOfBookingPlayedStatistic = dashboardRepository.getNumberOfYardBookingPlayedForOwner(ownerId, startDate, endDate);
 
         //Với mỗi thông số trong list mới, tìm trong list cũ để update thông số
-        for(YardStatisticModel newModel : yardsContainNumberOfBookingPlayedStatistic)
-        {
-            for(YardStatisticModel preModel : preList)
-            {
-                if(newModel.getYardId().equals(preModel.getYardId()))
-                {
+        for (YardStatisticModel newModel : yardsContainNumberOfBookingPlayedStatistic) {
+            for (YardStatisticModel preModel : preList) {
+                if (newModel.getYardId().equals(preModel.getYardId())) {
                     preModel.setNumberOfBookingPlayed(newModel.getNumberOfBookingPlayed());
                     break;
                 }
@@ -119,26 +106,21 @@ public class DashboardService {
     }
 
     public List<YardStatisticModel> updateBusinessContributionStatisticForModels(List<YardStatisticModel> preList,
-                                                                                  String ownerId,
-                                                                                  Timestamp startDate,
-                                                                                  Timestamp endDate)
-    {
+                                                                                 String ownerId,
+                                                                                 Timestamp startDate,
+                                                                                 Timestamp endDate) {
         List<YardStatisticModel> yardsContainBusinessContributionStatistic = dashboardRepository.getYardBookingTotalIncomeForOwner(ownerId, startDate, endDate);
 
         long totalIncome = 0;
-        for(YardStatisticModel newModel : yardsContainBusinessContributionStatistic)
-        {
+        for (YardStatisticModel newModel : yardsContainBusinessContributionStatistic) {
             totalIncome += newModel.getTotalIncome();
         }
 
         //Với mỗi thông số trong list mới, tìm trong list cũ để update thông số
-        for(YardStatisticModel newModel : yardsContainBusinessContributionStatistic)
-        {
-            for(YardStatisticModel preModel : preList)
-            {
-                if(newModel.getYardId().equals(preModel.getYardId()))
-                {
-                    double percentage = ((double) newModel.getTotalIncome())/totalIncome*100;
+        for (YardStatisticModel newModel : yardsContainBusinessContributionStatistic) {
+            for (YardStatisticModel preModel : preList) {
+                if (newModel.getYardId().equals(preModel.getYardId())) {
+                    double percentage = ((double) newModel.getTotalIncome()) / totalIncome * 100;
                     preModel.setBusinessContributionPercentage((int) Math.round(percentage));
                     preModel.setTotalIncome(newModel.getTotalIncome());
                     break;
@@ -150,21 +132,16 @@ public class DashboardService {
     }
 
 
-    public Map getBookingByTimeStatistic(String ownerId, Timestamp startDate, Timestamp endDate)
-    {
+    public Map getBookingByTimeStatistic(String ownerId, Timestamp startDate, Timestamp endDate) {
         List<SlotStatistic> slots = dashboardRepository.getNumberOfBookingInSlotForOwner(ownerId, startDate, endDate);
         Map<String, Long> bookingInSlotStatisticsByTimeSet = new TreeMap<>();
-        for(String time : TIME_SET)
-        {
+        for (String time : TIME_SET) {
             bookingInSlotStatisticsByTimeSet.put(time, Long.valueOf(0));
         }
 
-        for(SlotStatistic slot : slots)
-        {
-            for(String time : TIME_SET)
-            {
-                if(time.compareTo(slot.getStartTime()) >= 0 && time.compareTo(slot.getEndTime()) <=0)
-                {
+        for (SlotStatistic slot : slots) {
+            for (String time : TIME_SET) {
+                if (time.compareTo(slot.getStartTime()) >= 0 && time.compareTo(slot.getEndTime()) <= 0) {
                     Long currentStatistic = bookingInSlotStatisticsByTimeSet.get(time);
                     currentStatistic += slot.getNumberOfBooking();
                     bookingInSlotStatisticsByTimeSet.put(time, currentStatistic);

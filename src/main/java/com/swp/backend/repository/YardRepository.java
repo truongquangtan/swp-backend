@@ -26,5 +26,6 @@ public interface YardRepository extends JpaRepository<YardEntity, String> {
     public YardEntity findYardEntityByIdAndDeleted(String yardId, boolean isDeleted);
 
     public YardEntity findYardEntityById(String yardId);
+
     public List<YardEntity> findYardEntitiesByOwnerIdOrderByReferenceAsc(String ownerId);
 }

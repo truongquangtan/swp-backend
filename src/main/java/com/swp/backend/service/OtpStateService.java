@@ -3,7 +3,6 @@ package com.swp.backend.service;
 import com.swp.backend.entity.AccountEntity;
 import com.swp.backend.entity.AccountOtpEntity;
 import com.swp.backend.repository.AccountOtpRepository;
-import com.swp.backend.repository.AccountRepository;
 import com.swp.backend.utils.DateHelper;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataAccessException;
@@ -61,7 +60,7 @@ public class OtpStateService {
         sendEmailOtpResetPassword(account.getFullName(), account.getEmail(), otp);
     }
 
-    private void sendEmailOtpResetPassword(String userName, String email, String otpCode){
+    private void sendEmailOtpResetPassword(String userName, String email, String otpCode) {
         String htmlBody = "<div style=\"font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2\">" +
                 " <div style=\"margin:50px auto;width:70%;padding:20px 0\">" +
                 " <div style=\"border-bottom:1px solid #eee\">" +

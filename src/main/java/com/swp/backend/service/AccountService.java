@@ -175,7 +175,7 @@ public class AccountService {
                 try {
                     yardService.reactiveAllYardsOfOwner(userId);
                     yardService.getAllYardEntityOfOwner(userId).stream().forEach(yard -> {
-                        if(!yard.isActive())
+                        if (!yard.isActive())
                             reactivationService.processReactiveYard(yard.getId());
                     });
                 } catch (Exception exception) {
@@ -188,7 +188,7 @@ public class AccountService {
                 try {
                     accountLoginService.deleteAllLogin(userId);
                     yardService.getAllYardEntityOfOwner(userId).stream().forEach(yard -> {
-                        if(yard.isActive())
+                        if (yard.isActive())
                             inactivationService.processInactivateYard(userId, yard.getId(), DISABLED_USER_REASON);
                     });
                 } catch (Exception exception) {
@@ -296,7 +296,7 @@ public class AccountService {
             account.setPhone(phone);
         }
 
-        if(fullName  != null && fullName.trim().length() > 0){
+        if (fullName != null && fullName.trim().length() > 0) {
             account.setFullName(fullName.trim());
         }
 
@@ -314,15 +314,15 @@ public class AccountService {
                 .build();
     }
 
-    public AccountModel verifyCurrentPassword(String userId, String password) throws DataAccessException{
-        if(userId == null || password == null){
+    public AccountModel verifyCurrentPassword(String userId, String password) throws DataAccessException {
+        if (userId == null || password == null) {
             return null;
         }
         AccountEntity account = accountRepository.findUserEntityByUserId(userId);
-        if(account == null){
+        if (account == null) {
             return null;
         }
-        if(passwordEncoder.matches(password, account.getPassword())){
+        if (passwordEncoder.matches(password, account.getPassword())) {
             RoleEntity role = roleService.getRoleById(account.getRoleId());
             return AccountModel.builder()
                     .role(role.getRoleName())

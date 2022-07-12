@@ -60,16 +60,16 @@ public class BookingApi {
             boolean isNonValidVoucher = false;
             boolean isApplyVoucher = false;
             VoucherEntity voucher = null;
-            if(request.getVoucherCode() != null){
+            if (request.getVoucherCode() != null) {
                 voucher = voucherService.getValidApplyVoucherForBookingByVoucherCode(request.getVoucherCode());
-                if(voucher != null){
+                if (voucher != null) {
                     isApplyVoucher = true;
-                }else {
+                } else {
                     isNonValidVoucher = true;
                 }
             }
             for (BookingModel bookingModel : request.getBookingList()) {
-                if(isApplyVoucher){
+                if (isApplyVoucher) {
                     bookingModel.setVoucherCode(voucher.getVoucherCode());
                 }
                 BookingEntity booking = bookingService.book(userId, yardId, bookingModel, isNonValidVoucher);
@@ -83,8 +83,8 @@ public class BookingApi {
             if (isAllError) {
                 response = new BookingResponse("All of your booking slot is error", isError, bookingEntities);
                 return ResponseEntity.ok().body(gson.toJson(response));
-            }else {
-                if(isApplyVoucher){
+            } else {
+                if (isApplyVoucher) {
                     voucher.setUsages(voucher.getUsages() + 1);
                     voucherService.updateUsesVoucher(voucher);
                 }

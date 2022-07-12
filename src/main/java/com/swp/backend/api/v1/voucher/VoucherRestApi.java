@@ -46,7 +46,7 @@ public class VoucherRestApi {
                 return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
             }
             List<BookingModel> listBooking = applyVoucherRequest.getBookingList();
-            if(listBooking == null || listBooking.size() == 0){
+            if (listBooking == null || listBooking.size() == 0) {
                 ErrorResponse errorResponse = ErrorResponse.builder().message("List booking is empty").build();
                 return ResponseEntity.badRequest().body(gson.toJson(errorResponse));
             }
