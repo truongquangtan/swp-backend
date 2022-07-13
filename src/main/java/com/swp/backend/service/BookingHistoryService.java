@@ -122,7 +122,7 @@ public class BookingHistoryService {
         if (columnSort == null || columnSort.trim().length() == 0) {
             return bookingHistoryModels;
         }
-        String columnName = columnSort.trim().toLowerCase();
+        String columnName = columnSort.trim();
         char sort = columnSort.charAt(0);
         if (sort == '+' || sort == '-') {
             columnName = columnName.substring(1);

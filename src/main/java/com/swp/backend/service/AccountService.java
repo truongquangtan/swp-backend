@@ -368,7 +368,7 @@ public class AccountService {
         }
         return accounts.stream().filter(account -> account.getFullName().toLowerCase().contains(keyword)
                 || account.getEmail().toLowerCase().contains(keyword)
-                || account.getPhone().contains(keyword)
+                || (account.getPhone() != null && account.getPhone().contains(keyword))
         ).collect(Collectors.toList());
     }
 
