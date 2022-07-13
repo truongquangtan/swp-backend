@@ -11,10 +11,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("api/v1/owners/me")
 @RestController
@@ -42,9 +39,21 @@ public class OwnerVoucherRestApi {
         }
     }
 
-    @PostMapping("vouchers/update")
-    public ResponseEntity<String> updateVoucher(){
-        return ResponseEntity.ok().build();
+    @PutMapping("vouchers/update")
+    public ResponseEntity<String> updateVoucher(@RequestBody(required = false) VoucherModel voucher){
+        try {
+            if (voucher == null) {
+                ErrorResponse response = ErrorResponse.builder().message("Missing body!").build();
+                return ResponseEntity.badRequest().body(gson.toJson(response));
+            }
+            voucherService.updateVoucher(voucher);
+            MessageResponse messageResponse = MessageResponse.builder().message("Save change success!").build();
+            return ResponseEntity.ok(gson.toJson(messageResponse));
+        }catch (Exception exception){
+            exception.printStackTrace();
+            ErrorResponse errorResponse = ErrorResponse.builder().stack(exception.getMessage()).message("Server busy temp can't search voucher.").build();
+            return ResponseEntity.internalServerError().body(gson.toJson(errorResponse));
+        }
     }
 
     @PostMapping("vouchers")

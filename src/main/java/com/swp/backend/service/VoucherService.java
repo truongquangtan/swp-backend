@@ -1,6 +1,7 @@
 package com.swp.backend.service;
 
 import com.swp.backend.api.v1.owner.voucher.VoucherResponse;
+import com.swp.backend.constance.VoucherProperties;
 import com.swp.backend.entity.VoucherEntity;
 import com.swp.backend.exception.ApplyVoucherException;
 import com.swp.backend.model.*;
@@ -58,8 +59,33 @@ public class VoucherService {
         voucherRepository.save(voucherEntity);
     }
 
+    public void updateVoucher(VoucherModel voucher) throws DataAccessException {
+        Timestamp startDate = DateHelper.parseTimestampNonTimeAtZone(voucher.getStartDate());
+        Timestamp endDate = DateHelper.parseTimestampNonTimeAtZone(voucher.getEndDate());
+        endDate = DateHelper.plusMinutes(endDate, 1439);
+        VoucherEntity voucherEntity = VoucherEntity.builder()
+                .id(voucher.getId())
+                .voucherCode(voucher.getVoucherCode())
+                .createdByAccountId(voucher.getCreatedByAccountId())
+                .startDate(startDate)
+                .endDate(endDate)
+                .maxQuantity(voucher.getMaxQuantity())
+                .usages(voucher.getUsages())
+                .title(voucher.getTitle())
+                .description(voucher.getDescription())
+                .discount(voucher.getDiscount())
+                .active(voucher.getIsActive())
+                .status(voucher.getStatus())
+                .type(voucher.getType())
+                .createdAt(Timestamp.valueOf(voucher.getCreatedAt()))
+                .reference(voucher.getReference())
+                .build();
+        voucherRepository.save(voucherEntity);
+    }
+
     public VoucherResponse SearchVoucherByOwnerId(String ownerId, SearchModel searchModel) {
         List<VoucherEntity> voucherResults = findAllVoucherByOwnerId(ownerId, null);
+        voucherResults = voucherResults.stream().filter(voucher -> !voucher.getStatus().equals(DELETED)).collect(Collectors.toList());
         int pageValue = 1;
         int offSetValue = 10;
         if(searchModel != null){
@@ -183,19 +209,6 @@ public class VoucherService {
         return vouchers;
     }
 
-    public VoucherResponse getAllVoucherByOwnerId(String ownerId, Integer offSet, Integer page) {
-        int offSetValue = offSet != null ? offSet : 10;
-        int pageValue = page != null ? page : 1;
-        int maxResult = voucherRepository.countAllByCreatedByAccountId(ownerId);
-        if ((pageValue - 1) * offSetValue >= maxResult) {
-            pageValue = 1;
-        }
-        Pageable pageable = PageRequest.of((pageValue - 1), offSetValue, Sort.by("createdAt").descending());
-        List<VoucherEntity> voucherResults = findAllVoucherByOwnerId(ownerId, pageable);
-        List<VoucherModel> voucherModels = voucherResults.stream().map((this::convertVoucherModelFromVoucherEntity)).collect(Collectors.toList());
-        return VoucherResponse.builder().vouchers(voucherModels).maxResult(maxResult).page(pageValue).build();
-    }
-
     private List<VoucherEntity> findAllVoucherByOwnerId(String ownerId, Pageable pageable) {
         List<VoucherEntity> vouchers;
         if (pageable == null) {
@@ -221,6 +234,7 @@ public class VoucherService {
         }
         Pageable pageable = PageRequest.of((pageValue - 1), offSetValue, Sort.by("createdAt").ascending());
         List<VoucherEntity> voucherResults = voucherRepository.findVoucherEntitiesByCreatedByAccountIdAndEndDateAfterAndActive(ownerId, now, true, pageable);
+        voucherResults = voucherResults.stream().filter(voucher -> voucher.getStatus().equals(ACTIVE)).collect(Collectors.toList());
         List<VoucherModel> voucherModels = voucherResults.stream().map((this::convertVoucherModelFromVoucherEntity)).collect(Collectors.toList());
         voucherModels = voucherModels.stream().filter(voucherModel -> voucherModel.getMaxQuantity() > voucherModel.getUsages()).collect(Collectors.toList());
         return VoucherResponse.builder().vouchers(voucherModels).maxResult(maxResult).page(pageValue).build();
@@ -249,12 +263,6 @@ public class VoucherService {
                 .createdByAccountId(voucherEntity.getCreatedByAccountId())
                 .discount(voucherEntity.getDiscount())
                 .build();
-    }
-
-    public void updateVoucher(VoucherModel voucher) throws DataAccessException {
-        VoucherEntity voucherEntity = voucherRepository.getVoucherEntityById(voucher.getId());
-        voucherEntity.setActive(voucher.getIsActive() != null ? voucher.getIsActive() : voucherEntity.isActive());
-        voucherRepository.save(voucherEntity);
     }
 
     public List<BookingApplyVoucherModel> calculationPriceApplyVoucher(List<BookingModel> listBooking, VoucherEntity voucherApply) throws ApplyVoucherException {
