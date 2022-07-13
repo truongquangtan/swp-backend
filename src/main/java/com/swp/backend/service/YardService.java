@@ -267,11 +267,10 @@ public class YardService {
         if (filter == null) {
             return yards;
         }
-        if (filter.getField().equalsIgnoreCase("status")) {
-            if (filter.getValue().equals("active")) {
+        if (filter.getField().equalsIgnoreCase("isActive")) {
+            if (Boolean.parseBoolean(filter.getValue())) {
                 return yards.stream().filter(YardEntity::isActive).collect(Collectors.toList());
-            }
-            if (filter.getValue().equals("inactive")) {
+            }else {
                 return yards.stream().filter(yard -> !yard.isActive()).collect(Collectors.toList());
             }
         }
@@ -322,7 +321,7 @@ public class YardService {
             }
         }
 
-        if (sortColumn.equals("startTime")) {
+        if (sortColumn.equals("openAt")) {
             if (sort == '+') {
                 yards.sort((fistYard, secondYard) -> fistYard.getOpenAt().compareTo(secondYard.getOpenAt()));
             } else {
@@ -330,7 +329,7 @@ public class YardService {
             }
         }
 
-        if (sortColumn.equals("endTime")) {
+        if (sortColumn.equals("closeAt")) {
             if (sort == '+') {
                 yards.sort((fistYard, secondYard) -> fistYard.getCloseAt().compareTo(secondYard.getCloseAt()));
             } else {
