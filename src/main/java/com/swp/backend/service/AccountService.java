@@ -379,7 +379,7 @@ public class AccountService {
                 .userId(account.getUserId())
                 .role(roleNameMapping.get(account.getRoleId()))
                 .email(account.getEmail())
-                .phone(account.getFullName())
+                .phone(account.getPhone())
                 .isActive(account.isActive())
                 .avatar(account.getAvatar())
                 .isConfirmed(account.isConfirmed())

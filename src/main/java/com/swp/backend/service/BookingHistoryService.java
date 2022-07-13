@@ -153,6 +153,14 @@ public class BookingHistoryService {
                 bookingHistoryModels.sort((first, second) -> Integer.compare(second.getPrice(), first.getPrice()));
             }
         }
+
+        if (columnName.equals("bigYardName")) {
+            if (sort == '+') {
+                bookingHistoryModels.sort((first, second) -> first.getBigYardName().compareTo(second.getBigYardName()));
+            } else {
+                bookingHistoryModels.sort((first, second) -> first.getBigYardName().compareTo(second.getBigYardName()));
+            }
+        }
         return bookingHistoryModels;
     }
 
