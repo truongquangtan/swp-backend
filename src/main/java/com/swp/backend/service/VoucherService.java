@@ -60,15 +60,26 @@ public class VoucherService {
 
     public VoucherResponse SearchVoucherByOwnerId(String ownerId, SearchModel searchModel) {
         List<VoucherEntity> voucherResults = findAllVoucherByOwnerId(ownerId, null);
-        voucherResults = handleSearchByKeyword(searchModel.getKeyword(), voucherResults);
-        voucherResults = handleFilterVoucher(searchModel.getFilter(), voucherResults);
-        voucherResults = handleSortByColumn(searchModel.getSort(), voucherResults);
+        if(searchModel != null){
+            voucherResults = handleSearchByKeyword(searchModel.getKeyword(), voucherResults);
+            voucherResults = handleFilterVoucher(searchModel.getFilter(), voucherResults);
+            voucherResults = handleSortByColumn(searchModel.getSort(), voucherResults);
+        }
 
         if (voucherResults.size() == 0) {
             return VoucherResponse.builder().page(1).maxResult(0).message("Did not any result matches with keyword. Try again!").build();
         }
         List<VoucherModel> voucherModels = voucherResults.stream().map((this::convertVoucherModelFromVoucherEntity)).collect(Collectors.toList());
-        return VoucherResponse.builder().vouchers(voucherModels).maxResult(voucherModels.size()).page(1).build();
+        int maxResult = voucherResults.size();
+        int pageValue = searchModel.getPage() != null ? searchModel.getPage() : 1;
+        int offSetValue = searchModel.getItemsPerPage() != null ? searchModel.getItemsPerPage() : 10;
+
+        if ((pageValue - 1) * offSetValue >= maxResult) {
+            pageValue = 1;
+        }
+        int startIndex = Math.max((pageValue - 1) * offSetValue - 1, 0);
+        int endIndex = Math.min((pageValue * offSetValue), maxResult);
+        return VoucherResponse.builder().vouchers(voucherModels.subList(startIndex, endIndex)).maxResult(voucherModels.size()).page(1).build();
     }
 
     private List<VoucherEntity> handleFilterVoucher(FilterModel filter, List<VoucherEntity> vouchers) {

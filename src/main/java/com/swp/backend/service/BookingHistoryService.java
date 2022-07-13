@@ -61,7 +61,6 @@ public class BookingHistoryService {
     }
 
     public List<BookingHistoryModel> handleSearchAndFilterBookingHistory(String userId, String roleName, SearchModel searchModel) {
-
         List<BookingHistoryEntity> bookingEntities;
         switch (roleName) {
             case RoleProperties.ROLE_USER:
@@ -78,10 +77,11 @@ public class BookingHistoryService {
             String createBy = booking.getCreatedBy().equals(userId) ? "You" : accountService.getRoleFromUserId(booking.getCreatedBy());
             return getBookingHistoryModelFromBookingHistoryEntityAndCreatedBy(booking, "You");
         }).collect(Collectors.toList());
-
-        bookingHistoryModels = searchBookingHistories(searchModel.getKeyword(), bookingHistoryModels);
-        bookingHistoryModels = filterBookingHistories(searchModel.getFilter(), bookingHistoryModels);
-        bookingHistoryModels = sortBookingHistories(searchModel.getSort(), bookingHistoryModels);
+        if(searchModel != null){
+            bookingHistoryModels = searchBookingHistories(searchModel.getKeyword(), bookingHistoryModels);
+            bookingHistoryModels = filterBookingHistories(searchModel.getFilter(), bookingHistoryModels);
+            bookingHistoryModels = sortBookingHistories(searchModel.getSort(), bookingHistoryModels);
+        }
         return bookingHistoryModels;
     }
 

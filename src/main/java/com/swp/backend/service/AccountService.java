@@ -265,9 +265,11 @@ public class AccountService {
         List<Integer> roleIds = roles.stream().map(RoleEntity::getId).collect(Collectors.toList());
         List<AccountModel> accounts = transformAccountEntityToAccountModel(accountRepository.findAccountEntitiesByRoleIdIn(roleIds), roles);
 
-        accounts = searchAccounts(searchModel.getKeyword(), accounts);
-        accounts = filterAccounts(searchModel.getFilter(), accounts);
-        accounts = sortAccounts(searchModel.getSort(), accounts);
+        if(searchModel != null){
+            accounts = searchAccounts(searchModel.getKeyword(), accounts);
+            accounts = filterAccounts(searchModel.getFilter(), accounts);
+            accounts = sortAccounts(searchModel.getSort(), accounts);
+        }
 
         if (accounts.size() == 0) {
             return GetAllAccountResponse.builder().accounts(accounts).maxResult(0).page(0).build();

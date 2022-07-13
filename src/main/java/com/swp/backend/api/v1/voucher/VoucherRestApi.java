@@ -7,7 +7,7 @@ import com.swp.backend.exception.ApplyVoucherException;
 import com.swp.backend.exception.ErrorResponse;
 import com.swp.backend.model.BookingApplyVoucherModel;
 import com.swp.backend.model.BookingModel;
-import com.swp.backend.model.RequestPageModel;
+import com.swp.backend.model.SearchModel;
 import com.swp.backend.service.VoucherService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,13 +23,13 @@ public class VoucherRestApi {
     private Gson gson;
 
     @PostMapping("owners/{ownerId}/vouchers")
-    public ResponseEntity<String> getAllVoucherAvailable(@RequestBody(required = false) RequestPageModel requestPageModel, @PathVariable String ownerId) {
+    public ResponseEntity<String> getAllVoucherAvailable(@RequestBody(required = false)SearchModel searchModel, @PathVariable String ownerId) {
         try {
             VoucherResponse response;
-            if (requestPageModel == null) {
+            if (searchModel == null) {
                 response = voucherService.getAllVoucherForYard(ownerId, null, null);
             } else {
-                response = voucherService.getAllVoucherForYard(ownerId, requestPageModel.getItemsPerPage(), requestPageModel.getPage());
+                response = voucherService.getAllVoucherForYard(ownerId, searchModel.getItemsPerPage(), searchModel.getPage());
             }
             return ResponseEntity.ok().body(gson.toJson(response));
         } catch (Exception exception) {

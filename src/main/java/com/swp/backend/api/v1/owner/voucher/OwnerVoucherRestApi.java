@@ -3,7 +3,6 @@ package com.swp.backend.api.v1.owner.voucher;
 import com.google.gson.Gson;
 import com.swp.backend.exception.ErrorResponse;
 import com.swp.backend.model.MessageResponse;
-import com.swp.backend.model.RequestPageModel;
 import com.swp.backend.model.SearchModel;
 import com.swp.backend.model.VoucherModel;
 import com.swp.backend.service.SecurityContextService;
@@ -43,12 +42,14 @@ public class OwnerVoucherRestApi {
         }
     }
 
-    @PostMapping("vouchers/search")
+    @PostMapping("vouchers/update")
+    public ResponseEntity<String> updateVoucher(){
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("vouchers")
     public ResponseEntity<String> searchAndFilterVoucher(@RequestBody(required = false) SearchModel search) {
         try {
-            if (search == null) {
-                return ResponseEntity.badRequest().body(gson.toJson(ErrorResponse.builder().message("Missing body!").build()));
-            }
             SecurityContext securityContext = SecurityContextHolder.getContext();
             String ownerId = securityContextService.extractUsernameFromContext(securityContext);
             VoucherResponse searchResult = voucherService.SearchVoucherByOwnerId(ownerId, search);
@@ -60,22 +61,4 @@ public class OwnerVoucherRestApi {
         }
     }
 
-    @PostMapping("vouchers")
-    public ResponseEntity<String> getAllVouchers(@RequestBody(required = false) RequestPageModel pageModel) {
-        try {
-            VoucherResponse response;
-            SecurityContext securityContext = SecurityContextHolder.getContext();
-            String accountId = securityContextService.extractUsernameFromContext(securityContext);
-            if (pageModel == null) {
-                response = voucherService.getAllVoucherByOwnerId(accountId, null, null);
-                return ResponseEntity.ok().body(gson.toJson(response));
-            } else {
-                response = voucherService.getAllVoucherByOwnerId(accountId, pageModel.getItemsPerPage(), pageModel.getPage());
-            }
-            return ResponseEntity.ok(gson.toJson(response));
-        } catch (Exception exception) {
-            ErrorResponse errorResponse = ErrorResponse.builder().stack(exception.getMessage()).message("Server busy temp can't create voucher.").build();
-            return ResponseEntity.internalServerError().body(gson.toJson(errorResponse));
-        }
-    }
 }
