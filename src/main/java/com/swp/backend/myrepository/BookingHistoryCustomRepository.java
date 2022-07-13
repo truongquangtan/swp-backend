@@ -78,10 +78,9 @@ public class BookingHistoryCustomRepository {
             if (queriedList == null) {
                 return null;
             }
-            List<BookingHistoryEntity> result = queriedList.stream().map(objectQueried -> {
+            return queriedList.stream().map(objectQueried -> {
                 return (BookingHistoryEntity) objectQueried;
             }).collect(Collectors.toList());
-            return result;
         } catch (Exception ex) {
             return null;
         }

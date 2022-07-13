@@ -1,13 +1,14 @@
 package com.swp.backend.service;
 
+import com.swp.backend.api.v1.admin.accounts.GetAllAccountResponse;
 import com.swp.backend.constance.RoleProperties;
 import com.swp.backend.entity.AccountEntity;
 import com.swp.backend.entity.AccountOtpEntity;
 import com.swp.backend.entity.RoleEntity;
 import com.swp.backend.model.AccountModel;
-import com.swp.backend.myrepository.AccountCustomRepository;
+import com.swp.backend.model.FilterModel;
+import com.swp.backend.model.SearchModel;
 import com.swp.backend.repository.AccountRepository;
-import com.swp.backend.repository.RoleRepository;
 import com.swp.backend.utils.DateHelper;
 import com.swp.backend.utils.RegexHelper;
 import lombok.AllArgsConstructor;
@@ -15,17 +16,11 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,12 +33,10 @@ public class AccountService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final AccountLoginService accountLoginService;
-    private final RoleRepository roleRepository;
     private final YardService yardService;
     private final FirebaseStoreService firebaseStoreService;
     private final InactivationService inactivationService;
     private final ReactivationService reactivationService;
-    private final AccountCustomRepository accountCustomRepository;
 
     public AccountEntity updatePassword(String username, String password) throws DataAccessException {
         AccountEntity account = findAccountByUsername(username);
@@ -174,7 +167,7 @@ public class AccountService {
             new Thread(() -> {
                 try {
                     yardService.reactiveAllYardsOfOwner(userId);
-                    yardService.getAllYardEntityOfOwner(userId).stream().forEach(yard -> {
+                    yardService.getAllYardEntityOfOwner(userId).forEach(yard -> {
                         if (!yard.isActive())
                             reactivationService.processReactiveYard(yard.getId());
                     });
@@ -187,7 +180,7 @@ public class AccountService {
             new Thread(() -> {
                 try {
                     accountLoginService.deleteAllLogin(userId);
-                    yardService.getAllYardEntityOfOwner(userId).stream().forEach(yard -> {
+                    yardService.getAllYardEntityOfOwner(userId).forEach(yard -> {
                         if (yard.isActive())
                             inactivationService.processInactivateYard(userId, yard.getId(), DISABLED_USER_REASON);
                     });
@@ -203,82 +196,9 @@ public class AccountService {
         accountRepository.save(accountEntity);
     }
 
-    public List<AccountModel> getAllAccountHasRoleUserByPage(int page, int itemsPerPage) {
-        List<RoleEntity> roleEntities = roleService.getAllRole();
-        if (roleEntities == null || roleEntities.size() == 0) {
-            return null;
-        }
-        HashMap<Integer, String> roleMap = new HashMap<>();
-        roleEntities.forEach(role -> roleMap.put(role.getId(), role.getRoleName()));
-
-        int startIndex = itemsPerPage * (page - 1);
-        int endIndex = startIndex + itemsPerPage - 1;
-        int maxIndex = accountCustomRepository.countAllUserOrOwnerAccounts() - 1;
-        endIndex = Math.min(endIndex, maxIndex);
-
-        if (startIndex > endIndex) return new ArrayList<>();
-
-        List<AccountEntity> accounts = accountCustomRepository.getAllUserOrOwnerAccountsByPage(startIndex, endIndex);
-        if (accounts == null || accounts.size() == 0) {
-            return new ArrayList<>();
-        }
-        return accounts.stream().map(account -> AccountModel.builder()
-                .userId(account.getUserId())
-                .fullName(account.getFullName())
-                .email(account.getEmail())
-                .phone(account.getPhone())
-                .isActive(account.isActive())
-                .isConfirmed(account.isConfirmed())
-                .avatar(account.getAvatar())
-                .role(roleMap.get(account.getRoleId()))
-                .createAt(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(account.getCreateAt()))
-                .build()).collect(Collectors.toList());
-    }
-
-    @Transactional(isolation = Isolation.READ_COMMITTED)
-    public int countAllAccountHasRoleUser() {
-        return accountRepository.countAccountEntitiesByRoleIdOrRoleId(1, 3);
-    }
-
-    public boolean deactivateAccount(String userId) throws DataAccessException {
-        AccountEntity account = findAccountByUsername(userId);
-        if (account == null) {
-            return false;
-        }
-        account.setActive(false);
-        accountRepository.save(account);
-        new Thread(() -> {
-            try {
-                accountLoginService.deleteAllLogin(userId);
-            } catch (Exception exception) {
-                exception.printStackTrace();
-            }
-        }).start();
-        return true;
-    }
-
-    public boolean reactivateAccount(String userId) throws DataAccessException {
-        AccountEntity account = findAccountByUsername(userId);
-        if (account == null) {
-            return false;
-        }
-        account.setActive(true);
-        accountRepository.save(account);
-        return true;
-    }
-
     public String getRoleFromUserId(String userId) {
         AccountEntity accountEntity = accountRepository.findUserEntityByUserId(userId);
-        int roleId = accountEntity.getRoleId();
-        return roleRepository.findRoleEntityById(roleId).getRoleName();
-    }
-
-    public List<?> searchAccount(Integer itemsPerPage, Integer page, Integer role, String keyword, String status, List<String> sortBy, String sort) {
-        return accountCustomRepository.searchAccount(itemsPerPage, page, role, keyword, status, sortBy, sort);
-    }
-
-    public int getMaxResultSearch(Integer role, String keyword, String status) {
-        return accountCustomRepository.countMaxResultSearchAccount(role, keyword, status);
+        return roleService.getRoleById(accountEntity.getRoleId()).getRoleName();
     }
 
     public AccountModel updateAccount(MultipartFile avatar, String userId, String fullName, String phone) throws IOException, DataAccessException {
@@ -336,5 +256,134 @@ public class AccountService {
                     .build();
         }
         return null;
+    }
+
+    public GetAllAccountResponse searchAndFilterAccount(SearchModel searchModel){
+        List<String> roleNames = new ArrayList<>();
+        roleNames.add(RoleProperties.ROLE_OWNER);
+        roleNames.add(RoleProperties.ROLE_USER);
+        List<RoleEntity> roles = roleService.getRoleIdsFromListRoleName(roleNames);
+        List<Integer> roleIds = roles.stream().map(RoleEntity::getId).collect(Collectors.toList());
+        List<AccountModel> accounts = transformAccountEntityToAccountModel(accountRepository.findAccountEntitiesByRoleIdIn(roleIds), roles);
+
+        accounts = searchAccounts(searchModel.getKeyword(), accounts);
+        accounts = filterAccounts(searchModel.getFilter(), accounts);
+        accounts = sortAccounts(searchModel.getSort(), accounts);
+
+        if(accounts.size() == 0){
+            return GetAllAccountResponse.builder().accounts(accounts).maxResult(0).page(0).build();
+        }
+        int maxResult = accounts.size();
+        int pageValue = searchModel.getPage() != null ? searchModel.getPage() : 1;
+        int offSetValue = searchModel.getItemsPerPage() != null ? searchModel.getItemsPerPage() : 10;
+        
+        if((pageValue - 1) * offSetValue >= maxResult ){
+            pageValue = 1;
+        }
+        int startIndex = Math.max((pageValue - 1) * offSetValue - 1, 0);
+        int endIndex = Math.min((pageValue * offSetValue ), maxResult);
+        return GetAllAccountResponse.builder()
+                .accounts(accounts.subList(startIndex, endIndex))
+                .maxResult(maxResult)
+                .page(pageValue)
+                .build();
+    }
+
+    private List<AccountModel> sortAccounts(String columnSort, List<AccountModel> accounts){
+        if (columnSort == null ||  columnSort.trim().length() == 0){
+            return accounts;
+        }
+        String columnName = columnSort.trim().toLowerCase();
+        char sort = columnSort.charAt(0);
+        if(sort == '+' || sort == '-'){
+            columnName = columnName.substring(1);
+        }else {
+            sort = '+';
+        }
+
+        if(columnName.equals("email")){
+            if(sort == '+'){
+                accounts.sort(Comparator.comparing(AccountModel::getEmail));
+            }else {
+                accounts.sort((firstAccount, secondAccount) -> secondAccount.getEmail().compareTo(firstAccount.getEmail()));
+            }
+        }
+
+        if(columnName.equals("displayName")){
+            if(sort == '+'){
+                accounts.sort(Comparator.comparing(AccountModel::getFullName));
+            }else {
+                accounts.sort((firstAccount, secondAccount) -> secondAccount.getFullName().compareTo(firstAccount.getFullName()));
+            }
+        }
+
+
+        if(columnName.equals("phone")){
+            accounts = accounts.stream().filter(account -> account.getPhone() != null || account.getPhone().length() > 0).collect(Collectors.toList());
+            if(sort == '+'){
+                accounts.sort(Comparator.comparing(AccountModel::getPhone));
+            }else {
+                accounts.sort((firstAccount, secondAccount) -> secondAccount.getPhone().compareTo(firstAccount.getPhone()));
+            }
+        }
+
+        if(columnName.equals("createdAt")){
+            if(sort == '+'){
+                accounts.sort(Comparator.comparing(AccountModel::getCreateAt));
+            }else {
+                accounts.sort((firstAccount, secondAccount) -> secondAccount.getCreateAt().compareTo(firstAccount.getCreateAt()));
+            }
+        }
+
+        return accounts;
+    }
+
+    private List<AccountModel> filterAccounts(FilterModel filter, List<AccountModel> accounts){
+        if(filter == null){
+            return accounts;
+        }
+
+        String columnFilter = filter.getField();
+        if (columnFilter.equals("role")) {
+            return accounts.stream().filter(account -> account.getRole().equals(filter.getValue())).collect(Collectors.toList());
+        }
+
+        if(columnFilter.equals("status")){
+            if(filter.getValue().equals("active")){
+                return accounts.stream().filter(AccountModel::isActive).collect(Collectors.toList());
+            }
+
+            if(filter.getValue().equals("inactive")){
+                return accounts.stream().filter(account -> !account.isActive()).collect(Collectors.toList());
+            }
+        }
+        return accounts;
+    }
+
+    private List<AccountModel> searchAccounts(String keyword, List<AccountModel> accounts){
+        String keywordVale = keyword != null && keyword.trim().length() > 0 ? keyword.trim().toLowerCase() : null;
+        if(keywordVale == null){
+            return accounts;
+        }
+        return accounts.stream().filter(account -> account.getFullName().toLowerCase().contains(keyword)
+                || account.getEmail().toLowerCase().contains(keyword)
+                || account.getPhone().contains(keyword)
+        ).collect(Collectors.toList());
+    }
+
+    private List<AccountModel> transformAccountEntityToAccountModel(List<AccountEntity> accounts, List<RoleEntity> roles){
+        HashMap<Integer, String> roleNameMapping = new HashMap<>();
+        roles.forEach(role -> roleNameMapping.put(role.getId(), role.getRoleName()));
+        return accounts.stream().map(account -> AccountModel.builder()
+                .userId(account.getUserId())
+                .role(roleNameMapping.get(account.getRoleId()))
+                .email(account.getEmail())
+                .phone(account.getFullName())
+                .isActive(account.isActive())
+                .avatar(account.getAvatar())
+                .isConfirmed(account.isConfirmed())
+                .createAt(account.getCreateAt().toString())
+                .fullName(account.getFullName())
+                .build()).collect(Collectors.toList());
     }
 }

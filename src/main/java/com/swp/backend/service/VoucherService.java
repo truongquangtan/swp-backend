@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -185,11 +184,11 @@ public class VoucherService {
         List<VoucherEntity> vouchers;
         if (pageable == null) {
             vouchers = voucherRepository.findVoucherEntitiesByCreatedByAccountId(ownerId);
-        }else {
+        } else {
             vouchers = voucherRepository.findVoucherEntitiesByCreatedByAccountId(ownerId, pageable);
         }
         return vouchers.stream().peek(voucher -> {
-            if(voucher.getUsages() >= voucher.getMaxQuantity() || voucher.getEndDate().compareTo(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE)) < 0){
+            if (voucher.getUsages() >= voucher.getMaxQuantity() || voucher.getEndDate().compareTo(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE)) < 0) {
                 voucher.setStatus(EXPIRED);
                 voucherRepository.save(voucher);
             }
@@ -298,7 +297,7 @@ public class VoucherService {
             throw ApplyVoucherException.builder().errorMessage("Voucher is not available.").build();
         }
 
-        if(voucherApply.getEndDate().compareTo(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE)) < 0){
+        if (voucherApply.getEndDate().compareTo(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE)) < 0) {
             voucherApply.setStatus(EXPIRED);
             voucherRepository.save(voucherApply);
             throw ApplyVoucherException.builder().errorMessage("Voucher is out of date.").build();

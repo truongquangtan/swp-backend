@@ -2,7 +2,6 @@ package com.swp.backend.api.v1.owner.yard;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
-import com.swp.backend.api.v1.owner.yard.request.GetYardRequest;
 import com.swp.backend.api.v1.owner.yard.request.YardRequest;
 import com.swp.backend.api.v1.owner.yard.response.CreateYardSuccessResponse;
 import com.swp.backend.api.v1.owner.yard.response.GetYardDetailResponse;
@@ -12,6 +11,7 @@ import com.swp.backend.entity.YardEntity;
 import com.swp.backend.exception.ErrorResponse;
 import com.swp.backend.exception.InactivateProcessException;
 import com.swp.backend.model.MessageResponse;
+import com.swp.backend.model.SearchModel;
 import com.swp.backend.service.InactivationService;
 import com.swp.backend.service.SecurityContextService;
 import com.swp.backend.service.YardService;
@@ -60,16 +60,11 @@ public class YardRestApi {
     }
 
     @PostMapping(value = "yards/search")
-    public ResponseEntity<String> showAllYard(@RequestBody(required = false) GetYardRequest getYardRequest) {
+    public ResponseEntity<String> showAllYard(@RequestBody(required = false) SearchModel searchModel) {
         try {
-            GetYardResponse response;
             SecurityContext securityContext = SecurityContextHolder.getContext();
             String ownerId = securityContextService.extractUsernameFromContext(securityContext);
-            if (getYardRequest == null) {
-                response = yardService.findAllYardByOwnerId(ownerId, null, null);
-            } else {
-                response = yardService.findAllYardByOwnerId(ownerId, getYardRequest.getItemsPerPage(), getYardRequest.getPage());
-            }
+            GetYardResponse response = yardService.findAllYardByOwnerId(ownerId, searchModel);
             return ResponseEntity.ok().body(gson.toJson(response));
         } catch (Exception e) {
             e.printStackTrace();
@@ -121,7 +116,7 @@ public class YardRestApi {
     }
 
     @PutMapping(value = "yards/{yardId}")
-    public ResponseEntity<String> updateyardById(@RequestParam(name = "yard") String yard,
+    public ResponseEntity<String> updateYardById(@RequestParam(name = "yard") String yard,
                                                  @RequestParam(name = "newImages", required = false) MultipartFile[] newImages,
                                                  @RequestParam(name = "images") String images,
                                                  @PathVariable String yardId) {

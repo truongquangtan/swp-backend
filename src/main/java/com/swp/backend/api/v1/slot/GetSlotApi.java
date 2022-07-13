@@ -84,8 +84,7 @@ public class GetSlotApi {
                 response = new SlotResponse("The Yard entity of this sub yard is not active or deleted.", null);
                 return ResponseEntity.badRequest().body(gson.toJson(response));
             }
-            if(!yardService.getOwnerIdOfYard(bigYardId).equals(userId))
-            {
+            if (!yardService.getOwnerIdOfYard(bigYardId).equals(userId)) {
                 response = new SlotResponse("The owner is not author of this yard", null);
                 return ResponseEntity.badRequest().body(gson.toJson(response));
             }
@@ -128,8 +127,7 @@ public class GetSlotApi {
                 response = new SlotResponse("The Yard entity of this sub yard is not active or deleted.", null);
                 return ResponseEntity.badRequest().body(gson.toJson(response));
             }
-            if(!yardService.getOwnerIdOfYard(bigYardId).equals(userId))
-            {
+            if (!yardService.getOwnerIdOfYard(bigYardId).equals(userId)) {
                 response = new SlotResponse("The owner is not author of this yard", null);
                 return ResponseEntity.badRequest().body(gson.toJson(response));
             }
