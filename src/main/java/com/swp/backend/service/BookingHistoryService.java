@@ -83,7 +83,7 @@ public class BookingHistoryService {
         }
 
         List<BookingHistoryModel> bookingHistoryModels = bookingEntities.stream().map(booking -> {
-            String createBy = booking.getCreatedBy().equals(userId) ? "You" : accountService.getRoleFromUserId(booking.getCreatedBy());
+            String createBy = accountService.findAccountByUsername(booking.getCreatedBy()).getFullName();
             return getBookingHistoryModelFromBookingHistoryEntityAndCreatedBy(booking, createBy);
         }).collect(Collectors.toList());
         if(searchModel != null){
