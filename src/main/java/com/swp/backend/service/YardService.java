@@ -231,17 +231,17 @@ public class YardService {
         yards = filterYard(searchModel.getFilter(), yards);
         sortYards(searchModel.getSort(), yards);
         List<YardModel> yardModels = transformYardEntityToYardModal(yards);
+        if (yardModels == null || yardModels.size() == 0) {
+            return GetYardResponse.builder().maxResult(0).listYard(Collections.emptyList()).page(0).build();
+        }
         int maxResult = yardModels.size();
         int pageValue = searchModel.getPage() != null ? searchModel.getPage() : 1;
         int offSetValue = searchModel.getItemsPerPage() != null ? searchModel.getItemsPerPage() : 10;
-        if (maxResult == 0) {
-            return GetYardResponse.builder().maxResult(0).page(0).build();
-        }
 
         if ((pageValue - 1) * offSetValue >= maxResult) {
             pageValue = 1;
         }
-        int startIndex = Math.max((pageValue - 1) * offSetValue - 1, 0);
+        int startIndex = Math.max((pageValue - 1) * offSetValue, 0);
         int endIndex = Math.min((pageValue * offSetValue), maxResult);
         return GetYardResponse.builder().listYard(yardModels.subList(startIndex, endIndex)).page(pageValue).maxResult(maxResult).build();
     }
