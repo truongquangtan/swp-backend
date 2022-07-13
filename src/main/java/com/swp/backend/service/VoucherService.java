@@ -60,10 +60,18 @@ public class VoucherService {
 
     public VoucherResponse SearchVoucherByOwnerId(String ownerId, SearchModel searchModel) {
         List<VoucherEntity> voucherResults = findAllVoucherByOwnerId(ownerId, null);
+        int pageValue = 1;
+        int offSetValue = 10;
         if(searchModel != null){
             voucherResults = handleSearchByKeyword(searchModel.getKeyword(), voucherResults);
             voucherResults = handleFilterVoucher(searchModel.getFilter(), voucherResults);
             voucherResults = handleSortByColumn(searchModel.getSort(), voucherResults);
+            if(searchModel.getPage() != null){
+                pageValue = searchModel.getPage();
+            }
+            if(searchModel.getItemsPerPage() != null){
+                offSetValue = searchModel.getItemsPerPage();
+            }
         }
 
         if (voucherResults.size() == 0) {
@@ -71,9 +79,6 @@ public class VoucherService {
         }
         List<VoucherModel> voucherModels = voucherResults.stream().map((this::convertVoucherModelFromVoucherEntity)).collect(Collectors.toList());
         int maxResult = voucherResults.size();
-        int pageValue = searchModel.getPage() != null ? searchModel.getPage() : 1;
-        int offSetValue = searchModel.getItemsPerPage() != null ? searchModel.getItemsPerPage() : 10;
-
         if ((pageValue - 1) * offSetValue >= maxResult) {
             pageValue = 1;
         }

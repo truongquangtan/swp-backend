@@ -38,14 +38,22 @@ public class BookingHistoryService {
     }
 
     public BookingHistoryResponse searchAndFilterBookingHistory(String userId, String roleName, SearchModel searchModel) {
+        int pageValue = 1;
+        int offSetValue = 10;
+
         List<BookingHistoryModel> bookingHistoryModelList = handleSearchAndFilterBookingHistory(userId, roleName, searchModel);
         if (bookingHistoryModelList == null || bookingHistoryModelList.size() == 0) {
             return BookingHistoryResponse.builder().page(0).maxResult(0).message("There was no items in data").build();
         }
 
         int maxResult = bookingHistoryModelList.size();
-        int pageValue = searchModel.getPage() != null ? searchModel.getPage() : 1;
-        int offSetValue = searchModel.getItemsPerPage() != null ? searchModel.getItemsPerPage() : 10;
+        if(searchModel != null && searchModel.getItemsPerPage() != null){
+            offSetValue = searchModel.getItemsPerPage();
+        }
+
+        if(searchModel != null && searchModel.getPage() != null){
+            pageValue = searchModel.getPage();
+        }
 
         if ((pageValue - 1) * offSetValue >= maxResult) {
             pageValue = 1;

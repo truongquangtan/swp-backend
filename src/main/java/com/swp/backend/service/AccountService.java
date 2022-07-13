@@ -258,6 +258,8 @@ public class AccountService {
     }
 
     public GetAllAccountResponse searchAndFilterAccount(SearchModel searchModel) {
+        int pageValue = 1;
+        int offSetValue = 10;
         List<String> roleNames = new ArrayList<>();
         roleNames.add(RoleProperties.ROLE_OWNER);
         roleNames.add(RoleProperties.ROLE_USER);
@@ -269,14 +271,14 @@ public class AccountService {
             accounts = searchAccounts(searchModel.getKeyword(), accounts);
             accounts = filterAccounts(searchModel.getFilter(), accounts);
             accounts = sortAccounts(searchModel.getSort(), accounts);
+            pageValue = searchModel.getPage() != null ? searchModel.getPage() : 1;
+            offSetValue = searchModel.getItemsPerPage() != null ? searchModel.getItemsPerPage() : 10;
         }
 
         if (accounts.size() == 0) {
             return GetAllAccountResponse.builder().accounts(accounts).maxResult(0).page(0).build();
         }
         int maxResult = accounts.size();
-        int pageValue = searchModel.getPage() != null ? searchModel.getPage() : 1;
-        int offSetValue = searchModel.getItemsPerPage() != null ? searchModel.getItemsPerPage() : 10;
 
         if ((pageValue - 1) * offSetValue >= maxResult) {
             pageValue = 1;
