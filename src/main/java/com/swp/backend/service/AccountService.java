@@ -283,7 +283,7 @@ public class AccountService {
         if ((pageValue - 1) * offSetValue >= maxResult) {
             pageValue = 1;
         }
-        int startIndex = Math.max((pageValue - 1) * offSetValue - 1, 0);
+        int startIndex = Math.max((pageValue - 1) * offSetValue, 0);
         int endIndex = Math.min((pageValue * offSetValue), maxResult);
         return GetAllAccountResponse.builder()
                 .accounts(accounts.subList(startIndex, endIndex))
