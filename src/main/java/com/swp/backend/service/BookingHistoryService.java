@@ -22,12 +22,12 @@ import java.util.stream.Collectors;
 
 @Service
 public class BookingHistoryService {
-    private MatchService matchService;
-    private BookingRepository bookingRepository;
-    private BookingHistoryRepository bookingHistoryRepository;
-    private BookingHistoryCustomRepository bookingHistoryCustomRepository;
+    private final MatchService matchService;
+    private final BookingRepository bookingRepository;
+    private final BookingHistoryRepository bookingHistoryRepository;
+    private final BookingHistoryCustomRepository bookingHistoryCustomRepository;
 
-    private AccountService accountService;
+    private final AccountService accountService;
 
     public BookingHistoryService(MatchService matchService, BookingRepository bookingRepository, BookingHistoryRepository bookingHistoryRepository, BookingHistoryCustomRepository bookingHistoryCustomRepository, @Lazy AccountService accountService) {
         this.matchService = matchService;
@@ -58,7 +58,7 @@ public class BookingHistoryService {
         if ((pageValue - 1) * offSetValue >= maxResult) {
             pageValue = 1;
         }
-        int startIndex = Math.max((pageValue - 1) * offSetValue - 1, 0);
+        int startIndex = Math.max((pageValue - 1) * offSetValue, 0);
         int endIndex = Math.min((pageValue * offSetValue), maxResult);
 
         return BookingHistoryResponse.builder()
@@ -83,7 +83,7 @@ public class BookingHistoryService {
 
         List<BookingHistoryModel> bookingHistoryModels = bookingEntities.stream().map(booking -> {
             String createBy = booking.getCreatedBy().equals(userId) ? "You" : accountService.getRoleFromUserId(booking.getCreatedBy());
-            return getBookingHistoryModelFromBookingHistoryEntityAndCreatedBy(booking, "You");
+            return getBookingHistoryModelFromBookingHistoryEntityAndCreatedBy(booking, createBy);
         }).collect(Collectors.toList());
         if(searchModel != null){
             bookingHistoryModels = searchBookingHistories(searchModel.getKeyword(), bookingHistoryModels);
@@ -101,6 +101,7 @@ public class BookingHistoryService {
         }
         return bookingHistoryModels.stream().filter(bookingHistoryModel -> bookingHistoryModel.getBigYardName().toLowerCase().contains(keywordValue)
                 || bookingHistoryModel.getAddress().toLowerCase().contains(keywordValue)
+                || bookingHistoryModel.getSubYardName().toLowerCase().contains(keywordValue)
         ).collect(Collectors.toList());
     }
 
@@ -108,7 +109,7 @@ public class BookingHistoryService {
         if (filter == null) {
             return bookingHistoryModels;
         }
-        if (filter.getField().equals("status")) {
+        if (filter.getField().equals("bookingStatus")) {
             return bookingHistoryModels.stream().filter(
                     bookingHistoryModel -> bookingHistoryModel.getBookingStatus().equals(filter.getValue())
             ).collect(Collectors.toList());
