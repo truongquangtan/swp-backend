@@ -312,7 +312,7 @@ public class AccountService {
             }
         }
 
-        if (columnName.equals("displayName")) {
+        if (columnName.equals("fullName")) {
             if (sort == '+') {
                 accounts.sort(Comparator.comparing(AccountModel::getFullName));
             } else {
@@ -351,12 +351,10 @@ public class AccountService {
             return accounts.stream().filter(account -> account.getRole().equals(filter.getValue())).collect(Collectors.toList());
         }
 
-        if (columnFilter.equals("status")) {
-            if (filter.getValue().equals("active")) {
+        if (columnFilter.equals("isActive")) {
+            if (Boolean.parseBoolean(filter.getValue())) {
                 return accounts.stream().filter(AccountModel::isActive).collect(Collectors.toList());
-            }
-
-            if (filter.getValue().equals("inactive")) {
+            }else  {
                 return accounts.stream().filter(account -> !account.isActive()).collect(Collectors.toList());
             }
         }
