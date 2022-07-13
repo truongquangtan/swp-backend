@@ -224,7 +224,7 @@ public class YardService {
         return yard.getAddress() + ", " + district + ", " + province;
     }
 
-    public GetYardResponse findAllYardByOwnerId(String ownerId, SearchModel searchModel){
+    public GetYardResponse findAllYardByOwnerId(String ownerId, SearchModel searchModel) {
         List<YardEntity> yards = yardRepository.findAllByOwnerIdAndDeleted(ownerId, false);
         String keyword = searchModel.getKeyword() != null && searchModel.getKeyword().trim().length() > 0 ? searchModel.getKeyword().trim().toLowerCase() : null;
         yards = searchYardsByKeyword(searchModel.getKeyword(), yards);
@@ -234,19 +234,19 @@ public class YardService {
         int maxResult = yardModels.size();
         int pageValue = searchModel.getPage() != null ? searchModel.getPage() : 1;
         int offSetValue = searchModel.getItemsPerPage() != null ? searchModel.getItemsPerPage() : 10;
-        if(maxResult == 0){
+        if (maxResult == 0) {
             return GetYardResponse.builder().maxResult(0).page(0).build();
         }
 
-        if((pageValue - 1) * offSetValue >= maxResult ){
+        if ((pageValue - 1) * offSetValue >= maxResult) {
             pageValue = 1;
         }
         int startIndex = Math.max((pageValue - 1) * offSetValue - 1, 0);
-        int endIndex = Math.min((pageValue * offSetValue ), maxResult);
+        int endIndex = Math.min((pageValue * offSetValue), maxResult);
         return GetYardResponse.builder().listYard(yardModels.subList(startIndex, endIndex)).page(pageValue).maxResult(maxResult).build();
     }
 
-    private List<YardModel> transformYardEntityToYardModal(List<YardEntity> yards){
+    private List<YardModel> transformYardEntityToYardModal(List<YardEntity> yards) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
         return yards.stream().map(yard -> {
             return YardModel.builder()
@@ -263,85 +263,85 @@ public class YardService {
         }).collect(Collectors.toList());
     }
 
-    private List<YardEntity> filterYard(FilterModel filter, List<YardEntity> yards){
-        if(filter == null){
+    private List<YardEntity> filterYard(FilterModel filter, List<YardEntity> yards) {
+        if (filter == null) {
             return yards;
         }
-        if(filter.getField().equalsIgnoreCase("status")){
-            if(filter.getValue().equals("active")){
+        if (filter.getField().equalsIgnoreCase("status")) {
+            if (filter.getValue().equals("active")) {
                 return yards.stream().filter(YardEntity::isActive).collect(Collectors.toList());
             }
-            if(filter.getValue().equals("inactive")){
+            if (filter.getValue().equals("inactive")) {
                 return yards.stream().filter(yard -> !yard.isActive()).collect(Collectors.toList());
             }
         }
         return yards;
     }
 
-    private void sortYards(String sortFiled, List<YardEntity> yards){
+    private void sortYards(String sortFiled, List<YardEntity> yards) {
         String sortColumn = sortFiled != null ? sortFiled.trim() : null;
-        if(sortColumn == null){
+        if (sortColumn == null) {
             return;
         }
         char sort = sortColumn.charAt(0);
-        if(sort == '+' || sort == '-'){
+        if (sort == '+' || sort == '-') {
             sortColumn = sortFiled.substring(1);
-        }else {
+        } else {
             sort = '+';
         }
 
-        if(sortColumn.equals("reference")){
-            if(sort == '+'){
+        if (sortColumn.equals("reference")) {
+            if (sort == '+') {
                 yards.sort((fistYard, secondYard) -> Integer.compare(fistYard.getReference(), secondYard.getReference()));
-            }else {
+            } else {
                 yards.sort((fistYard, secondYard) -> Integer.compare(secondYard.getReference(), fistYard.getReference()));
             }
         }
 
-        if(sortColumn.equals("name")){
-            if(sort == '+'){
+        if (sortColumn.equals("name")) {
+            if (sort == '+') {
                 yards.sort((fistYard, secondYard) -> fistYard.getName().compareTo(secondYard.getName()));
-            }else {
+            } else {
                 yards.sort((fistYard, secondYard) -> secondYard.getName().compareTo(fistYard.getName()));
             }
         }
 
-        if(sortColumn.equals("address")){
-            if(sort == '+'){
+        if (sortColumn.equals("address")) {
+            if (sort == '+') {
                 yards.sort((fistYard, secondYard) -> fistYard.getAddress().compareTo(secondYard.getAddress()));
-            }else {
+            } else {
                 yards.sort((fistYard, secondYard) -> secondYard.getAddress().compareTo(fistYard.getAddress()));
             }
         }
 
-        if(sortColumn.equals("createdAt")){
-            if(sort == '+'){
+        if (sortColumn.equals("createdAt")) {
+            if (sort == '+') {
                 yards.sort((fistYard, secondYard) -> fistYard.getCreateAt().compareTo(secondYard.getCreateAt()));
-            }else {
+            } else {
                 yards.sort((fistYard, secondYard) -> secondYard.getCreateAt().compareTo(fistYard.getCreateAt()));
             }
         }
 
-        if(sortColumn.equals("startTime")){
-            if(sort == '+'){
+        if (sortColumn.equals("startTime")) {
+            if (sort == '+') {
                 yards.sort((fistYard, secondYard) -> fistYard.getOpenAt().compareTo(secondYard.getOpenAt()));
-            }else {
+            } else {
                 yards.sort((fistYard, secondYard) -> secondYard.getOpenAt().compareTo(fistYard.getOpenAt()));
             }
         }
 
-        if(sortColumn.equals("endTime")){
-            if(sort == '+'){
+        if (sortColumn.equals("endTime")) {
+            if (sort == '+') {
                 yards.sort((fistYard, secondYard) -> fistYard.getCloseAt().compareTo(secondYard.getCloseAt()));
-            }else {
+            } else {
                 yards.sort((fistYard, secondYard) -> secondYard.getCloseAt().compareTo(fistYard.getCloseAt()));
             }
         }
     }
 
-    private List<YardEntity> searchYardsByKeyword(String keyword, List<YardEntity> yards){
+    private List<YardEntity> searchYardsByKeyword(String keyword, List<YardEntity> yards) {
         String keywordValue = keyword != null && keyword.trim().length() > 0 ? keyword.trim().toLowerCase() : null;
-        if(keyword == null) {
+        if (keyword == null) {
             return yards;
         }
         return yards.stream().filter(yard -> String.valueOf(yard.getReference()).contains(keyword)

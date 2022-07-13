@@ -258,7 +258,7 @@ public class AccountService {
         return null;
     }
 
-    public GetAllAccountResponse searchAndFilterAccount(SearchModel searchModel){
+    public GetAllAccountResponse searchAndFilterAccount(SearchModel searchModel) {
         List<String> roleNames = new ArrayList<>();
         roleNames.add(RoleProperties.ROLE_OWNER);
         roleNames.add(RoleProperties.ROLE_USER);
@@ -270,18 +270,18 @@ public class AccountService {
         accounts = filterAccounts(searchModel.getFilter(), accounts);
         accounts = sortAccounts(searchModel.getSort(), accounts);
 
-        if(accounts.size() == 0){
+        if (accounts.size() == 0) {
             return GetAllAccountResponse.builder().accounts(accounts).maxResult(0).page(0).build();
         }
         int maxResult = accounts.size();
         int pageValue = searchModel.getPage() != null ? searchModel.getPage() : 1;
         int offSetValue = searchModel.getItemsPerPage() != null ? searchModel.getItemsPerPage() : 10;
-        
-        if((pageValue - 1) * offSetValue >= maxResult ){
+
+        if ((pageValue - 1) * offSetValue >= maxResult) {
             pageValue = 1;
         }
         int startIndex = Math.max((pageValue - 1) * offSetValue - 1, 0);
-        int endIndex = Math.min((pageValue * offSetValue ), maxResult);
+        int endIndex = Math.min((pageValue * offSetValue), maxResult);
         return GetAllAccountResponse.builder()
                 .accounts(accounts.subList(startIndex, endIndex))
                 .maxResult(maxResult)
@@ -289,48 +289,48 @@ public class AccountService {
                 .build();
     }
 
-    private List<AccountModel> sortAccounts(String columnSort, List<AccountModel> accounts){
-        if (columnSort == null ||  columnSort.trim().length() == 0){
+    private List<AccountModel> sortAccounts(String columnSort, List<AccountModel> accounts) {
+        if (columnSort == null || columnSort.trim().length() == 0) {
             return accounts;
         }
         String columnName = columnSort.trim().toLowerCase();
         char sort = columnSort.charAt(0);
-        if(sort == '+' || sort == '-'){
+        if (sort == '+' || sort == '-') {
             columnName = columnName.substring(1);
-        }else {
+        } else {
             sort = '+';
         }
 
-        if(columnName.equals("email")){
-            if(sort == '+'){
+        if (columnName.equals("email")) {
+            if (sort == '+') {
                 accounts.sort(Comparator.comparing(AccountModel::getEmail));
-            }else {
+            } else {
                 accounts.sort((firstAccount, secondAccount) -> secondAccount.getEmail().compareTo(firstAccount.getEmail()));
             }
         }
 
-        if(columnName.equals("displayName")){
-            if(sort == '+'){
+        if (columnName.equals("displayName")) {
+            if (sort == '+') {
                 accounts.sort(Comparator.comparing(AccountModel::getFullName));
-            }else {
+            } else {
                 accounts.sort((firstAccount, secondAccount) -> secondAccount.getFullName().compareTo(firstAccount.getFullName()));
             }
         }
 
 
-        if(columnName.equals("phone")){
+        if (columnName.equals("phone")) {
             accounts = accounts.stream().filter(account -> account.getPhone() != null || account.getPhone().length() > 0).collect(Collectors.toList());
-            if(sort == '+'){
+            if (sort == '+') {
                 accounts.sort(Comparator.comparing(AccountModel::getPhone));
-            }else {
+            } else {
                 accounts.sort((firstAccount, secondAccount) -> secondAccount.getPhone().compareTo(firstAccount.getPhone()));
             }
         }
 
-        if(columnName.equals("createdAt")){
-            if(sort == '+'){
+        if (columnName.equals("createdAt")) {
+            if (sort == '+') {
                 accounts.sort(Comparator.comparing(AccountModel::getCreateAt));
-            }else {
+            } else {
                 accounts.sort((firstAccount, secondAccount) -> secondAccount.getCreateAt().compareTo(firstAccount.getCreateAt()));
             }
         }
@@ -338,8 +338,8 @@ public class AccountService {
         return accounts;
     }
 
-    private List<AccountModel> filterAccounts(FilterModel filter, List<AccountModel> accounts){
-        if(filter == null){
+    private List<AccountModel> filterAccounts(FilterModel filter, List<AccountModel> accounts) {
+        if (filter == null) {
             return accounts;
         }
 
@@ -348,21 +348,21 @@ public class AccountService {
             return accounts.stream().filter(account -> account.getRole().equals(filter.getValue())).collect(Collectors.toList());
         }
 
-        if(columnFilter.equals("status")){
-            if(filter.getValue().equals("active")){
+        if (columnFilter.equals("status")) {
+            if (filter.getValue().equals("active")) {
                 return accounts.stream().filter(AccountModel::isActive).collect(Collectors.toList());
             }
 
-            if(filter.getValue().equals("inactive")){
+            if (filter.getValue().equals("inactive")) {
                 return accounts.stream().filter(account -> !account.isActive()).collect(Collectors.toList());
             }
         }
         return accounts;
     }
 
-    private List<AccountModel> searchAccounts(String keyword, List<AccountModel> accounts){
+    private List<AccountModel> searchAccounts(String keyword, List<AccountModel> accounts) {
         String keywordVale = keyword != null && keyword.trim().length() > 0 ? keyword.trim().toLowerCase() : null;
-        if(keywordVale == null){
+        if (keywordVale == null) {
             return accounts;
         }
         return accounts.stream().filter(account -> account.getFullName().toLowerCase().contains(keyword)
@@ -371,7 +371,7 @@ public class AccountService {
         ).collect(Collectors.toList());
     }
 
-    private List<AccountModel> transformAccountEntityToAccountModel(List<AccountEntity> accounts, List<RoleEntity> roles){
+    private List<AccountModel> transformAccountEntityToAccountModel(List<AccountEntity> accounts, List<RoleEntity> roles) {
         HashMap<Integer, String> roleNameMapping = new HashMap<>();
         roles.forEach(role -> roleNameMapping.put(role.getId(), role.getRoleName()));
         return accounts.stream().map(account -> AccountModel.builder()

@@ -41,7 +41,7 @@ public class GetMatchApi {
         }
 
         try {
-            data = matchService.getMatchModelFromBookingEntity(booking);
+            data = matchService.transformMatchModelFromBookingEntity(booking);
             return ResponseEntity.ok(gson.toJson(data));
         } catch (Exception exception) {
             ErrorResponse error = ErrorResponse.builder().message("Error when query").build();

@@ -21,7 +21,7 @@ public class RoleService {
         return roleRepository.findRoleEntityByRoleName(roleName);
     }
 
-    public List<RoleEntity> getRoleIdsFromListRoleName(Collection<String> roleNames){
+    public List<RoleEntity> getRoleIdsFromListRoleName(Collection<String> roleNames) {
         return roleRepository.findRoleEntitiesByRoleNameIn(roleNames);
     }
 }

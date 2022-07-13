@@ -166,7 +166,7 @@ public class CancelBookingService {
     public void sendMailCancelToUser(BookingEntity booking, String reason) {
         AccountEntity user = accountRepository.findUserEntityByUserId(booking.getAccountId());
         String destination = user.getEmail();
-        MatchModel match = matchService.getMatchModelFromBookingEntity(booking);
+        MatchModel match = matchService.transformMatchModelFromBookingEntity(booking);
         String reasonForUser = "";
         if (reason.equals(InactivationService.INACTIVE_SUB_YARD_REASON)
                 || reason.equals(InactivationService.INACTIVE_YARD_REASON)
