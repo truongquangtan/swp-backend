@@ -2,8 +2,6 @@ package com.swp.backend.service;
 
 import com.swp.backend.entity.SlotEntity;
 import com.swp.backend.entity.YardEntity;
-import com.swp.backend.myrepository.BookingCustomRepository;
-import com.swp.backend.myrepository.SlotCustomRepository;
 import com.swp.backend.myrepository.SubYardCustomRepository;
 import com.swp.backend.repository.SlotRepository;
 import com.swp.backend.repository.SubYardRepository;
@@ -18,33 +16,13 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 public class ReactivationService {
-    private SlotCustomRepository slotCustomRepository;
     private SubYardCustomRepository subYardCustomRepository;
-    private BookingCustomRepository bookingCustomRepository;
     private SlotRepository slotRepository;
     private SubYardRepository subYardRepository;
     private YardRepository yardRepository;
-    private CancelBookingService cancelBookingService;
     private SlotService slotService;
     private SubYardService subYardService;
     private YardService yardService;
-
-    @Transactional(rollbackFor = RuntimeException.class)
-    public void reactivateSlot(String ownerId, int slotId) {
-        if (!slotCustomRepository.findOwnerIdFromSlotId(slotId).equals(ownerId)) {
-            throw new RuntimeException("The owner is not author of this slot.");
-        }
-
-        if (slotRepository.findSlotEntityByIdAndActive(slotId, false) == null) {
-            throw new RuntimeException("Can not find inactive slot.");
-        }
-
-        try {
-            slotService.reactivateSlot(slotId);
-        } catch (Exception ex) {
-            throw new RuntimeException("Error in canceling process");
-        }
-    }
 
     @Transactional(rollbackFor = RuntimeException.class)
     public void reactiveSubYard(String ownerId, String subYardId) {

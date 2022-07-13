@@ -31,7 +31,6 @@ public class CancelBookingService {
     private AccountRepository accountRepository;
     private YardRepository yardRepository;
     private SlotCustomRepository slotCustomRepository;
-    private BookingHistoryRepository bookingHistoryRepository;
     public static final int PREVENT_CANCEL_BOOKING_IN_MINUTE = 0;
 
     @Transactional

@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class AccountService {
     public static final String DISABLED_USER_REASON = "The owner is disabled by admin";
-
     private final AccountRepository accountRepository;
     private final RoleService roleService;
     private final BCryptPasswordEncoder passwordEncoder;

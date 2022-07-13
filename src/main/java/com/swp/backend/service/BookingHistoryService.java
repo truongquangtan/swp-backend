@@ -12,7 +12,7 @@ import com.swp.backend.model.model_builder.BookingHistoryEntityBuilder;
 import com.swp.backend.myrepository.BookingHistoryCustomRepository;
 import com.swp.backend.repository.BookingHistoryRepository;
 import com.swp.backend.repository.BookingRepository;
-import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
@@ -21,13 +21,21 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
 public class BookingHistoryService {
     private MatchService matchService;
     private BookingRepository bookingRepository;
     private BookingHistoryRepository bookingHistoryRepository;
     private BookingHistoryCustomRepository bookingHistoryCustomRepository;
+
     private AccountService accountService;
+
+    public BookingHistoryService(MatchService matchService, BookingRepository bookingRepository, BookingHistoryRepository bookingHistoryRepository, BookingHistoryCustomRepository bookingHistoryCustomRepository, @Lazy AccountService accountService) {
+        this.matchService = matchService;
+        this.bookingRepository = bookingRepository;
+        this.bookingHistoryRepository = bookingHistoryRepository;
+        this.bookingHistoryCustomRepository = bookingHistoryCustomRepository;
+        this.accountService = accountService;
+    }
 
     public BookingHistoryResponse searchAndFilterBookingHistory(String userId, String roleName, SearchModel searchModel) {
         List<BookingHistoryModel> bookingHistoryModelList = handleSearchAndFilterBookingHistory(userId, roleName, searchModel);
@@ -50,7 +58,6 @@ public class BookingHistoryService {
                 .maxResult(maxResult)
                 .data(bookingHistoryModelList.subList(startIndex, endIndex))
                 .build();
-
     }
 
     public List<BookingHistoryModel> handleSearchAndFilterBookingHistory(String userId, String roleName, SearchModel searchModel) {
@@ -69,7 +76,7 @@ public class BookingHistoryService {
 
         List<BookingHistoryModel> bookingHistoryModels = bookingEntities.stream().map(booking -> {
             String createBy = booking.getCreatedBy().equals(userId) ? "You" : accountService.getRoleFromUserId(booking.getCreatedBy());
-            return getBookingHistoryModelFromBookingHistoryEntityAndCreatedBy(booking, createBy);
+            return getBookingHistoryModelFromBookingHistoryEntityAndCreatedBy(booking, "You");
         }).collect(Collectors.toList());
 
         bookingHistoryModels = searchBookingHistories(searchModel.getKeyword(), bookingHistoryModels);
