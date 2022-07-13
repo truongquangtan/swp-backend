@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping(value = "api/v1/owners/me")
+@RequestMapping(value = "api/v1/owners")
 public class BookingHistoryForOwnerApi {
     private Gson gson;
     private SecurityContextService securityContextService;
