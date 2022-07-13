@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -100,15 +101,15 @@ public class VoucherService {
             }
         }
 
-        if (voucherResults.size() == 0) {
-            return VoucherResponse.builder().page(1).maxResult(0).message("Did not any result matches with keyword. Try again!").build();
+        if (voucherResults == null || voucherResults.size() == 0) {
+            return VoucherResponse.builder().page(1).vouchers(Collections.emptyList()).maxResult(0).message("Did not any result matches with keyword. Try again!").build();
         }
         List<VoucherModel> voucherModels = voucherResults.stream().map((this::convertVoucherModelFromVoucherEntity)).collect(Collectors.toList());
         int maxResult = voucherResults.size();
         if ((pageValue - 1) * offSetValue >= maxResult) {
             pageValue = 1;
         }
-        int startIndex = Math.max((pageValue - 1) * offSetValue - 1, 0);
+        int startIndex = Math.max((pageValue - 1) * offSetValue, 0);
         int endIndex = Math.min((pageValue * offSetValue), maxResult);
         return VoucherResponse.builder().vouchers(voucherModels.subList(startIndex, endIndex)).maxResult(voucherModels.size()).page(1).build();
     }

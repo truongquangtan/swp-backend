@@ -275,8 +275,8 @@ public class AccountService {
             offSetValue = searchModel.getItemsPerPage() != null ? searchModel.getItemsPerPage() : 10;
         }
 
-        if (accounts.size() == 0) {
-            return GetAllAccountResponse.builder().accounts(accounts).maxResult(0).page(0).build();
+        if (accounts == null || accounts.size() == 0 ) {
+            return GetAllAccountResponse.builder().accounts(Collections.emptyList()).maxResult(0).page(0).build();
         }
         int maxResult = accounts.size();
 

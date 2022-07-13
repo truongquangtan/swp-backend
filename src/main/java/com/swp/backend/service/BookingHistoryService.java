@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,7 +44,7 @@ public class BookingHistoryService {
 
         List<BookingHistoryModel> bookingHistoryModelList = handleSearchAndFilterBookingHistory(userId, roleName, searchModel);
         if (bookingHistoryModelList == null || bookingHistoryModelList.size() == 0) {
-            return BookingHistoryResponse.builder().page(0).maxResult(0).message("There was no items in data").build();
+            return BookingHistoryResponse.builder().page(0).data(Collections.emptyList()).maxResult(0).message("There was no items in data").build();
         }
 
         int maxResult = bookingHistoryModelList.size();
