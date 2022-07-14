@@ -347,6 +347,7 @@ public class YardService {
         for(YardEntity yard : yards)
         {
             GetYardInBookingResponse getYardInBookingResponse = new GetYardInBookingResponse();
+            getYardsInBookingResponse.add(getYardInBookingResponse);
             getYardInBookingResponse.setYardId(yard.getId());
             getYardInBookingResponse.setYardName(yard.getName());
             List<SubYardEntity> subYards = subYardRepository.findSubYardEntitiesByParentYardAndParentActiveAndDeleted(yard.getId(), true, false);
