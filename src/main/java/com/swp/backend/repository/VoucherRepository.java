@@ -12,13 +12,17 @@ import java.util.List;
 public interface VoucherRepository extends JpaRepository<VoucherEntity, String> {
     public List<VoucherEntity> findVoucherEntitiesByCreatedByAccountId(String accountId, Pageable pageable);
 
-    public List<VoucherEntity> findVoucherEntitiesByCreatedByAccountIdAndActive(String accountId, boolean active, Pageable pageable);
+    public List<VoucherEntity> findVoucherEntitiesByCreatedByAccountId(String accountId);
+
+    public List<VoucherEntity> findVoucherEntitiesByCreatedByAccountIdAndEndDateAfterAndActive(String accountId, Timestamp now, boolean active, Pageable pageable);
 
     public VoucherEntity findVoucherEntityByVoucherCode(String voucherCode);
 
     public int countAllByCreatedByAccountId(String ownerId);
 
-    public int countAllByCreatedByAccountIdAndActive(String ownerId, boolean active);
+    public int countAllByCreatedByAccountIdAndEndDateAfterAndActive(String ownerId, Timestamp now, boolean active);
+
+    public VoucherEntity getVoucherEntityById(String voucherId);
 
     public long countAllByCreatedByAccountIdAndReference(String accountId, String yardId);
 

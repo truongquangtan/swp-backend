@@ -9,12 +9,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class BookingModel {
-    private int slotId;
-    private String refSubYard;
-    private int price;
-    private String date;
+    protected int slotId;
+    protected String refSubYard;
+    protected Integer price;
+    protected Integer originalPrice;
+    protected String voucherCode;
+    protected String date;
 
     public boolean isValid() {
-        return DateHelper.parseFromStringToTimestamp(date) != null && price > 0;
+        return DateHelper.parseFromStringToTimestamp(date) != null && price >= 0 && originalPrice >= 0;
     }
 }

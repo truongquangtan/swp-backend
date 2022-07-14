@@ -77,9 +77,7 @@ public class YardService {
             List<SlotEntity> slotEntities = new ArrayList<>();
             List<TypeYard> typeList = typeYardRepository.findAll();
             HashMap<String, Integer> typeMapper = new HashMap<>();
-            typeList.forEach(typeYard -> {
-                typeMapper.put(typeYard.getTypeName().toUpperCase(), typeYard.getId());
-            });
+            typeList.forEach(typeYard -> typeMapper.put(typeYard.getTypeName().toUpperCase(), typeYard.getId()));
             subYards.forEach(subYard -> {
                 String subYardId = UUID.randomUUID().toString();
                 int type = typeMapper.get(subYard.getType() == 3 ? "3 VS 3" : "5 VS 5");
@@ -90,6 +88,7 @@ public class YardService {
                         .typeYard(type)
                         .active(true)
                         .createAt(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE))
+                        .updatedAt(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE))
                         .build();
                 subYardEntities.add(subYardEntity);
 
@@ -121,9 +120,7 @@ public class YardService {
                 return YardPictureEntity.builder().image(url).refId(yardId).build();
             }).collect(Collectors.toList());
             if (listImage.size() > 0) {
-                new Thread(() -> {
-                    yardPictureRepository.saveAll(listImage);
-                }).start();
+                new Thread(() -> yardPictureRepository.saveAll(listImage)).start();
             }
         }
         int noImageCount = images == null ? 3 : YardService.MAX_IMAGE - images.length;
@@ -192,6 +189,7 @@ public class YardService {
             String provinceName = provinceRepository.findDistinctById(provinceId).getProvinceName();
             YardModel yardModel = YardModel.builder()
                     .id(yard.getId())
+                    .ownerId(yard.getOwnerId())
                     .name(yard.getName())
                     .address(yard.getAddress())
                     .districtName(districtRepository.findById(yard.getDistrictId()).getDistrictName())
@@ -304,9 +302,8 @@ public class YardService {
 
     public List<SubYardDetailModel> getSubYardDetailModelFromYardId(String yardId) {
         List<SubYardModel> subYards = subYardService.getSubYardsByBigYard(yardId);
-        List<SubYardDetailModel> subYardDetailModels = subYards.stream().map(subYardModel -> {
-            List<SlotModel> slots = slotRepository.findSlotEntitiesByRefYardAndActiveIsTrue(subYardModel.getId()).stream().map(SlotModel::buildFromSlotEntity).collect(Collectors.toList());
-            Collections.sort(slots);
+        return subYards.stream().map(subYardModel -> {
+            List<SlotModel> slots = slotRepository.findSlotEntitiesByRefYardAndActiveIsTrue(subYardModel.getId()).stream().map(SlotModel::buildFromSlotEntity).sorted().collect(Collectors.toList());
             return SubYardDetailModel.builder().id(subYardModel.getId())
                     .name(subYardModel.getName())
                     .reference(subYardModel.getReference())
@@ -315,7 +312,6 @@ public class YardService {
                     .typeYard(subYardModel.getTypeYard())
                     .slots(slots).build();
         }).collect(Collectors.toList());
-        return subYardDetailModels;
     }
 
     @Transactional
@@ -337,5 +333,13 @@ public class YardService {
         YardEntity yardEntity = yardRepository.findYardEntitiesById(yardId);
         yardEntity.setDeleted(true);
         yardRepository.save(yardEntity);
+    }
+
+    public String getOwnerIdOfYard(String yardId) {
+        return yardRepository.findYardEntityById(yardId).getOwnerId();
+    }
+
+    public List<YardEntity> getAllYardEntityOfOwner(String ownerId) {
+        return yardRepository.findYardEntitiesByOwnerIdOrderByReferenceAsc(ownerId);
     }
 }

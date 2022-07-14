@@ -35,7 +35,8 @@ public class ApiEndpointProperties {
             "/api/v1/sub-yards",
             "/api/v1/sub-yards/**",
             "/api/v1/vote/yards/**",
-            "/api/v1/owners/{ownerId}/vouchers"
+            "/api/v1/owners/{ownerId}/vouchers",
+            "/api/v1/vouchers/{voucherCode}/calculate"
     };
     public static String[] ownerOnlyEndpoint = {
             "/api/v1/owners/me/**"
@@ -47,13 +48,18 @@ public class ApiEndpointProperties {
             "/api/v1/admin/all-accounts",
             "/api/v1/admin/filter/all-accounts",
             "/api/v1/filter-accounts",
-            "/api/v1/admin/accounts/{accountId}"
+            "/api/v1/admin/accounts/{accountId}",
+            "/api/v1/admin/reports",
+            "/api/v1/admin/reports/{reportId}",
+            "/api/v1/admin/reports/{reportId}/handle",
+            "/api/v1/admin/reports/{reportId}/reject"
     };
 
     public static String[] userOnlyEndpoint = {
             "/api/v1/yards/{yardId}/booking",
             "/api/v1/me/incoming-matches",
             "/api/v1/me/history-booking",
-            "/api/v1/me/bookings/{bookingId}"
+            "/api/v1/me/bookings/{bookingId}",
+            "/api/v1/me/report/yards/{yardId}"
     };
 }

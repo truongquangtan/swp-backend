@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class Slot {
+public class Slot implements Comparable<Slot> {
     private int id;
     private String refSubYard;
     private int price;
@@ -13,4 +13,10 @@ public class Slot {
     private String endTime;
     private boolean isActive;
     private boolean isBooked = true;
+
+    @Override
+    public int compareTo(Slot anotherSlot) {
+        return this.startTime.compareTo(anotherSlot.getStartTime());
+    }
+
 }

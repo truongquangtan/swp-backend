@@ -36,7 +36,7 @@ public class YardRestApi {
     private Gson gson;
 
     @PostMapping(value = "yards")
-    public ResponseEntity<String> createYard(@RequestParam(name = "yard") String yard, @RequestParam(name = "images") MultipartFile[] images) {
+    public ResponseEntity<String> createYard(@RequestParam(name = "yard") String yard, @RequestParam(name = "images", required = false) MultipartFile[] images) {
         YardRequest yardRequest;
         try {
             yardRequest = gson.fromJson(yard, YardRequest.class);

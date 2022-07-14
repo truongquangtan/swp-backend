@@ -12,10 +12,12 @@ import com.swp.backend.repository.SlotRepository;
 import com.swp.backend.repository.SubYardRepository;
 import com.swp.backend.repository.TypeYardRepository;
 import com.swp.backend.repository.YardRepository;
+import com.swp.backend.utils.DateHelper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,26 +29,6 @@ public class SubYardService {
     private TypeYardRepository typeYardRepository;
     private SlotRepository slotRepository;
     private YardRepository yardRepository;
-
-    private List<SubYardEntity> findAllSubYardByParentId(String bigYardId) {
-        return subYardCustomRepository.getAllSubYardByBigYard(bigYardId);
-    }
-
-    private List<SubYardEntity> findActiveSubYardByParentId(String bigYardId) {
-        return subYardCustomRepository.getAllActiveSubYardByBigYard(bigYardId);
-    }
-
-    public List<SubYardModel> getSubYardsByBigYard(String bigYardId) {
-        List<?> queriedSubYards = findAllSubYardByParentId(bigYardId);
-
-        return getListSubYardModelFromQueriedList(queriedSubYards);
-    }
-
-    public List<SubYardModel> getActiveSubYardsByBigYard(String bigYardId) {
-        List<?> queriedSubYards = findActiveSubYardByParentId(bigYardId);
-
-        return getListSubYardModelFromQueriedList(queriedSubYards);
-    }
 
     private List<SubYardModel> getListSubYardModelFromQueriedList(List<?> queriedSubYards) {
         return queriedSubYards.stream().map(object -> {
@@ -66,6 +48,35 @@ public class SubYardService {
                 return null;
             }
         }).collect(Collectors.toList());
+    }
+
+    public List<GetSubYardDetailResponse> getAllSubYardDetailOfYard(String yardId) {
+        List<GetSubYardDetailResponse> subYardDetailResponses = new ArrayList<>();
+        List<SubYardEntity> subYardEntities = findAllSubYardByParentId(yardId);
+        for (SubYardEntity subYardEntity : subYardEntities) {
+            subYardDetailResponses.add(processGetSubYardDetailResponseByOwner(subYardEntity.getId()));
+        }
+        return subYardDetailResponses;
+    }
+
+    public List<SubYardModel> getSubYardsByBigYard(String bigYardId) {
+        List<?> queriedSubYards = findAllSubYardByParentId(bigYardId);
+
+        return getListSubYardModelFromQueriedList(queriedSubYards);
+    }
+
+    public List<SubYardModel> getActiveSubYardsByBigYard(String bigYardId) {
+        List<?> queriedSubYards = findActiveSubYardByParentId(bigYardId);
+
+        return getListSubYardModelFromQueriedList(queriedSubYards);
+    }
+
+    private List<SubYardEntity> findAllSubYardByParentId(String bigYardId) {
+        return subYardCustomRepository.getAllSubYardByBigYard(bigYardId);
+    }
+
+    private List<SubYardEntity> findActiveSubYardByParentId(String bigYardId) {
+        return subYardCustomRepository.getAllActiveSubYardByBigYard(bigYardId);
     }
 
     public GetSubYardDetailResponse getSubYardDetailResponse(String ownerId, String yardId, String subYardId) {
@@ -111,9 +122,10 @@ public class SubYardService {
     }
 
     @Transactional
-    public void setIsActiveFalseForSubYard(String subYardId) {
+    public void setInactivationInfoToSubYardEntity(String subYardId) {
         SubYardEntity subYardEntity = subYardRepository.getSubYardEntitiesById(subYardId);
         subYardEntity.setActive(false);
+        subYardEntity.setUpdatedAt(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE));
         subYardRepository.save(subYardEntity);
     }
 
@@ -125,9 +137,10 @@ public class SubYardService {
     }
 
     @Transactional
-    public void setIsActiveTrueForSubYard(String subYardId) {
+    public void setActivationInfoToSubYardEntity(String subYardId) {
         SubYardEntity subYardEntity = subYardRepository.getSubYardEntitiesById(subYardId);
         subYardEntity.setActive(true);
+        subYardEntity.setUpdatedAt(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE));
         subYardRepository.save(subYardEntity);
     }
 
@@ -139,9 +152,10 @@ public class SubYardService {
     }
 
     @Transactional
-    public void setIsDeletedTrueForSubYard(String subYardId) {
+    public void setDeletedInfoToSubYardEntity(String subYardId) {
         SubYardEntity subYardEntity = subYardRepository.getSubYardEntitiesById(subYardId);
         subYardEntity.setDeleted(true);
+        subYardEntity.setUpdatedAt(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE));
         subYardRepository.save(subYardEntity);
     }
 

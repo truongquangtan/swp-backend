@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -93,7 +92,8 @@ public class YardUpdateService {
                 picture.setImage(firebaseStoreService.uploadFile(newImages[i]));
                 yardPictureRepository.save(picture);
             }
-        } catch (IOException ex) {
+        } catch (Exception ex) {
+            ex.printStackTrace();
             throw new RuntimeException(ex.getMessage());
         }
     }

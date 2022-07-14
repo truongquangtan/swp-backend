@@ -1,12 +1,15 @@
 package com.swp.backend.api.v1.slot;
 
 import com.google.gson.Gson;
+import com.swp.backend.model.BookedSlotModel;
 import com.swp.backend.model.Slot;
+import com.swp.backend.service.SecurityContextService;
 import com.swp.backend.service.SlotService;
 import com.swp.backend.service.SubYardService;
 import com.swp.backend.service.YardService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,13 +21,12 @@ public class GetSlotApi {
     private SlotService slotService;
     private SubYardService subYardService;
     private YardService yardService;
+    private SecurityContextService securityContextService;
     private Gson gson;
 
     @PostMapping(value = "sub-yards/{subYardId}/slots")
     public ResponseEntity<String> getSlotBySubYardAndDate(@PathVariable String subYardId, @RequestBody(required = false) GetSlotRequest getSlotRequest) {
         try {
-
-
             SlotResponse response;
 
             //Invalid Request Filter
@@ -54,6 +56,93 @@ public class GetSlotApi {
             List<Slot> slots = slotService.getAllSlotInSubYardByDate(subYardId, getSlotRequest.getDate());
             response = new SlotResponse("Get slots successful", slots);
             return ResponseEntity.ok().body(gson.toJson(response));
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PostMapping(value = "owners/me/sub-yards/{subYardId}/slots")
+    public ResponseEntity<String> getSlotBySubYardAndDateByOwner(@PathVariable String subYardId, @RequestBody(required = false) GetSlotRequest getSlotRequest) {
+        try {
+            SlotResponse response;
+            String userId = securityContextService.extractUsernameFromContext(SecurityContextHolder.getContext());
+
+            //Invalid Request Filter
+            if (getSlotRequest == null) {
+                response = new SlotResponse("Empty body", null);
+                return ResponseEntity.badRequest().body(gson.toJson(response));
+            }
+            if (!getSlotRequest.isValid()) {
+                response = new SlotResponse("Request can not be parsed", null);
+                return ResponseEntity.badRequest().body(gson.toJson(response));
+            }
+
+            //BigYard not available filter
+            String bigYardId = subYardService.getBigYardIdFromSubYard(subYardId);
+            if (!yardService.isAvailableYard(bigYardId)) {
+                response = new SlotResponse("The Yard entity of this sub yard is not active or deleted.", null);
+                return ResponseEntity.badRequest().body(gson.toJson(response));
+            }
+            if(!yardService.getOwnerIdOfYard(bigYardId).equals(userId))
+            {
+                response = new SlotResponse("The owner is not author of this yard", null);
+                return ResponseEntity.badRequest().body(gson.toJson(response));
+            }
+
+            //SubYard not available filter
+            if (!subYardService.isActiveSubYard(subYardId)) {
+                response = new SlotResponse("SubYard is not active", null);
+                return ResponseEntity.badRequest().body(gson.toJson(response));
+            }
+
+            //Successful query
+            List<Slot> slots = slotService.getAllSlotInSubYardByDateFromOwner(subYardId, getSlotRequest.getDate());
+            response = new SlotResponse("Get slots successful", slots);
+            return ResponseEntity.ok().body(gson.toJson(response));
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PostMapping(value = "owners/me/sub-yards/{subYardId}/slots/{slotId}")
+    public ResponseEntity<String> getSlotBySubYardAndDateByOwner(@PathVariable String subYardId, @PathVariable int slotId, @RequestBody(required = false) GetSlotRequest getSlotRequest) {
+        try {
+            SlotResponse response;
+            String userId = securityContextService.extractUsernameFromContext(SecurityContextHolder.getContext());
+
+            //Invalid Request Filter
+            if (getSlotRequest == null) {
+                response = new SlotResponse("Empty body", null);
+                return ResponseEntity.badRequest().body(gson.toJson(response));
+            }
+            if (!getSlotRequest.isValid()) {
+                response = new SlotResponse("Request can not be parsed", null);
+                return ResponseEntity.badRequest().body(gson.toJson(response));
+            }
+
+            //BigYard not available filter
+            String bigYardId = subYardService.getBigYardIdFromSubYard(subYardId);
+            if (!yardService.isAvailableYard(bigYardId)) {
+                response = new SlotResponse("The Yard entity of this sub yard is not active or deleted.", null);
+                return ResponseEntity.badRequest().body(gson.toJson(response));
+            }
+            if(!yardService.getOwnerIdOfYard(bigYardId).equals(userId))
+            {
+                response = new SlotResponse("The owner is not author of this yard", null);
+                return ResponseEntity.badRequest().body(gson.toJson(response));
+            }
+
+            //SubYard not available filter
+            if (!subYardService.isActiveSubYard(subYardId)) {
+                response = new SlotResponse("SubYard is not active", null);
+                return ResponseEntity.badRequest().body(gson.toJson(response));
+            }
+
+            //Successful query
+            BookedSlotModel bookedSlotModel = slotService.getBookedSlotModel(slotId, getSlotRequest.getDate());
+            return ResponseEntity.ok().body(gson.toJson(bookedSlotModel));
         } catch (Exception exception) {
             exception.printStackTrace();
             return ResponseEntity.internalServerError().build();

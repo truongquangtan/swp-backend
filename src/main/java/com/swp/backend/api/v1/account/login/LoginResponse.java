@@ -1,10 +1,14 @@
 package com.swp.backend.api.v1.account.login;
 
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
-@Builder
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 public class LoginResponse {
     private String userId;
     private String avatar;

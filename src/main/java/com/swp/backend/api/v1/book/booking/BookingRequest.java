@@ -11,8 +11,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BookingRequest {
+    private String voucherCode;
     private List<BookingModel> bookingList;
-    private String voucherId;
 
     public boolean isValid() {
         for (BookingModel bookingModel : bookingList) {

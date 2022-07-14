@@ -31,6 +31,8 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class AccountService {
+    public static final String DISABLED_USER_REASON = "The owner is disabled by admin";
+
     private final AccountRepository accountRepository;
     private final RoleService roleService;
     private final BCryptPasswordEncoder passwordEncoder;
@@ -39,7 +41,8 @@ public class AccountService {
     private final RoleRepository roleRepository;
     private final YardService yardService;
     private final FirebaseStoreService firebaseStoreService;
-
+    private final InactivationService inactivationService;
+    private final ReactivationService reactivationService;
     private final AccountCustomRepository accountCustomRepository;
 
     public AccountEntity updatePassword(String username, String password) throws DataAccessException {
@@ -171,6 +174,10 @@ public class AccountService {
             new Thread(() -> {
                 try {
                     yardService.reactiveAllYardsOfOwner(userId);
+                    yardService.getAllYardEntityOfOwner(userId).stream().forEach(yard -> {
+                        if (!yard.isActive())
+                            reactivationService.processReactiveYard(yard.getId());
+                    });
                 } catch (Exception exception) {
                     exception.printStackTrace();
                 }
@@ -180,7 +187,10 @@ public class AccountService {
             new Thread(() -> {
                 try {
                     accountLoginService.deleteAllLogin(userId);
-                    yardService.inactiveAllYardsOfOwner(userId);
+                    yardService.getAllYardEntityOfOwner(userId).stream().forEach(yard -> {
+                        if (yard.isActive())
+                            inactivationService.processInactivateYard(userId, yard.getId(), DISABLED_USER_REASON);
+                    });
                 } catch (Exception exception) {
                     exception.printStackTrace();
                 }
@@ -271,10 +281,10 @@ public class AccountService {
         return accountCustomRepository.countMaxResultSearchAccount(role, keyword, status);
     }
 
-    public boolean updateAccount(MultipartFile avatar, String userId, String email, String oldPassword, String password, String phone) throws IOException, DataAccessException {
+    public AccountModel updateAccount(MultipartFile avatar, String userId, String fullName, String phone) throws IOException, DataAccessException {
         AccountEntity account = findAccountByUsername(userId);
         if (account == null) {
-            return false;
+            return null;
         }
 
         if (avatar != null) {
@@ -282,23 +292,49 @@ public class AccountService {
             account.setAvatar(url);
         }
 
-        if (oldPassword != null && password != null) {
-            if (passwordEncoder.matches(oldPassword, account.getPassword()) && password.trim().length() >= 8) {
-                account.setPassword(passwordEncoder.encode(password));
-            } else {
-                return false;
-            }
-        }
-
         if (phone != null && phone.matches(RegexHelper.PHONE_REGEX_LOCAL)) {
             account.setPhone(phone);
         }
 
-        if (email != null && email.matches(RegexHelper.EMAIL_REGEX)) {
-            account.setEmail(email);
+        if (fullName != null && fullName.trim().length() > 0) {
+            account.setFullName(fullName.trim());
         }
 
         accountRepository.save(account);
-        return true;
+        RoleEntity role = roleService.getRoleById(account.getRoleId());
+        return AccountModel.builder()
+                .role(role.getRoleName())
+                .userId(account.getUserId())
+                .fullName(account.getFullName())
+                .avatar(account.getAvatar())
+                .createAt(account.getCreateAt().toString())
+                .phone(account.getPhone())
+                .isConfirmed(account.isConfirmed())
+                .email(account.getEmail())
+                .build();
+    }
+
+    public AccountModel verifyCurrentPassword(String userId, String password) throws DataAccessException {
+        if (userId == null || password == null) {
+            return null;
+        }
+        AccountEntity account = accountRepository.findUserEntityByUserId(userId);
+        if (account == null) {
+            return null;
+        }
+        if (passwordEncoder.matches(password, account.getPassword())) {
+            RoleEntity role = roleService.getRoleById(account.getRoleId());
+            return AccountModel.builder()
+                    .role(role.getRoleName())
+                    .userId(account.getUserId())
+                    .fullName(account.getFullName())
+                    .avatar(account.getAvatar())
+                    .createAt(account.getCreateAt().toString())
+                    .phone(account.getPhone())
+                    .isConfirmed(account.isConfirmed())
+                    .email(account.getEmail())
+                    .build();
+        }
+        return null;
     }
 }

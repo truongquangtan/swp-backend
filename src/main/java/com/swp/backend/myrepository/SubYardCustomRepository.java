@@ -23,7 +23,8 @@ public class SubYardCustomRepository {
                 " AND s.is_active = true" +
                 " AND s.is_deleted = false" +
                 " AND y.is_active = true" +
-                " AND y.is_deleted = false";
+                " AND y.is_deleted = false" +
+                " ORDER BY updated_at";
         try {
 
             Query query = entityManager.createNativeQuery(nativeQuery, SubYardEntity.class);
@@ -45,7 +46,8 @@ public class SubYardCustomRepository {
                 " WHERE s.parent_yard = ?1" +
                 " AND s.is_deleted = false" +
                 " AND y.is_active = true" +
-                " AND y.is_deleted = false";
+                " AND y.is_deleted = false" +
+                " ORDER BY updated_at";
         try {
 
             Query query = entityManager.createNativeQuery(nativeQuery, SubYardEntity.class);
