@@ -2,13 +2,14 @@ package com.swp.backend.service;
 
 import com.swp.backend.constance.BookingStatus;
 import com.swp.backend.entity.BookingEntity;
-import com.swp.backend.entity.BookingHistoryEntity;
 import com.swp.backend.entity.SlotEntity;
 import com.swp.backend.entity.YardEntity;
 import com.swp.backend.model.BookingModel;
 import com.swp.backend.myrepository.BookingCustomRepository;
-import com.swp.backend.myrepository.BookingHistoryCustomRepository;
-import com.swp.backend.repository.*;
+import com.swp.backend.repository.BookingRepository;
+import com.swp.backend.repository.SlotRepository;
+import com.swp.backend.repository.SubYardRepository;
+import com.swp.backend.repository.YardRepository;
 import com.swp.backend.utils.DateHelper;
 import com.swp.backend.utils.PaginationHelper;
 import lombok.AllArgsConstructor;
@@ -34,9 +35,8 @@ public class BookingService {
     private YardRepository yardRepository;
     private SlotRepository slotRepository;
     private SubYardRepository subYardRepository;
-    private BookingHistoryRepository bookingHistoryRepository;
-    private BookingHistoryCustomRepository bookingHistoryCustomRepository;
     private BookingHistoryService bookingHistoryService;
+
 
     @Transactional
     public BookingEntity book(String userId, String yardId, BookingModel bookingModel, boolean isNonValidVoucher) {
@@ -135,7 +135,6 @@ public class BookingService {
 
     private void addInformationToBookingHistory(BookingEntity bookingEntity) {
         bookingHistoryService.saveBookingHistory(bookingEntity, "", bookingEntity.getAccountId());
-
     }
 
     public List<BookingEntity> getIncomingMatchesOfUser(String userId, int itemsPerPage, int page) {
@@ -166,31 +165,9 @@ public class BookingService {
     private List<BookingEntity> getBookingEntitiesFromQueriedList(List<?> queriedList) {
         List<BookingEntity> result = new ArrayList<>();
         if (queriedList != null) {
-            result = queriedList.stream().map(queriedBooking -> {
-                return (BookingEntity) queriedBooking;
-            }).collect(Collectors.toList());
+            result = queriedList.stream().map(queriedBooking -> (BookingEntity) queriedBooking).collect(Collectors.toList());
         }
         return result;
-    }
-
-    public List<BookingHistoryEntity> getBookingHistoryOfUser(String userId, int itemsPerPage, int page) {
-        PaginationHelper paginationHelper = new PaginationHelper(itemsPerPage, countAllHistoryBookingsOfUser(userId));
-        List<BookingHistoryEntity> result = bookingHistoryCustomRepository.getAllBookingHistoryOfUser(userId, paginationHelper.getStartIndex(page), paginationHelper.getEndIndex(page));
-        return result == null ? new ArrayList<>() : result;
-    }
-
-    public List<BookingHistoryEntity> getBookingHistoryOfOwner(String ownerId, int itemsPerPage, int page) {
-        PaginationHelper paginationHelper = new PaginationHelper(itemsPerPage, countAllHistoryBookingsOfOwner(ownerId));
-        List<BookingHistoryEntity> result = bookingHistoryCustomRepository.getAllBookingHistoryOfOwner(ownerId, paginationHelper.getStartIndex(page), paginationHelper.getEndIndex(page));
-        return result == null ? new ArrayList<>() : result;
-    }
-
-    public int countAllHistoryBookingsOfOwner(String ownerId) {
-        return bookingHistoryCustomRepository.countAllBookingHistoryOfOwner(ownerId);
-    }
-
-    public int countAllHistoryBookingsOfUser(String userId) {
-        return bookingHistoryCustomRepository.countAllBookingHistoryOfUser(userId);
     }
 
     public int countAllIncomingMatchesOfUser(String userId) {

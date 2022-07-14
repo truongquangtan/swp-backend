@@ -35,13 +35,13 @@ public class GetMatchApi {
 
         BookingEntity booking = bookingService.getBookingById(bookingId);
 
-        if (booking.getAccountId().equals(userId) == false) {
+        if (!booking.getAccountId().equals(userId)) {
             ErrorResponse error = ErrorResponse.builder().message("The user is not author of booking").build();
             return ResponseEntity.badRequest().body(gson.toJson(error));
         }
 
         try {
-            data = matchService.getMatchModelFromBookingEntity(booking);
+            data = matchService.transformMatchModelFromBookingEntity(booking);
             return ResponseEntity.ok(gson.toJson(data));
         } catch (Exception exception) {
             ErrorResponse error = ErrorResponse.builder().message("Error when query").build();

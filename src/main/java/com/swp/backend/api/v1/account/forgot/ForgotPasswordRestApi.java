@@ -25,7 +25,7 @@ public class ForgotPasswordRestApi {
     private SecurityContextService securityContextService;
     private Gson gson;
     private RoleService roleService;
-    JwtTokenUtils jwtTokenUtils;
+    private JwtTokenUtils jwtTokenUtils;
 
     @PostMapping(value = "send-mail")
     public ResponseEntity<String> sendOtpRestPassword(@RequestBody(required = false) SendMailRequest sendMailRequest) {

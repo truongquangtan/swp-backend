@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -59,17 +59,58 @@ public class VoucherService {
         voucherRepository.save(voucherEntity);
     }
 
+    public void updateVoucher(VoucherModel voucher) throws DataAccessException {
+        Timestamp startDate = DateHelper.parseTimestampNonTimeAtZone(voucher.getStartDate());
+        Timestamp endDate = DateHelper.parseTimestampNonTimeAtZone(voucher.getEndDate());
+        endDate = DateHelper.plusMinutes(endDate, 1439);
+        VoucherEntity voucherEntity = VoucherEntity.builder()
+                .id(voucher.getId())
+                .voucherCode(voucher.getVoucherCode())
+                .createdByAccountId(voucher.getCreatedByAccountId())
+                .startDate(startDate)
+                .endDate(endDate)
+                .maxQuantity(voucher.getMaxQuantity())
+                .usages(voucher.getUsages())
+                .title(voucher.getTitle())
+                .description(voucher.getDescription())
+                .discount(voucher.getDiscount())
+                .active(voucher.getIsActive())
+                .status(voucher.getStatus())
+                .type(voucher.getType())
+                .createdAt(Timestamp.valueOf(voucher.getCreatedAt()))
+                .reference(voucher.getReference())
+                .build();
+        voucherRepository.save(voucherEntity);
+    }
+
     public VoucherResponse SearchVoucherByOwnerId(String ownerId, SearchModel searchModel) {
         List<VoucherEntity> voucherResults = findAllVoucherByOwnerId(ownerId, null);
-        voucherResults = handleSearchByKeyword(searchModel.getKeyword(), voucherResults);
-        voucherResults = handleFilterVoucher(searchModel.getFilter(), voucherResults);
-        voucherResults = handleSortByColumn(searchModel.getSort(), voucherResults);
+        voucherResults = voucherResults.stream().filter(voucher -> !voucher.getStatus().equals(DELETED)).collect(Collectors.toList());
+        int pageValue = 1;
+        int offSetValue = 10;
+        if(searchModel != null){
+            voucherResults = handleSearchByKeyword(searchModel.getKeyword(), voucherResults);
+            voucherResults = handleFilterVoucher(searchModel.getFilter(), voucherResults);
+            voucherResults = handleSortByColumn(searchModel.getSort(), voucherResults);
+            if(searchModel.getPage() != null){
+                pageValue = searchModel.getPage();
+            }
+            if(searchModel.getItemsPerPage() != null){
+                offSetValue = searchModel.getItemsPerPage();
+            }
+        }
 
-        if (voucherResults.size() == 0) {
-            return VoucherResponse.builder().page(1).maxResult(0).message("Did not any result matches with keyword. Try again!").build();
+        if (voucherResults == null || voucherResults.size() == 0) {
+            return VoucherResponse.builder().page(1).vouchers(Collections.emptyList()).maxResult(0).message("Did not any result matches with keyword. Try again!").build();
         }
         List<VoucherModel> voucherModels = voucherResults.stream().map((this::convertVoucherModelFromVoucherEntity)).collect(Collectors.toList());
-        return VoucherResponse.builder().vouchers(voucherModels).maxResult(voucherModels.size()).page(1).build();
+        int maxResult = voucherResults.size();
+        if ((pageValue - 1) * offSetValue >= maxResult) {
+            pageValue = 1;
+        }
+        int startIndex = Math.max((pageValue - 1) * offSetValue, 0);
+        int endIndex = Math.min((pageValue * offSetValue), maxResult);
+        return VoucherResponse.builder().vouchers(voucherModels.subList(startIndex, endIndex)).maxResult(voucherModels.size()).page(1).build();
     }
 
     private List<VoucherEntity> handleFilterVoucher(FilterModel filter, List<VoucherEntity> vouchers) {
@@ -168,28 +209,15 @@ public class VoucherService {
         return vouchers;
     }
 
-    public VoucherResponse getAllVoucherByOwnerId(String ownerId, Integer offSet, Integer page) {
-        int offSetValue = offSet != null ? offSet : 10;
-        int pageValue = page != null ? page : 1;
-        int maxResult = voucherRepository.countAllByCreatedByAccountId(ownerId);
-        if ((pageValue - 1) * offSetValue >= maxResult) {
-            pageValue = 1;
-        }
-        Pageable pageable = PageRequest.of((pageValue - 1), offSetValue, Sort.by("createdAt").descending());
-        List<VoucherEntity> voucherResults = findAllVoucherByOwnerId(ownerId, pageable);
-        List<VoucherModel> voucherModels = voucherResults.stream().map((this::convertVoucherModelFromVoucherEntity)).collect(Collectors.toList());
-        return VoucherResponse.builder().vouchers(voucherModels).maxResult(maxResult).page(pageValue).build();
-    }
-
     private List<VoucherEntity> findAllVoucherByOwnerId(String ownerId, Pageable pageable) {
         List<VoucherEntity> vouchers;
         if (pageable == null) {
             vouchers = voucherRepository.findVoucherEntitiesByCreatedByAccountId(ownerId);
-        }else {
+        } else {
             vouchers = voucherRepository.findVoucherEntitiesByCreatedByAccountId(ownerId, pageable);
         }
         return vouchers.stream().peek(voucher -> {
-            if(voucher.getUsages() >= voucher.getMaxQuantity() || voucher.getEndDate().compareTo(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE)) < 0){
+            if (voucher.getUsages() >= voucher.getMaxQuantity() || voucher.getEndDate().compareTo(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE)) < 0) {
                 voucher.setStatus(EXPIRED);
                 voucherRepository.save(voucher);
             }
@@ -206,6 +234,7 @@ public class VoucherService {
         }
         Pageable pageable = PageRequest.of((pageValue - 1), offSetValue, Sort.by("createdAt").ascending());
         List<VoucherEntity> voucherResults = voucherRepository.findVoucherEntitiesByCreatedByAccountIdAndEndDateAfterAndActive(ownerId, now, true, pageable);
+        voucherResults = voucherResults.stream().filter(voucher -> voucher.getStatus().equals(ACTIVE)).collect(Collectors.toList());
         List<VoucherModel> voucherModels = voucherResults.stream().map((this::convertVoucherModelFromVoucherEntity)).collect(Collectors.toList());
         voucherModels = voucherModels.stream().filter(voucherModel -> voucherModel.getMaxQuantity() > voucherModel.getUsages()).collect(Collectors.toList());
         return VoucherResponse.builder().vouchers(voucherModels).maxResult(maxResult).page(pageValue).build();
@@ -234,12 +263,6 @@ public class VoucherService {
                 .createdByAccountId(voucherEntity.getCreatedByAccountId())
                 .discount(voucherEntity.getDiscount())
                 .build();
-    }
-
-    public void updateVoucher(VoucherModel voucher) throws DataAccessException {
-        VoucherEntity voucherEntity = voucherRepository.getVoucherEntityById(voucher.getId());
-        voucherEntity.setActive(voucher.getIsActive() != null ? voucher.getIsActive() : voucherEntity.isActive());
-        voucherRepository.save(voucherEntity);
     }
 
     public List<BookingApplyVoucherModel> calculationPriceApplyVoucher(List<BookingModel> listBooking, VoucherEntity voucherApply) throws ApplyVoucherException {
@@ -298,7 +321,7 @@ public class VoucherService {
             throw ApplyVoucherException.builder().errorMessage("Voucher is not available.").build();
         }
 
-        if(voucherApply.getEndDate().compareTo(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE)) < 0){
+        if (voucherApply.getEndDate().compareTo(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE)) < 0) {
             voucherApply.setStatus(EXPIRED);
             voucherRepository.save(voucherApply);
             throw ApplyVoucherException.builder().errorMessage("Voucher is out of date.").build();

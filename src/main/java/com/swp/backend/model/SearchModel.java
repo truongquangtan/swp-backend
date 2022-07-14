@@ -11,4 +11,6 @@ public class SearchModel {
     private String keyword;
     private String sort;
     private FilterModel filter;
+    private Integer itemsPerPage;
+    private Integer page;
 }
