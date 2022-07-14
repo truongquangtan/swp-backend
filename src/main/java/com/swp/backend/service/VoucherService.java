@@ -84,7 +84,7 @@ public class VoucherService {
     }
 
     public VoucherResponse SearchVoucherByOwnerId(String ownerId, SearchModel searchModel) {
-        List<VoucherEntity> voucherResults = findAllVoucherByOwnerId(ownerId, null);
+        List<VoucherEntity> voucherResults = findAllVoucherByOwnerId(ownerId);
         voucherResults = voucherResults.stream().filter(voucher -> !voucher.getStatus().equals(DELETED)).collect(Collectors.toList());
         int pageValue = 1;
         int offSetValue = 10;
@@ -171,7 +171,7 @@ public class VoucherService {
         switch (columnSort) {
             case "voucherCode":
                 if (orderBy == '+') {
-                    vouchers.sort((firstVoucher, secondVoucher) -> secondVoucher.getVoucherCode().compareTo(firstVoucher.getVoucherCode()));
+                    vouchers.sort(Comparator.comparing(VoucherEntity::getVoucherCode));
                 } else {
                     vouchers.sort((firstVoucher, secondVoucher) -> secondVoucher.getVoucherCode().compareTo(firstVoucher.getVoucherCode()));
                 }
@@ -192,9 +192,9 @@ public class VoucherService {
                 break;
             case "endDate":
                 if (orderBy == '+') {
-                    vouchers.sort((firstVoucher, secondVoucher) -> secondVoucher.getEndDate().compareTo(firstVoucher.getEndDate()));
-                } else {
                     vouchers.sort(Comparator.comparing(VoucherEntity::getEndDate));
+                } else {
+                    vouchers.sort((firstVoucher, secondVoucher) -> secondVoucher.getEndDate().compareTo(firstVoucher.getEndDate()));
                 }
                 break;
             case "maxQuantity":
@@ -208,13 +208,9 @@ public class VoucherService {
         return vouchers;
     }
 
-    private List<VoucherEntity> findAllVoucherByOwnerId(String ownerId, Pageable pageable) {
+    private List<VoucherEntity> findAllVoucherByOwnerId(String ownerId) {
         List<VoucherEntity> vouchers;
-        if (pageable == null) {
             vouchers = voucherRepository.findVoucherEntitiesByCreatedByAccountId(ownerId);
-        } else {
-            vouchers = voucherRepository.findVoucherEntitiesByCreatedByAccountId(ownerId, pageable);
-        }
         return vouchers.stream().peek(voucher -> {
             if (voucher.getUsages() >= voucher.getMaxQuantity() || voucher.getEndDate().compareTo(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE)) < 0) {
                 voucher.setStatus(EXPIRED);
