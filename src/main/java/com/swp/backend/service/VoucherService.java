@@ -229,6 +229,12 @@ public class VoucherService {
         }
         Pageable pageable = PageRequest.of((pageValue - 1), offSetValue, Sort.by("createdAt").ascending());
         List<VoucherEntity> voucherResults = voucherRepository.findVoucherEntitiesByCreatedByAccountIdAndEndDateAfterAndActive(ownerId, now, true, pageable);
+        voucherResults = voucherResults.stream().peek(voucher -> {
+            if (voucher.getUsages() >= voucher.getMaxQuantity() || voucher.getEndDate().compareTo(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE)) < 0) {
+                voucher.setStatus(EXPIRED);
+                voucherRepository.save(voucher);
+            }
+        }).collect(Collectors.toList());
         voucherResults = voucherResults.stream().filter(voucher -> voucher.getStatus().equals(ACTIVE)).collect(Collectors.toList());
         List<VoucherModel> voucherModels = voucherResults.stream().map((this::convertVoucherModelFromVoucherEntity)).collect(Collectors.toList());
         voucherModels = voucherModels.stream().filter(voucherModel -> voucherModel.getMaxQuantity() > voucherModel.getUsages()).collect(Collectors.toList());
