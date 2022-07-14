@@ -17,4 +17,5 @@ public interface SubYardRepository extends JpaRepository<SubYardEntity, String> 
 
     @Query("SELECT subYard.id FROM SubYardEntity subYard WHERE subYard.parentYard IN :listSubYardId")
     public List<String> getAllSubYardIdByListBigYardId(@Param("listSubYardId") Collection<String> listSubYardId);
+    public List<SubYardEntity> findSubYardEntitiesByParentYardAndParentActiveAndDeleted(String yardId, boolean isParentActive, boolean isDeleted);
 }

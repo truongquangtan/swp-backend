@@ -6,6 +6,7 @@ import com.swp.backend.api.v1.owner.yard.request.GetYardRequest;
 import com.swp.backend.api.v1.owner.yard.request.YardRequest;
 import com.swp.backend.api.v1.owner.yard.response.CreateYardSuccessResponse;
 import com.swp.backend.api.v1.owner.yard.response.GetYardDetailResponse;
+import com.swp.backend.api.v1.owner.yard.response.GetYardInBookingResponse;
 import com.swp.backend.api.v1.owner.yard.response.GetYardResponse;
 import com.swp.backend.api.v1.owner.yard.updateYardRequest.UpdateYardRequest;
 import com.swp.backend.entity.YardEntity;
@@ -144,6 +145,22 @@ public class YardRestApi {
         } catch (RuntimeException ex) {
             ex.printStackTrace();
             return ResponseEntity.internalServerError().body(ex.getMessage());
+        }
+    }
+    @GetMapping(value = "all-yards")
+    public ResponseEntity<String> getAllYardInBookingManagement()
+    {
+        List<GetYardInBookingResponse> response;
+        try
+        {
+            String ownerId = securityContextService.extractUsernameFromContext(SecurityContextHolder.getContext());
+            response = yardService.getSimpleYardDetailsFromOwner(ownerId);
+            return ResponseEntity.ok(gson.toJson(response));
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+            return  ResponseEntity.internalServerError().body("Server error " + ex.getMessage());
         }
     }
 }

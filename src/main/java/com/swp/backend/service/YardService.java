@@ -3,14 +3,12 @@ package com.swp.backend.service;
 import com.swp.backend.api.v1.owner.yard.request.SubYardRequest;
 import com.swp.backend.api.v1.owner.yard.request.YardRequest;
 import com.swp.backend.api.v1.owner.yard.response.GetYardDetailResponse;
+import com.swp.backend.api.v1.owner.yard.response.GetYardInBookingResponse;
 import com.swp.backend.api.v1.owner.yard.response.GetYardResponse;
 import com.swp.backend.api.v1.yard.search.YardResponse;
 import com.swp.backend.constance.NoImageUrl;
 import com.swp.backend.entity.*;
-import com.swp.backend.model.SlotModel;
-import com.swp.backend.model.SubYardDetailModel;
-import com.swp.backend.model.SubYardModel;
-import com.swp.backend.model.YardModel;
+import com.swp.backend.model.*;
 import com.swp.backend.myrepository.YardCustomRepository;
 import com.swp.backend.repository.*;
 import com.swp.backend.utils.DateHelper;
@@ -341,5 +339,24 @@ public class YardService {
 
     public List<YardEntity> getAllYardEntityOfOwner(String ownerId) {
         return yardRepository.findYardEntitiesByOwnerIdOrderByReferenceAsc(ownerId);
+    }
+    public List<GetYardInBookingResponse> getSimpleYardDetailsFromOwner(String ownerId)
+    {
+        List<GetYardInBookingResponse> getYardsInBookingResponse = new ArrayList<>();
+        List<YardEntity> yards = yardRepository.findYardEntitiesByOwnerIdAndDeleted(ownerId, false);
+        for(YardEntity yard : yards)
+        {
+            GetYardInBookingResponse getYardInBookingResponse = new GetYardInBookingResponse();
+            getYardInBookingResponse.setYardId(yard.getId());
+            getYardInBookingResponse.setYardName(yard.getName());
+            List<SubYardEntity> subYards = subYardRepository.findSubYardEntitiesByParentYardAndParentActiveAndDeleted(yard.getId(), true, false);
+            List<SubYardSimpleModel> subYardsDetail = new ArrayList<>();
+            for(SubYardEntity subYard : subYards)
+            {
+                subYardsDetail.add(new SubYardSimpleModel(subYard.getId(), subYard.getName()));
+            }
+            getYardInBookingResponse.setSubYards(subYardsDetail);
+        }
+        return getYardsInBookingResponse;
     }
 }
