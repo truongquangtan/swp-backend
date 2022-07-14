@@ -31,6 +31,7 @@ public class SlotService {
     private AccountRepository accountRepository;
     private YardRepository yardRepository;
     private SubYardRepository subYardRepository;
+    private TypeYardRepository typeYardRepository;
 
     public List<Slot> getAllSlotInSubYardByDate(String subYardId, String date) {
         try {
@@ -168,7 +169,6 @@ public class SlotService {
         SubYardEntity subYard;
         subYard = subYardRepository.getSubYardEntitiesById(bookingEntity.getSubYardId());
         SlotEntity slot = slotRepository.findSlotEntityById(slotId);
-        if (bookingEntity == null) return null;
         return BookedSlotModel.builder()
                 .userId(bookingEntity.getAccountId())
                 .userName(account.getFullName())
@@ -180,6 +180,8 @@ public class SlotService {
                 .endTime(slot.getEndTime().format(DateTimeFormatter.ofPattern("HH:mm")))
                 .bookedTime(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(bookingEntity.getBookAt()))
                 .price(Integer.toString(bookingEntity.getPrice()))
+                .address(yard.getAddress())
+                .typeYard(typeYardRepository.getTypeYardById(subYard.getTypeYard()).getTypeName())
                 .build();
     }
 }

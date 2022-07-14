@@ -16,4 +16,6 @@ public class BookedSlotModel {
     private String startTime;
     private String endTime;
     private String price;
+    private String address;
+    private String typeYard;
 }
