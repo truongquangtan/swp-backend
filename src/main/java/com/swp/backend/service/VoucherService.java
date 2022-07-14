@@ -129,7 +129,7 @@ public class VoucherService {
                     return vouchers.stream().filter(voucher -> !voucher.isActive()).collect(Collectors.toList());
                 }
                 if (value.equalsIgnoreCase(EXPIRED)) {
-                    return vouchers.stream().filter(voucher -> voucher.getUsages() >= voucher.getMaxQuantity() || voucher.getEndDate().compareTo(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE)) > 0).collect(Collectors.toList());
+                    return vouchers.stream().filter(voucher -> voucher.getUsages() >= voucher.getMaxQuantity() || voucher.getEndDate().compareTo(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE)) < 0).collect(Collectors.toList());
                 }
                 break;
             case "type":
