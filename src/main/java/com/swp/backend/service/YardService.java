@@ -225,6 +225,130 @@ public class YardService {
         return yard.getAddress() + ", " + district + ", " + province;
     }
 
+    public GetYardResponse findAllYardByOwnerId(String ownerId, SearchModel searchModel) {
+        List<YardEntity> yards = yardRepository.findAllByOwnerIdAndDeleted(ownerId, false);
+        String keyword = searchModel.getKeyword() != null && searchModel.getKeyword().trim().length() > 0 ? searchModel.getKeyword().trim().toLowerCase() : null;
+        yards = searchYardsByKeyword(searchModel.getKeyword(), yards);
+        yards = filterYard(searchModel.getFilter(), yards);
+        sortYards(searchModel.getSort(), yards);
+        List<YardModel> yardModels = transformYardEntityToYardModal(yards);
+        if (yardModels == null || yardModels.size() == 0) {
+            return GetYardResponse.builder().maxResult(0).listYard(Collections.emptyList()).page(0).build();
+        }
+        int maxResult = yardModels.size();
+        int pageValue = searchModel.getPage() != null ? searchModel.getPage() : 1;
+        int offSetValue = searchModel.getItemsPerPage() != null ? searchModel.getItemsPerPage() : 10;
+
+        if ((pageValue - 1) * offSetValue >= maxResult) {
+            pageValue = 1;
+        }
+        int startIndex = Math.max((pageValue - 1) * offSetValue, 0);
+        int endIndex = Math.min((pageValue * offSetValue), maxResult);
+        return GetYardResponse.builder().listYard(yardModels.subList(startIndex, endIndex)).page(pageValue).maxResult(maxResult).build();
+    }
+
+    private List<YardModel> transformYardEntityToYardModal(List<YardEntity> yards) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        return yards.stream().map(yard -> {
+            return YardModel.builder()
+                    .id(yard.getId())
+                    .address(yard.getAddress())
+                    .name(yard.getName())
+                    .openAt(yard.getOpenAt().format(formatter))
+                    .closeAt(yard.getCloseAt().format(formatter))
+                    .reference(yard.getReference())
+                    .createdAt(yard.getCreateAt())
+                    .address(yard.getAddress())
+                    .isActive(yard.isActive())
+                    .build();
+        }).collect(Collectors.toList());
+    }
+
+    private List<YardEntity> filterYard(FilterModel filter, List<YardEntity> yards) {
+        if (filter == null) {
+            return yards;
+        }
+        if (filter.getField().equalsIgnoreCase("isActive")) {
+            if (Boolean.parseBoolean(filter.getValue())) {
+                return yards.stream().filter(YardEntity::isActive).collect(Collectors.toList());
+            }else {
+                return yards.stream().filter(yard -> !yard.isActive()).collect(Collectors.toList());
+            }
+        }
+        return yards;
+    }
+
+    private void sortYards(String sortFiled, List<YardEntity> yards) {
+        String sortColumn = sortFiled != null ? sortFiled.trim() : null;
+        if (sortColumn == null) {
+            return;
+        }
+        char sort = sortColumn.charAt(0);
+        if (sort == '+' || sort == '-') {
+            sortColumn = sortFiled.substring(1);
+        } else {
+            sort = '+';
+        }
+
+        if (sortColumn.equals("reference")) {
+            if (sort == '-') {
+                yards.sort((fistYard, secondYard) -> Integer.compare(fistYard.getReference(), secondYard.getReference()));
+            } else {
+                yards.sort((fistYard, secondYard) -> Integer.compare(secondYard.getReference(), fistYard.getReference()));
+            }
+        }
+
+        if (sortColumn.equals("name")) {
+            if (sort == '+') {
+                yards.sort((fistYard, secondYard) -> fistYard.getName().compareTo(secondYard.getName()));
+            } else {
+                yards.sort((fistYard, secondYard) -> secondYard.getName().compareTo(fistYard.getName()));
+            }
+        }
+
+        if (sortColumn.equals("address")) {
+            if (sort == '+') {
+                yards.sort((fistYard, secondYard) -> fistYard.getAddress().compareTo(secondYard.getAddress()));
+            } else {
+                yards.sort((fistYard, secondYard) -> secondYard.getAddress().compareTo(fistYard.getAddress()));
+            }
+        }
+
+        if (sortColumn.equals("createdAt")) {
+            if (sort == '+') {
+                yards.sort((fistYard, secondYard) -> fistYard.getCreateAt().compareTo(secondYard.getCreateAt()));
+            } else {
+                yards.sort((fistYard, secondYard) -> secondYard.getCreateAt().compareTo(fistYard.getCreateAt()));
+            }
+        }
+
+        if (sortColumn.equals("openAt")) {
+            if (sort == '+') {
+                yards.sort((fistYard, secondYard) -> fistYard.getOpenAt().compareTo(secondYard.getOpenAt()));
+            } else {
+                yards.sort((fistYard, secondYard) -> secondYard.getOpenAt().compareTo(fistYard.getOpenAt()));
+            }
+        }
+
+        if (sortColumn.equals("closeAt")) {
+            if (sort == '+') {
+                yards.sort((fistYard, secondYard) -> fistYard.getCloseAt().compareTo(secondYard.getCloseAt()));
+            } else {
+                yards.sort((fistYard, secondYard) -> secondYard.getCloseAt().compareTo(fistYard.getCloseAt()));
+            }
+        }
+    }
+
+    private List<YardEntity> searchYardsByKeyword(String keyword, List<YardEntity> yards) {
+        String keywordValue = keyword != null && keyword.trim().length() > 0 ? keyword.trim().toLowerCase() : null;
+        if (keyword == null) {
+            return yards;
+        }
+        return yards.stream().filter(yard -> String.valueOf(yard.getReference()).contains(keyword)
+                || yard.getAddress().toLowerCase().contains(keyword)
+                || yard.getName().toLowerCase().contains(keyword)
+        ).collect(Collectors.toList());
+    }
 
     public GetYardResponse findAllYardByOwnerId(String ownerId, Integer ofSet, Integer page) throws DataAccessException {
         int maxResult = yardRepository.countAllByOwnerIdAndDeleted(ownerId, false);
@@ -259,8 +383,8 @@ public class YardService {
     }
 
     @Transactional
-    public int reactiveAllYardsOfOwner(String ownerId) {
-        return yardCustomRepository.reactivateAllYardsOfOwner(ownerId);
+    public void reactiveAllYardsOfOwner(String ownerId) {
+        yardCustomRepository.reactivateAllYardsOfOwner(ownerId);
     }
 
     public GetYardDetailResponse getYardDetailResponseFromYardId(String yardId) {

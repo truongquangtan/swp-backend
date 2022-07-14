@@ -23,12 +23,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "api/v1")
 @AllArgsConstructor
 public class LoginRestApi {
-    Gson gson;
-    AccountService accountService;
-    RoleService roleService;
-    BCryptPasswordEncoder bCryptPasswordEncoder;
-    JwtTokenUtils jwtTokenUtils;
-    AccountLoginService accountLoginService;
+    private Gson gson;
+    private AccountService accountService;
+    private RoleService roleService;
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private JwtTokenUtils jwtTokenUtils;
+    private AccountLoginService accountLoginService;
 
     @PostMapping("login")
     @Operation(summary = "Login by email/username/phone and password.")
@@ -40,7 +40,7 @@ public class LoginRestApi {
     )
     public ResponseEntity<String> login(@RequestBody(required = false) LoginRequest loginRequest) {
         try {
-            //Case empty body
+           //Case empty body
             if (loginRequest == null) {
                 return ResponseEntity.badRequest().body("Request is empty body.");
             }

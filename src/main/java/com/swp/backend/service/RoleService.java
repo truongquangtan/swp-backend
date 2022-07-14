@@ -5,6 +5,7 @@ import com.swp.backend.repository.RoleRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -20,11 +21,7 @@ public class RoleService {
         return roleRepository.findRoleEntityByRoleName(roleName);
     }
 
-    public List<RoleEntity> getAllRole() {
-        return roleRepository.findAll();
-    }
-
-    public List<RoleEntity> getRoleByListRoleName(List<String> roleNames) {
+    public List<RoleEntity> getRoleIdsFromListRoleName(Collection<String> roleNames) {
         return roleRepository.findRoleEntitiesByRoleNameIn(roleNames);
     }
 }

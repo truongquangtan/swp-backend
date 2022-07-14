@@ -52,10 +52,9 @@ public class SlotService {
             return null;
         }
     }
-    public List<Slot> getAllSlotInSubYardByDateFromOwner(String subYardId, String date)
-    {
-        try
-        {
+
+    public List<Slot> getAllSlotInSubYardByDateFromOwner(String subYardId, String date) {
+        try {
             List<SlotEntity> allSlotEntities = getAllSlotsInSubYardByFutureDate(subYardId);
             List<Slot> allSlots = ListSlotBuilder.getAvailableSlotsFromSlotEntities(allSlotEntities);
             List<?> queriedBookedSlots = slotCustomRepository.getAllBookedSlotInSubYardByFutureDate(subYardId, LocalDate.parse(date, DateTimeFormatter.ofPattern("d/M/yyyy")));
@@ -64,8 +63,7 @@ public class SlotService {
             Collections.sort(allSlots);
 
             return allSlots;
-        } catch (Exception ex)
-        {
+        } catch (Exception ex) {
             ex.printStackTrace();
             return null;
         }
@@ -157,8 +155,7 @@ public class SlotService {
         return slotEntity != null;
     }
 
-    public BookedSlotModel getBookedSlotModel(int slotId, String date)
-    {
+    public BookedSlotModel getBookedSlotModel(int slotId, String date) {
         LocalDate queryDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("d/M/yyyy"));
         Timestamp queryDateInTimestamp = Timestamp.valueOf(queryDate + " 00:00:00");
         BookingEntity bookingEntity = bookingRepository.findBookingEntityBySlotIdAndStatusAndDate(slotId, BookingStatus.SUCCESS, queryDateInTimestamp);
@@ -167,7 +164,7 @@ public class SlotService {
         SubYardEntity subYard;
         subYard = subYardRepository.getSubYardEntitiesById(bookingEntity.getSubYardId());
         SlotEntity slot = slotRepository.findSlotEntityById(slotId);
-        if(bookingEntity == null) return null;
+        if (bookingEntity == null) return null;
         return BookedSlotModel.builder()
                 .userId(bookingEntity.getAccountId())
                 .userName(account.getFullName())

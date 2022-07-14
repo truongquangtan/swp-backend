@@ -46,6 +46,6 @@ public class VoucherEntity {
     private Timestamp createdAt;
     @Column(name = "status")
     private String status;
-    @Column(name = "reference", insertable = false)
+    @Column(name = "reference", insertable = false, updatable = true)
     private int reference;
 }

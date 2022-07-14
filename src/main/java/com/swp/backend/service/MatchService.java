@@ -28,7 +28,7 @@ public class MatchService {
     private SubYardCustomRepository subYardCustomRepository;
     private SubYardRepository subYardRepository;
 
-    public MatchModel getMatchModelFromBookingEntity(BookingEntity bookingEntity) {
+    public MatchModel transformMatchModelFromBookingEntity(BookingEntity bookingEntity) {
         DateTimeFormatter hourFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -66,7 +66,7 @@ public class MatchService {
         List<MatchModel> result = new ArrayList<>();
 
         for (BookingEntity bookingEntity : bookingEntities) {
-            MatchModel model = getMatchModelFromBookingEntity(bookingEntity);
+            MatchModel model = transformMatchModelFromBookingEntity(bookingEntity);
             result.add(model);
         }
 

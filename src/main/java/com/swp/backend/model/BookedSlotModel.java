@@ -1,6 +1,5 @@
 package com.swp.backend.model;
 
-import com.swp.backend.entity.BookingEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
