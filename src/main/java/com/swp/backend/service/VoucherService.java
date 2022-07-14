@@ -170,38 +170,38 @@ public class VoucherService {
 
         switch (columnSort) {
             case "voucherCode":
-                if (orderBy == '-') {
+                if (orderBy == '+') {
                     vouchers.sort((firstVoucher, secondVoucher) -> secondVoucher.getVoucherCode().compareTo(firstVoucher.getVoucherCode()));
                 } else {
                     vouchers.sort((firstVoucher, secondVoucher) -> secondVoucher.getVoucherCode().compareTo(firstVoucher.getVoucherCode()));
                 }
                 break;
             case "reference":
-                if (orderBy == '-') {
+                if (orderBy == '+') {
                     vouchers.sort(Comparator.comparingInt(VoucherEntity::getReference));
                 } else {
                     vouchers.sort((firstVoucher, secondVoucher) -> Integer.compare(secondVoucher.getReference(), firstVoucher.getReference()));
                 }
                 break;
             case "startDate":
-                if (orderBy == '-') {
+                if (orderBy == '+') {
                     vouchers.sort(Comparator.comparing(VoucherEntity::getStartDate));
                 } else {
                     vouchers.sort((firstVoucher, secondVoucher) -> secondVoucher.getStartDate().compareTo(firstVoucher.getStartDate()));
                 }
                 break;
             case "endDate":
-                if (orderBy == '-') {
-                    vouchers.sort(Comparator.comparing(VoucherEntity::getEndDate));
-                } else {
+                if (orderBy == '+') {
                     vouchers.sort((firstVoucher, secondVoucher) -> secondVoucher.getEndDate().compareTo(firstVoucher.getEndDate()));
+                } else {
+                    vouchers.sort(Comparator.comparing(VoucherEntity::getEndDate));
                 }
                 break;
             case "maxQuantity":
-                if (orderBy == '-') {
-                    vouchers.sort((firstVoucher, secondVoucher) -> Float.compare(secondVoucher.getMaxQuantity(), firstVoucher.getMaxQuantity()));
-                } else {
+                if (orderBy == '+') {
                     vouchers.sort((firstVoucher, secondVoucher) -> Float.compare(firstVoucher.getMaxQuantity(), secondVoucher.getMaxQuantity()));
+                } else {
+                    vouchers.sort((firstVoucher, secondVoucher) -> Float.compare(secondVoucher.getMaxQuantity(), firstVoucher.getMaxQuantity()));
                 }
                 break;
         }
