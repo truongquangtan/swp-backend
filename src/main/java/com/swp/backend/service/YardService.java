@@ -478,7 +478,8 @@ public class YardService {
             List<SubYardSimpleModel> subYardsDetail = new ArrayList<>();
             for(SubYardEntity subYard : subYards)
             {
-                subYardsDetail.add(new SubYardSimpleModel(subYard.getId(), subYard.getName()));
+                String typeYard = typeYardRepository.getTypeYardById(subYard.getTypeYard()).getTypeName();
+                subYardsDetail.add(new SubYardSimpleModel(subYard.getId(), subYard.getName(), typeYard));
             }
             getYardInBookingResponse.setSubYards(subYardsDetail);
         }

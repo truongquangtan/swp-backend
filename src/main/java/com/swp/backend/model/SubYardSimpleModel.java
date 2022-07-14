@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class SubYardSimpleModel {
     private String subYardId;
     private String subYardName;
+    private String typeYard;
 }
