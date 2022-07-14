@@ -159,6 +159,10 @@ public class SlotService {
         LocalDate queryDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("d/M/yyyy"));
         Timestamp queryDateInTimestamp = Timestamp.valueOf(queryDate + " 00:00:00");
         BookingEntity bookingEntity = bookingRepository.findBookingEntityBySlotIdAndStatusAndDate(slotId, BookingStatus.SUCCESS, queryDateInTimestamp);
+        if(bookingEntity == null)
+        {
+            return null;
+        }
         AccountEntity account = accountRepository.findUserEntityByUserId(bookingEntity.getAccountId());
         YardEntity yard = yardRepository.findYardEntitiesById(bookingEntity.getBigYardId());
         SubYardEntity subYard;
