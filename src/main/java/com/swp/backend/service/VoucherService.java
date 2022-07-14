@@ -129,7 +129,7 @@ public class VoucherService {
                     return vouchers.stream().filter(voucher -> !voucher.isActive()).collect(Collectors.toList());
                 }
                 if (value.equalsIgnoreCase(EXPIRED)) {
-                    return vouchers.stream().filter(voucher -> voucher.getUsages() >= voucher.getMaxQuantity() || voucher.getEndDate().compareTo(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE)) > 0).collect(Collectors.toList());
+                    return vouchers.stream().filter(voucher -> voucher.getUsages() >= voucher.getMaxQuantity() || voucher.getEndDate().compareTo(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE)) < 0).collect(Collectors.toList());
                 }
                 break;
             case "type":
@@ -169,14 +169,14 @@ public class VoucherService {
         }
 
         switch (columnSort) {
-            case "code":
+            case "voucherCode":
                 if (orderBy == '-') {
                     vouchers.sort((firstVoucher, secondVoucher) -> secondVoucher.getVoucherCode().compareTo(firstVoucher.getVoucherCode()));
                 } else {
                     vouchers.sort((firstVoucher, secondVoucher) -> secondVoucher.getVoucherCode().compareTo(firstVoucher.getVoucherCode()));
                 }
                 break;
-            case "ref":
+            case "reference":
                 if (orderBy == '-') {
                     vouchers.sort(Comparator.comparingInt(VoucherEntity::getReference));
                 } else {
@@ -197,15 +197,14 @@ public class VoucherService {
                     vouchers.sort((firstVoucher, secondVoucher) -> secondVoucher.getEndDate().compareTo(firstVoucher.getEndDate()));
                 }
                 break;
-            case "amount":
+            case "maxQuantity":
                 if (orderBy == '-') {
-                    vouchers.sort((firstVoucher, secondVoucher) -> Float.compare(secondVoucher.getDiscount(), firstVoucher.getDiscount()));
+                    vouchers.sort((firstVoucher, secondVoucher) -> Float.compare(secondVoucher.getMaxQuantity(), firstVoucher.getMaxQuantity()));
                 } else {
-                    vouchers.sort((firstVoucher, secondVoucher) -> Float.compare(firstVoucher.getDiscount(), secondVoucher.getDiscount()));
+                    vouchers.sort((firstVoucher, secondVoucher) -> Float.compare(firstVoucher.getMaxQuantity(), secondVoucher.getMaxQuantity()));
                 }
                 break;
         }
-
         return vouchers;
     }
 
