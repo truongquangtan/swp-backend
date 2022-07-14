@@ -15,8 +15,6 @@ import com.swp.backend.utils.DateHelper;
 import com.swp.backend.utils.TimeMappingHelper;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataAccessException;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -227,17 +225,21 @@ public class YardService {
 
     public GetYardResponse findAllYardByOwnerId(String ownerId, SearchModel searchModel) {
         List<YardEntity> yards = yardRepository.findAllByOwnerIdAndDeleted(ownerId, false);
-        String keyword = searchModel.getKeyword() != null && searchModel.getKeyword().trim().length() > 0 ? searchModel.getKeyword().trim().toLowerCase() : null;
-        yards = searchYardsByKeyword(searchModel.getKeyword(), yards);
-        yards = filterYard(searchModel.getFilter(), yards);
-        sortYards(searchModel.getSort(), yards);
+        int maxResult;
+        int pageValue = 1;
+        int offSetValue = 10;
+        if(searchModel != null){
+            pageValue = searchModel.getPage();
+            offSetValue = searchModel.getItemsPerPage();
+            yards = searchYardsByKeyword(searchModel.getKeyword(), yards);
+            yards = filterYard(searchModel.getFilter(), yards);
+            sortYards(searchModel.getSort(), yards);
+        }
         List<YardModel> yardModels = transformYardEntityToYardModal(yards);
         if (yardModels == null || yardModels.size() == 0) {
             return GetYardResponse.builder().maxResult(0).listYard(Collections.emptyList()).page(0).build();
         }
-        int maxResult = yardModels.size();
-        int pageValue = searchModel.getPage() != null ? searchModel.getPage() : 1;
-        int offSetValue = searchModel.getItemsPerPage() != null ? searchModel.getItemsPerPage() : 10;
+        maxResult = yardModels.size();
 
         if ((pageValue - 1) * offSetValue >= maxResult) {
             pageValue = 1;
@@ -249,19 +251,17 @@ public class YardService {
 
     private List<YardModel> transformYardEntityToYardModal(List<YardEntity> yards) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-        return yards.stream().map(yard -> {
-            return YardModel.builder()
-                    .id(yard.getId())
-                    .address(yard.getAddress())
-                    .name(yard.getName())
-                    .openAt(yard.getOpenAt().format(formatter))
-                    .closeAt(yard.getCloseAt().format(formatter))
-                    .reference(yard.getReference())
-                    .createdAt(yard.getCreateAt())
-                    .address(yard.getAddress())
-                    .isActive(yard.isActive())
-                    .build();
-        }).collect(Collectors.toList());
+        return yards.stream().map(yard -> YardModel.builder()
+                .id(yard.getId())
+                .address(yard.getAddress())
+                .name(yard.getName())
+                .openAt(yard.getOpenAt().format(formatter))
+                .closeAt(yard.getCloseAt().format(formatter))
+                .reference(yard.getReference())
+                .createdAt(yard.getCreateAt())
+                .address(yard.getAddress())
+                .isActive(yard.isActive())
+                .build()).collect(Collectors.toList());
     }
 
     private List<YardEntity> filterYard(FilterModel filter, List<YardEntity> yards) {
@@ -291,8 +291,8 @@ public class YardService {
         }
 
         if (sortColumn.equals("reference")) {
-            if (sort == '-') {
-                yards.sort((fistYard, secondYard) -> Integer.compare(fistYard.getReference(), secondYard.getReference()));
+            if (sort == '+') {
+                yards.sort(Comparator.comparingInt(YardEntity::getReference));
             } else {
                 yards.sort((fistYard, secondYard) -> Integer.compare(secondYard.getReference(), fistYard.getReference()));
             }
@@ -300,7 +300,7 @@ public class YardService {
 
         if (sortColumn.equals("name")) {
             if (sort == '+') {
-                yards.sort((fistYard, secondYard) -> fistYard.getName().compareTo(secondYard.getName()));
+                yards.sort(Comparator.comparing(YardEntity::getName));
             } else {
                 yards.sort((fistYard, secondYard) -> secondYard.getName().compareTo(fistYard.getName()));
             }
@@ -308,7 +308,7 @@ public class YardService {
 
         if (sortColumn.equals("address")) {
             if (sort == '+') {
-                yards.sort((fistYard, secondYard) -> fistYard.getAddress().compareTo(secondYard.getAddress()));
+                yards.sort(Comparator.comparing(YardEntity::getAddress));
             } else {
                 yards.sort((fistYard, secondYard) -> secondYard.getAddress().compareTo(fistYard.getAddress()));
             }
@@ -316,7 +316,7 @@ public class YardService {
 
         if (sortColumn.equals("createdAt")) {
             if (sort == '+') {
-                yards.sort((fistYard, secondYard) -> fistYard.getCreateAt().compareTo(secondYard.getCreateAt()));
+                yards.sort(Comparator.comparing(YardEntity::getCreateAt));
             } else {
                 yards.sort((fistYard, secondYard) -> secondYard.getCreateAt().compareTo(fistYard.getCreateAt()));
             }
@@ -324,7 +324,7 @@ public class YardService {
 
         if (sortColumn.equals("openAt")) {
             if (sort == '+') {
-                yards.sort((fistYard, secondYard) -> fistYard.getOpenAt().compareTo(secondYard.getOpenAt()));
+                yards.sort(Comparator.comparing(YardEntity::getOpenAt));
             } else {
                 yards.sort((fistYard, secondYard) -> secondYard.getOpenAt().compareTo(fistYard.getOpenAt()));
             }
@@ -332,7 +332,7 @@ public class YardService {
 
         if (sortColumn.equals("closeAt")) {
             if (sort == '+') {
-                yards.sort((fistYard, secondYard) -> fistYard.getCloseAt().compareTo(secondYard.getCloseAt()));
+                yards.sort(Comparator.comparing(YardEntity::getCloseAt));
             } else {
                 yards.sort((fistYard, secondYard) -> secondYard.getCloseAt().compareTo(fistYard.getCloseAt()));
             }
@@ -341,45 +341,13 @@ public class YardService {
 
     private List<YardEntity> searchYardsByKeyword(String keyword, List<YardEntity> yards) {
         String keywordValue = keyword != null && keyword.trim().length() > 0 ? keyword.trim().toLowerCase() : null;
-        if (keyword == null) {
+        if (keywordValue == null) {
             return yards;
         }
-        return yards.stream().filter(yard -> String.valueOf(yard.getReference()).contains(keyword)
-                || yard.getAddress().toLowerCase().contains(keyword)
-                || yard.getName().toLowerCase().contains(keyword)
+        return yards.stream().filter(yard -> String.valueOf(yard.getReference()).contains(keywordValue)
+                || yard.getAddress().toLowerCase().contains(keywordValue)
+                || yard.getName().toLowerCase().contains(keywordValue)
         ).collect(Collectors.toList());
-    }
-
-    public GetYardResponse findAllYardByOwnerId(String ownerId, Integer ofSet, Integer page) throws DataAccessException {
-        int maxResult = yardRepository.countAllByOwnerIdAndDeleted(ownerId, false);
-
-        int ofSetValue = (ofSet != null && ofSet > 0) ? ofSet : 10;
-        int pageValue = (page != null && page >= 1) ? page : 1;
-
-        Pageable pagination = PageRequest.of(pageValue - 1, ofSetValue);
-        List<YardEntity> result = yardRepository.findAllByOwnerIdAndDeletedOrderByCreateAtDesc(ownerId, false, pagination);
-
-        List<YardModel> listYard = result.stream().map(yard -> {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-            return YardModel.builder()
-                    .id(yard.getId())
-                    .address(yard.getAddress())
-                    .name(yard.getName())
-                    .openAt(yard.getOpenAt().format(formatter))
-                    .closeAt(yard.getCloseAt().format(formatter))
-                    .reference(yard.getReference())
-                    .createdAt(yard.getCreateAt())
-                    .address(yard.getAddress())
-                    .isActive(yard.isActive())
-                    .build();
-        }).collect(Collectors.toList());
-
-        return GetYardResponse.builder().page(pageValue).maxResult(maxResult).listYard(listYard).build();
-    }
-
-    @Transactional
-    public int inactiveAllYardsOfOwner(String ownerId) {
-        return yardCustomRepository.inactivateAllYardsOfOwner(ownerId);
     }
 
     @Transactional
