@@ -40,7 +40,7 @@ public class LoginRestApi {
     )
     public ResponseEntity<String> login(@RequestBody(required = false) LoginRequest loginRequest) {
         try {
-            //Case empty body
+           //Case empty body
             if (loginRequest == null) {
                 return ResponseEntity.badRequest().body("Request is empty body.");
             }

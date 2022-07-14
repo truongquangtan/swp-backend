@@ -290,7 +290,7 @@ public class YardService {
         }
 
         if (sortColumn.equals("reference")) {
-            if (sort == '+') {
+            if (sort == '-') {
                 yards.sort((fistYard, secondYard) -> Integer.compare(fistYard.getReference(), secondYard.getReference()));
             } else {
                 yards.sort((fistYard, secondYard) -> Integer.compare(secondYard.getReference(), fistYard.getReference()));
