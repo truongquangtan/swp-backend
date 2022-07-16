@@ -1,15 +1,19 @@
 package com.swp.backend.api.v1.yard_report;
 
 import com.google.gson.Gson;
+import com.swp.backend.exception.ErrorResponse;
 import com.swp.backend.model.MessageResponse;
+import com.swp.backend.model.SearchModel;
 import com.swp.backend.model.YardReportModel;
 import com.swp.backend.service.SecurityContextService;
 import com.swp.backend.service.YardReportService;
+import com.swp.backend.utils.PaginationHelper;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -39,7 +43,7 @@ public class YardReportApi {
     }
 
     @PostMapping(value = "admin/reports")
-    public ResponseEntity<String> getReport(@RequestBody(required = false) GetYardReportForAdminRequest request) {
+    public ResponseEntity<String> getReport(@RequestBody(required = false) SearchModel request) {
         int itemsPerPage = ITEMS_PER_PAGE_DEFAULT;
         int page = PAGE_DEFAULT;
         if (request != null) {
@@ -47,10 +51,31 @@ public class YardReportApi {
             itemsPerPage = request.getItemsPerPage() > 0 ? request.getItemsPerPage() : itemsPerPage;
         }
 
-        List<YardReportModel> yardReportModels = yardReportService.getYardReportsDetail(page, itemsPerPage);
-        int maxResult = yardReportService.getNumberOfYardReports();
-        GetYardReportForAdminResponse response = new GetYardReportForAdminResponse("Get reports success fully", page, maxResult, yardReportModels);
-        return ResponseEntity.ok().body(gson.toJson(response));
+        try
+        {
+            List<YardReportModel> reportsResponse = new ArrayList<>();
+
+            List<YardReportModel> allYardReportModels = yardReportService.getAllReports(request);
+            int maxResult = allYardReportModels.size();
+
+            PaginationHelper paginationHelper = new PaginationHelper(itemsPerPage, maxResult);
+            int startIndex = paginationHelper.getStartIndex(page);
+            int endIndex = paginationHelper.getEndIndex(page);
+            if(startIndex <= endIndex)
+            {
+                reportsResponse = allYardReportModels.subList(paginationHelper.getStartIndex(page), paginationHelper.getEndIndex(page) + 1);
+            }
+            GetYardReportForAdminResponse response = new GetYardReportForAdminResponse("Get reports success fully", page, maxResult, reportsResponse);
+            return ResponseEntity.ok().body(gson.toJson(response));
+        } catch (RuntimeException runtimeException)
+        {
+            return ResponseEntity.badRequest().body(runtimeException.getMessage());
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return ResponseEntity.internalServerError().body("Server error");
+        }
     }
 
     @PutMapping(value = "admin/reports/{reportId}/handle")
