@@ -119,13 +119,6 @@ public class YardService {
                 new Thread(() -> yardPictureRepository.saveAll(listImage)).start();
             }
         }
-        int noImageCount = images == null ? 3 : YardService.MAX_IMAGE - images.length;
-        for (int i = 0; i < noImageCount; ++i) {
-            YardPictureEntity yardPictureEntity = YardPictureEntity.builder().refId(yardId)
-                    .image(NoImageUrl.NO_IMAGE)
-                    .build();
-            yardPictureRepository.save(yardPictureEntity);
-        }
     }
 
 
