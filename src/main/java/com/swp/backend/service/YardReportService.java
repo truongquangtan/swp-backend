@@ -120,7 +120,7 @@ public class YardReportService {
         List<YardReportModel> result = new ArrayList<>();
         for(YardReportModel yardReport : originalData)
         {
-            if(yardReport.getReference().toString().contains(keyword) || yardReport.getYardName().contains(keyword) || yardReport.getUserName().contains(keyword))
+            if(yardReport.getReference().toString().contains(keyword) || yardReport.getYardName().toUpperCase().contains(keyword.toUpperCase()) || yardReport.getUserName().toUpperCase().contains(keyword.toUpperCase()))
             {
                 result.add(yardReport);
             }
