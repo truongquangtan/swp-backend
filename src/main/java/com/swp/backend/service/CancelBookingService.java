@@ -5,6 +5,7 @@ import com.swp.backend.constance.BookingStatus;
 import com.swp.backend.entity.*;
 import com.swp.backend.exception.CancelBookingProcessException;
 import com.swp.backend.model.MatchModel;
+import com.swp.backend.model.Slot;
 import com.swp.backend.myrepository.SlotCustomRepository;
 import com.swp.backend.repository.*;
 import com.swp.backend.utils.DateHelper;
@@ -34,7 +35,7 @@ public class CancelBookingService {
     public static final int PREVENT_CANCEL_BOOKING_IN_MINUTE = 0;
 
     @Transactional
-    public void cancelBooking(String userId, String bookingId, CancelBookingRequest request) {
+    public void cancelBookingFromUser(String userId, String bookingId, CancelBookingRequest request) {
         BookingEntity booking = getBookingEntity(bookingId);
         int slotId = booking.getSlotId();
         SlotEntity slot = slotIdIsActiveFilter(slotId);
@@ -272,5 +273,26 @@ public class CancelBookingService {
                 "</table>" +
                 "<p style=\"text-align: center;\">--------------</p>";
         return result;
+    }
+
+    @Transactional
+    public void cancelBookingFromOwner(String ownerId, String bookingId, CancelBookingRequest request) {
+        BookingEntity booking = getBookingEntity(bookingId);
+        int slotId = booking.getSlotId();
+        SlotEntity slot = slotRepository.findSlotEntityById(slotId);
+        bookingIsInOwnerYardFilter(booking, ownerId);
+        bookingStatusIsSuccessFilter(booking);
+        slotTimeStartIsNotOverPreventTimeForCancel(booking, slot);
+
+        cancelBookingProcessCreatedByOwner(booking, request.getReason(), ownerId);
+        sendMailCancelToUser(booking, request.getReason());
+    }
+    private void bookingIsInOwnerYardFilter(BookingEntity booking, String ownerId)
+    {
+        YardEntity yard = yardRepository.findYardEntitiesById(booking.getBigYardId());
+        if(yard == null || !yard.getOwnerId().equals(ownerId))
+        {
+            throw new CancelBookingProcessException("The booking is not in owner yard.");
+        }
     }
 }
