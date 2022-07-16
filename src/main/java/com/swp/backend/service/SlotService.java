@@ -182,6 +182,7 @@ public class SlotService {
                 .price(Integer.toString(bookingEntity.getPrice()))
                 .address(yard.getAddress())
                 .typeYard(typeYardRepository.getTypeYardById(subYard.getTypeYard()).getTypeName())
+                .bookingId(bookingEntity.getId())
                 .build();
     }
 }

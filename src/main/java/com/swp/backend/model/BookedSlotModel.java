@@ -18,4 +18,5 @@ public class BookedSlotModel {
     private String price;
     private String address;
     private String typeYard;
+    private String bookingId;
 }
