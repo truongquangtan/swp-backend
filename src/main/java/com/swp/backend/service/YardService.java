@@ -300,9 +300,9 @@ public class YardService {
 
         if (sortColumn.equals("name")) {
             if (sort == '+') {
-                yards.sort(Comparator.comparing(YardEntity::getName));
-            } else {
                 yards.sort((fistYard, secondYard) -> secondYard.getName().compareTo(fistYard.getName()));
+            } else {
+                yards.sort(Comparator.comparing(YardEntity::getName));
             }
         }
 
