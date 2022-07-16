@@ -167,7 +167,7 @@ public class CancelBookingService {
         AccountEntity user = accountRepository.findUserEntityByUserId(booking.getAccountId());
         String destination = user.getEmail();
         MatchModel match = matchService.transformMatchModelFromBookingEntity(booking);
-        String reasonForUser = "";
+        String reasonForUser = reason;
         if (reason.equals(InactivationService.INACTIVE_SUB_YARD_REASON)
                 || reason.equals(InactivationService.INACTIVE_YARD_REASON)
                 || reason.equals(InactivationService.DELETE_SUB_YARD_REASON)
