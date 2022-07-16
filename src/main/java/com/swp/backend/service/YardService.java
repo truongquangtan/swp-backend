@@ -344,9 +344,9 @@ public class YardService {
         if (keywordValue == null) {
             return yards;
         }
-        return yards.stream().filter(yard -> String.valueOf(yard.getReference()).contains(keywordValue)
-                || yard.getAddress().toLowerCase().contains(keywordValue)
-                || yard.getName().toLowerCase().contains(keywordValue)
+        return yards.stream().filter(yard -> String.valueOf(yard.getReference()).contains(keywordValue.toLowerCase())
+                || yard.getAddress().toLowerCase().contains(keywordValue.toLowerCase())
+                || yard.getName().toLowerCase().contains(keywordValue.toLowerCase())
         ).collect(Collectors.toList());
     }
 
