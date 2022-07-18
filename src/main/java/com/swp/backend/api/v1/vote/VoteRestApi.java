@@ -33,7 +33,7 @@ public class VoteRestApi {
         }
     }
 
-    @PostMapping(value = "vote/yards/{yardId}")
+    @PostMapping(value = "vote/yard/{yardId}")
     public ResponseEntity<String> getVotesOfBigYard(@PathVariable String yardId, @RequestBody(required = false) GetVoteRequest request) {
         try {
             GetVoteResponse response;
