@@ -2,6 +2,7 @@ package com.swp.backend.api.v1.vote;
 
 import com.google.gson.Gson;
 import com.swp.backend.exception.ErrorResponse;
+import com.swp.backend.model.SearchModel;
 import com.swp.backend.service.SecurityContextService;
 import com.swp.backend.service.VoteService;
 import lombok.AllArgsConstructor;
@@ -20,7 +21,7 @@ public class VoteRestApi {
     private Gson gson;
 
     @PostMapping(value = "me/votes")
-    public ResponseEntity<String> getVote(@RequestBody(required = false) GetVoteRequest request) {
+    public ResponseEntity<String> getVote(@RequestBody(required = false) SearchModel request) {
         try {
             SecurityContext securityContext = SecurityContextHolder.getContext();
             String userId = securityContextService.extractUsernameFromContext(securityContext);
@@ -33,8 +34,8 @@ public class VoteRestApi {
         }
     }
 
-    @PostMapping(value = "vote/yard/{yardId}")
-    public ResponseEntity<String> getVotesOfBigYard(@PathVariable String yardId, @RequestBody(required = false) GetVoteRequest request) {
+    @PostMapping(value = "vote/yards/{yardId}")
+    public ResponseEntity<String> getVotesOfBigYard(@PathVariable String yardId, @RequestBody(required = false) SearchModel request) {
         try {
             GetVoteResponse response;
             if (request == null) {
