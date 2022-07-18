@@ -103,7 +103,7 @@ public class VoucherService {
         if (voucherResults == null || voucherResults.size() == 0) {
             return VoucherResponse.builder().page(1).vouchers(Collections.emptyList()).maxResult(0).message("Did not any result matches with keyword. Try again!").build();
         }
-        List<VoucherModel> voucherModels = voucherResults.stream().map((this::convertVoucherModelFromVoucherEntity)).collect(Collectors.toList());
+        List<VoucherModel> voucherModels = voucherResults.stream().map((this::convertVoucherModelFromVoucherEntity)).sorted(Comparator.comparingInt(VoucherModel::getReference)).collect(Collectors.toList());
         int maxResult = voucherResults.size();
         if ((pageValue - 1) * offSetValue >= maxResult) {
             pageValue = 1;
