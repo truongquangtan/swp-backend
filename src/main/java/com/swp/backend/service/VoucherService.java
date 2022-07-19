@@ -222,8 +222,16 @@ public class VoucherService {
         List<VoucherEntity> vouchers;
             vouchers = voucherRepository.findVoucherEntitiesByCreatedByAccountId(ownerId);
         return vouchers.stream().peek(voucher -> {
-            if (voucher.getUsages() >= voucher.getMaxQuantity() || voucher.getEndDate().compareTo(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE)) < 0) {
+            boolean isChangeStatus = false;
+            if(voucher.getUsages() >= voucher.getMaxQuantity() ){
+                voucher.setStatus(FULL);
+                isChangeStatus = true;
+            }
+            if ( voucher.getEndDate().compareTo(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE)) < 0) {
                 voucher.setStatus(EXPIRED);
+                isChangeStatus = true;
+            }
+            if(isChangeStatus){
                 voucherRepository.save(voucher);
             }
         }).collect(Collectors.toList());
@@ -240,8 +248,16 @@ public class VoucherService {
         Pageable pageable = PageRequest.of((pageValue - 1), offSetValue, Sort.by("createdAt").ascending());
         List<VoucherEntity> voucherResults = voucherRepository.findVoucherEntitiesByCreatedByAccountIdAndEndDateAfterAndActive(ownerId, now, true, pageable);
         voucherResults = voucherResults.stream().peek(voucher -> {
-            if (voucher.getUsages() >= voucher.getMaxQuantity() || voucher.getEndDate().compareTo(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE)) < 0) {
+            boolean isChangeStatus = false;
+            if(voucher.getUsages() >= voucher.getMaxQuantity() ){
+                voucher.setStatus(FULL);
+                isChangeStatus = true;
+            }
+            if ( voucher.getEndDate().compareTo(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE)) < 0) {
                 voucher.setStatus(EXPIRED);
+                isChangeStatus = true;
+            }
+            if(isChangeStatus){
                 voucherRepository.save(voucher);
             }
         }).collect(Collectors.toList());
@@ -339,7 +355,7 @@ public class VoucherService {
         }
 
         if (voucherApply.getMaxQuantity() <= voucherApply.getUsages()) {
-            voucherApply.setStatus(EXPIRED);
+            voucherApply.setStatus(FULL);
             voucherRepository.save(voucherApply);
             throw ApplyVoucherException.builder().errorMessage("Voucher it's over").build();
         }
@@ -366,7 +382,7 @@ public class VoucherService {
         }
 
         if (voucher.getMaxQuantity() - voucher.getUsages() <= 0) {
-            voucher.setStatus(EXPIRED);
+            voucher.setStatus(FULL);
             voucherRepository.save(voucher);
             return null;
         }
