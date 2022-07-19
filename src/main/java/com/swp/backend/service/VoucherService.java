@@ -69,26 +69,27 @@ public class VoucherService {
         Timestamp today = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
         today = DateHelper.plusMinutes(today, 1439);
 
+        VoucherEntity voucherEntity = voucherRepository.getVoucherEntityById(voucher.getId());
+
         if(endDate.before(today)){
             status = EXPIRED;
+        }else {
+            status = ACTIVE;
         }
-        VoucherEntity voucherEntity = VoucherEntity.builder()
-                .id(voucher.getId())
-                .voucherCode(voucher.getVoucherCode())
-                .createdByAccountId(voucher.getCreatedByAccountId())
-                .startDate(startDate)
-                .endDate(endDate)
-                .maxQuantity(voucher.getMaxQuantity())
-                .usages(voucher.getUsages())
-                .title(voucher.getTitle())
-                .description(voucher.getDescription())
-                .discount(voucher.getDiscount())
-                .active(isActive)
-                .status(status)
-                .type(voucher.getType())
-                .createdAt(Timestamp.valueOf(voucher.getCreatedAt()))
-                .reference(voucher.getReference())
-                .build();
+
+        if(voucherEntity.getUsages() >= voucher.getMaxQuantity() && !voucher.getStatus().equalsIgnoreCase(EXPIRED)){
+            status = FULL;
+        }
+
+        voucherEntity.setStartDate(startDate);
+        voucherEntity.setEndDate(endDate);
+        voucherEntity.setMaxQuantity(voucher.getMaxQuantity());
+        voucherEntity.setTitle(voucher.getTitle());
+        voucherEntity.setDescription(voucher.getDescription());
+        voucherEntity.setDiscount(voucher.getDiscount());
+        voucherEntity.setActive(isActive);
+        voucherEntity.setStatus(status);
+
         voucherRepository.save(voucherEntity);
     }
 
