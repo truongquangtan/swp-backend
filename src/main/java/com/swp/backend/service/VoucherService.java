@@ -1,6 +1,7 @@
 package com.swp.backend.service;
 
 import com.swp.backend.api.v1.owner.voucher.VoucherResponse;
+import com.swp.backend.constance.VoucherProperties;
 import com.swp.backend.entity.VoucherEntity;
 import com.swp.backend.exception.ApplyVoucherException;
 import com.swp.backend.model.*;
@@ -60,9 +61,17 @@ public class VoucherService {
     }
 
     public void updateVoucher(VoucherModel voucher) throws DataAccessException {
+        String status = voucher.getStatus();
+        boolean isActive = voucher.getIsActive();
         Timestamp startDate = DateHelper.parseTimestampNonTimeAtZone(voucher.getStartDate());
         Timestamp endDate = DateHelper.parseTimestampNonTimeAtZone(voucher.getEndDate());
         endDate = DateHelper.plusMinutes(endDate, 1439);
+        Timestamp today = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
+        today = DateHelper.plusMinutes(today, 1439);
+
+        if(endDate.before(today)){
+            status = EXPIRED;
+        }
         VoucherEntity voucherEntity = VoucherEntity.builder()
                 .id(voucher.getId())
                 .voucherCode(voucher.getVoucherCode())
@@ -74,8 +83,8 @@ public class VoucherService {
                 .title(voucher.getTitle())
                 .description(voucher.getDescription())
                 .discount(voucher.getDiscount())
-                .active(voucher.getIsActive())
-                .status(voucher.getStatus())
+                .active(isActive)
+                .status(status)
                 .type(voucher.getType())
                 .createdAt(Timestamp.valueOf(voucher.getCreatedAt()))
                 .reference(voucher.getReference())
