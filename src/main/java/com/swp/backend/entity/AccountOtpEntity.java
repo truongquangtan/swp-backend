@@ -27,4 +27,8 @@ public class AccountOtpEntity {
     @Column(name = "create_at")
     @Builder.Default
     private Timestamp createAt = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
+    @Column(name = "used")
+    @Builder.Default
+    private boolean isUsed = false;
+
 }

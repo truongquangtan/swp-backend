@@ -52,7 +52,7 @@ public class VerifyAccount {
                 return ResponseEntity.badRequest().body(gson.toJson(error));
             }
 
-            if (!accountOtpEntity.getOtpCode().matches(verify.getOtpCode())) {
+            if (!accountOtpEntity.getOtpCode().matches(verify.getOtpCode()) || accountOtpEntity.isUsed()) {
                 ErrorResponse error = ErrorResponse.builder().message("Otp incorrect or not lasted otp.").build();
                 return ResponseEntity.badRequest().body(gson.toJson(error));
             }
@@ -76,6 +76,8 @@ public class VerifyAccount {
                     role.getRoleName(),
                     account.isConfirmed()
             );
+            accountOtpEntity.setUsed(true);
+            otpStateService.updateState(accountOtpEntity);
             accountLoginService.saveLogin(account.getUserId(), token);
             LoginResponse loginResponse = LoginResponse.builder()
                     .token(token)

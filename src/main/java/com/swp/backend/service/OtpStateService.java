@@ -87,4 +87,8 @@ public class OtpStateService {
         }
         return false;
     }
+
+    public void updateState(AccountOtpEntity accountOtp){
+        accountOtpRepository.save(accountOtp);
+    }
 }
