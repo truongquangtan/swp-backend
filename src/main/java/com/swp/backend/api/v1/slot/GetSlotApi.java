@@ -2,7 +2,6 @@ package com.swp.backend.api.v1.slot;
 
 import com.google.gson.Gson;
 import com.swp.backend.model.BookedSlotModel;
-import com.swp.backend.model.MessageResponse;
 import com.swp.backend.model.Slot;
 import com.swp.backend.service.SecurityContextService;
 import com.swp.backend.service.SlotService;
@@ -13,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.mail.Message;
 import java.util.List;
 
 @RestController

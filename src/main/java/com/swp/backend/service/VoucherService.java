@@ -1,6 +1,7 @@
 package com.swp.backend.service;
 
 import com.swp.backend.api.v1.owner.voucher.VoucherResponse;
+import com.swp.backend.constance.VoucherProperties;
 import com.swp.backend.entity.VoucherEntity;
 import com.swp.backend.exception.ApplyVoucherException;
 import com.swp.backend.model.*;
@@ -60,26 +61,35 @@ public class VoucherService {
     }
 
     public void updateVoucher(VoucherModel voucher) throws DataAccessException {
+        String status = voucher.getStatus();
+        boolean isActive = voucher.getIsActive();
         Timestamp startDate = DateHelper.parseTimestampNonTimeAtZone(voucher.getStartDate());
         Timestamp endDate = DateHelper.parseTimestampNonTimeAtZone(voucher.getEndDate());
         endDate = DateHelper.plusMinutes(endDate, 1439);
-        VoucherEntity voucherEntity = VoucherEntity.builder()
-                .id(voucher.getId())
-                .voucherCode(voucher.getVoucherCode())
-                .createdByAccountId(voucher.getCreatedByAccountId())
-                .startDate(startDate)
-                .endDate(endDate)
-                .maxQuantity(voucher.getMaxQuantity())
-                .usages(voucher.getUsages())
-                .title(voucher.getTitle())
-                .description(voucher.getDescription())
-                .discount(voucher.getDiscount())
-                .active(voucher.getIsActive())
-                .status(voucher.getStatus())
-                .type(voucher.getType())
-                .createdAt(Timestamp.valueOf(voucher.getCreatedAt()))
-                .reference(voucher.getReference())
-                .build();
+        Timestamp today = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
+        today = DateHelper.plusMinutes(today, 1439);
+
+        VoucherEntity voucherEntity = voucherRepository.getVoucherEntityById(voucher.getId());
+
+        if(endDate.before(today)){
+            status = EXPIRED;
+        }else {
+            status = ACTIVE;
+        }
+
+        if(voucherEntity.getUsages() >= voucher.getMaxQuantity() && !voucher.getStatus().equalsIgnoreCase(EXPIRED)){
+            status = FULL;
+        }
+
+        voucherEntity.setStartDate(startDate);
+        voucherEntity.setEndDate(endDate);
+        voucherEntity.setMaxQuantity(voucher.getMaxQuantity());
+        voucherEntity.setTitle(voucher.getTitle());
+        voucherEntity.setDescription(voucher.getDescription());
+        voucherEntity.setDiscount(voucher.getDiscount());
+        voucherEntity.setActive(isActive);
+        voucherEntity.setStatus(status);
+
         voucherRepository.save(voucherEntity);
     }
 
@@ -103,7 +113,7 @@ public class VoucherService {
         if (voucherResults == null || voucherResults.size() == 0) {
             return VoucherResponse.builder().page(1).vouchers(Collections.emptyList()).maxResult(0).message("Did not any result matches with keyword. Try again!").build();
         }
-        List<VoucherModel> voucherModels = voucherResults.stream().map((this::convertVoucherModelFromVoucherEntity)).collect(Collectors.toList());
+        List<VoucherModel> voucherModels = voucherResults.stream().map((this::convertVoucherModelFromVoucherEntity)).sorted((fistVoucher, secondVoucher) -> Integer.compare(secondVoucher.getReference(), fistVoucher.getReference())).collect(Collectors.toList());
         int maxResult = voucherResults.size();
         if ((pageValue - 1) * offSetValue >= maxResult) {
             pageValue = 1;

@@ -5,7 +5,6 @@ import com.swp.backend.constance.BookingStatus;
 import com.swp.backend.entity.*;
 import com.swp.backend.exception.CancelBookingProcessException;
 import com.swp.backend.model.MatchModel;
-import com.swp.backend.model.Slot;
 import com.swp.backend.myrepository.SlotCustomRepository;
 import com.swp.backend.repository.*;
 import com.swp.backend.utils.DateHelper;

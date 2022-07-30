@@ -1,10 +1,12 @@
 package com.swp.backend.constance;
 
 public class VoucherProperties {
-    public static String CASH = "cash";
-    public static String PERCENT = "percent";
-    public static String ACTIVE = "active";
-    public static String DELETED = "deleted";
-    public static String EXPIRED = "expired";
-    public static String INACTIVE = "inactive";
+    public static final String CASH = "cash";
+    public static final String PERCENT = "percent";
+    public static final String ACTIVE = "active";
+    public static final String DELETED = "deleted";
+    public static final String EXPIRED = "expired";
+    public static final String INACTIVE = "inactive";
+
+    public static final String FULL = "full";
 }

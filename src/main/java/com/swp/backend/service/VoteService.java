@@ -1,10 +1,10 @@
 package com.swp.backend.service;
 
-import com.swp.backend.api.v1.vote.GetVoteRequest;
 import com.swp.backend.api.v1.vote.GetVoteResponse;
 import com.swp.backend.entity.BookingEntity;
 import com.swp.backend.entity.VoteEntity;
 import com.swp.backend.entity.YardEntity;
+import com.swp.backend.model.SearchModel;
 import com.swp.backend.model.VoteModel;
 import com.swp.backend.myrepository.VoteCustomRepository;
 import com.swp.backend.repository.BookingRepository;
@@ -111,7 +111,7 @@ public class VoteService {
         }).start();
     }
 
-    public GetVoteResponse getAllNonVoteByUserId(String userId, GetVoteRequest request) {
+    public GetVoteResponse getAllNonVoteByUserId(String userId, SearchModel request) {
         int maxResult = countAllNonVote(userId);
         int offSet = 6;
         int page = 1;

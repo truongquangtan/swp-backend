@@ -1,7 +1,6 @@
 package com.swp.backend.api.v1.yard_report;
 
 import com.google.gson.Gson;
-import com.swp.backend.exception.ErrorResponse;
 import com.swp.backend.model.MessageResponse;
 import com.swp.backend.model.SearchModel;
 import com.swp.backend.model.YardReportModel;
