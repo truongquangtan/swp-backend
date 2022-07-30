@@ -187,10 +187,10 @@ public class CancelBookingService {
                                           SlotEntity slot) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm");
         String result = "<img style=\"display: block; width: 60px; padding: 2px; height: 60px; margin: auto;\" src=\"https://firebasestorage.googleapis.com/v0/b/fu-swp391.appspot.com/o/mail-icon.png?alt=media\">" +
-                "<h1 style=\"font-family:open Sans Helvetica, Arial, sans-serif; margin: 0; font-size:18px; padding: 2px; text-align: center;\">Playground Basketball</h1>" +
+                "<h1 style=\"font-family:open Sans Helvetica, Arial, sans-serif; margin: 0; font-size:20px; padding: 2px; text-align: center;\">Playground Basketball</h1>" +
                 "<hr>" +
-                "<p style=\"font-family:open Sans Helvetica, Arial, sans-serif;font-size:16px; margin: 0; padding: 2px; text-align: center;\">There was a booking canceled by user <span style=\"color: green ; font-style: italic;\">" + userName + "</span> </p>" +
-                "<table border=\"1\" style=\"margin: 0 auto;\">" +
+                "<p style=\"font-family:open Sans Helvetica, Arial, sans-serif;font-size:18px; margin: 0; padding: 2px; text-align: center;\">There was a booking canceled by user <span style=\"color: green ; font-style: italic;\">" + userName + "</span> </p>" +
+                "<table border=\"1\" style=\"margin: 0 auto; font-size:18px;\">" +
                 "<tr>" +
                 "<td>Yard Address</td>" +
                 "<td>" + yardAddress + "</td>" +
@@ -234,10 +234,10 @@ public class CancelBookingService {
 
     private static String getHtmlTemplateMailToUser(MatchModel matchModel, String reason) {
         String result = "<img style=\"display: block; width: 60px; padding: 2px; height: 60px; margin: auto;\" src=\"https://firebasestorage.googleapis.com/v0/b/fu-swp391.appspot.com/o/mail-icon.png?alt=media\">" +
-                "<h1 style=\"font-family:open Sans Helvetica, Arial, sans-serif; margin: 0; font-size:18px; padding: 2px; text-align: center;\">Playground Basketball</h1>" +
+                "<h1 style=\"font-family:open Sans Helvetica, Arial, sans-serif; margin: 0; font-size:20px; padding: 2px; text-align: center;\">Playground Basketball</h1>" +
                 "<hr>" +
-                "<p style=\"font-family:open Sans Helvetica, Arial, sans-serif;font-size:16px; margin: 0; padding: 2px; text-align: center;\">There was a booking canceled due to the reason: " + reason + ". Your booking detail: " +
-                "<table border=\"1\" style=\"margin: 0 auto;\">" +
+                "<p style=\"font-family:open Sans Helvetica, Arial, sans-serif;font-size:18px; margin: 0; padding: 2px; text-align: center;\">There was a booking canceled due to the reason: " + reason + ". Your booking detail: " +
+                "<table border=\"1\" style=\"margin: 0 auto; font-size:18px\">" +
                 "<tr>" +
                 "<td>Address</td>" +
                 "<td>" + matchModel.getBigYardAddress() + "</td>" +

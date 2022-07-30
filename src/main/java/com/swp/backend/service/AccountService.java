@@ -1,6 +1,7 @@
 package com.swp.backend.service;
 
 import com.swp.backend.api.v1.admin.accounts.GetAllAccountResponse;
+import com.swp.backend.constance.FrontEndDeployedLink;
 import com.swp.backend.constance.RoleProperties;
 import com.swp.backend.entity.AccountEntity;
 import com.swp.backend.entity.AccountOtpEntity;
@@ -89,14 +90,14 @@ public class AccountService {
         String emailSubject = "VERIFY PLAYGROUND BASKETBALL CODE";
         String htmlBody =
                 "<img style=\"display: block; width: 60px; padding: 2px; height: 60px; margin: auto;\" src=\"https://firebasestorage.googleapis.com/v0/b/fu-swp391.appspot.com/o/mail-icon.png?alt=media\">" +
-                        "<h1 style=\"font-family:open Sans Helvetica, Arial, sans-serif; margin: 0; font-size:18px; padding: 2px; text-align: center;\">Playground Basketball</h1>" +
-                        "<p style=\"font-family:open Sans Helvetica, Arial, sans-serif;font-size:16px; margin: 0; padding: 2px; text-align: center;\">Please use the verification code below on the Playground Basketball website:</p>" +
-                        "<p style=\"font-family:open Sans Helvetica, Arial, sans-serif;font-size:18px; margin: 0; font-weight:bold;line-height:1;text-align:center;\">" +
+                        "<h1 style=\"font-family:open Sans Helvetica, Arial, sans-serif; margin: 0; font-size:20px; padding: 2px; text-align: center;\">Playground Basketball</h1>" +
+                        "<p style=\"font-family:open Sans Helvetica, Arial, sans-serif;font-size:18px; margin: 0; padding: 2px; text-align: center;\">Please use the verification code below on the Playground Basketball website:</p>" +
+                        "<p style=\"font-family:open Sans Helvetica, Arial, sans-serif;font-size:20px; margin: 0; font-weight:bold;line-height:1;text-align:center;\">" +
                         "<span style=\"color:#222222; background-color:#aad8ff;\">" + accountOtpEntity.getOtpCode() + "</span></p>" +
-                        "<p style=\"font-family:open Sans Helvetica, Arial, sans-serif;font-size:16px; padding: 2px; margin: 0; text-align: center;\">It expires in 5 minutes.</p>" +
-                        "<p style=\"font-family:open Sans Helvetica, Arial, sans-serif;font-size:16px; padding: 2px; margin: 0; text-align: center;\">If you didn't request this, you can ignore this email or let us know.</p>" +
-                        "<p style=\"font-family:open Sans Helvetica, Arial, sans-serif;font-size:16px; padding: 2px; margin: 0; text-align: center;\">Thank!</p>" +
-                        "<p style=\"font-family:open Sans Helvetica, Arial, sans-serif;font-size:16px; padding: 2px; margin: 0; text-align: center;\">Playground Basketball</p>";
+                        "<p style=\"font-family:open Sans Helvetica, Arial, sans-serif;font-size:18px; padding: 2px; margin: 0; text-align: center;\">It expires in 5 minutes.</p>" +
+                        "<p style=\"font-family:open Sans Helvetica, Arial, sans-serif;font-size:18px; padding: 2px; margin: 0; text-align: center;\">If you didn't request this, you can ignore this email or let us know.</p>" +
+                        "<p style=\"font-family:open Sans Helvetica, Arial, sans-serif;font-size:18px; padding: 2px; margin: 0; text-align: center;\">Thank!</p>" +
+                        "<p style=\"font-family:open Sans Helvetica, Arial, sans-serif;font-size:18px; padding: 2px; margin: 0; text-align: center;\">Playground Basketball</p>";
         emailService.sendHtmlTemplateMessage(accountEntity.getEmail(), emailSubject, htmlBody);
     }
 
@@ -129,11 +130,11 @@ public class AccountService {
     public void sendOwnerAccountViaEmail(String email, String password) {
         String emailSubject = "INVITE TO USE YARD BOOKING ADMIN ACCOUNT";
         String htmlBody = "<img style=\"display: block; width: 60px; padding: 2px; height: 60px; margin: auto;\" src=\"https://firebasestorage.googleapis.com/v0/b/fu-swp391.appspot.com/o/mail-icon.png?alt=media\">" +
-                "<h1 style=\"font-family:open Sans Helvetica, Arial, sans-serif; margin: 0; font-size:18px; padding: 2px; text-align: center;\">Playground Basketball</h1>" +
-                "<p style=\"font-family:open Sans Helvetica, Arial, sans-serif;font-size:16px; margin: 0; padding: 2px; text-align: center;\">Thank you for your cooperation!</p>" +
-                "<p style=\"font-family:open Sans Helvetica, Arial, sans-serif;font-size:16px; margin: 0; padding: 2px; text-align: center;\">Your account information:</p>" +
+                "<h1 style=\"font-family:open Sans Helvetica, Arial, sans-serif; margin: 0; font-size:20px; padding: 2px; text-align: center;\">Playground Basketball</h1>" +
+                "<p style=\"font-family:open Sans Helvetica, Arial, sans-serif;font-size:18px; margin: 0; padding: 2px; text-align: center;\">Thank you for your cooperation!</p>" +
+                "<p style=\"font-family:open Sans Helvetica, Arial, sans-serif;font-size:18px; margin: 0; padding: 2px; text-align: center;\">Your account information:</p>" +
                 "<br>" +
-                "<table border=\"1\" style=\"margin: 0 auto;\">" +
+                "<table border=\"1\" style=\"margin: 0 auto; font-size:18px;\">" +
                 "<tr>" +
                 "<td style=\"text-align: center;\">Email</td>" +
                 "<td style=\"text-align: center;\">" + email + "</td>" +
@@ -143,6 +144,8 @@ public class AccountService {
                 "<td style=\"text-align: center;\">" + password + "</td>" +
                 "</tr>" +
                 "</table>" +
+                "<p style=\"font-family:open Sans Helvetica, Arial, sans-serif;font-size:18px; margin: 0; padding: 2px; text-align: center;\"> Please navigate to this link to use our website: <a href=\""+ FrontEndDeployedLink.LOGIN_LINK +
+        "\">Basketball Playground</a></p>" +
                 "<p style=\"text-align: center;\">--------------</p>";
         emailService.sendHtmlTemplateMessage(email, emailSubject, htmlBody);
     }

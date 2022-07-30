@@ -6,7 +6,6 @@ import com.swp.backend.api.v1.owner.yard.response.GetYardDetailResponse;
 import com.swp.backend.api.v1.owner.yard.response.GetYardInBookingResponse;
 import com.swp.backend.api.v1.owner.yard.response.GetYardResponse;
 import com.swp.backend.api.v1.yard.search.YardResponse;
-import com.swp.backend.constance.NoImageUrl;
 import com.swp.backend.entity.*;
 import com.swp.backend.model.*;
 import com.swp.backend.myrepository.YardCustomRepository;
