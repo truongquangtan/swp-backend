@@ -57,7 +57,7 @@ public class AccountService {
 
         //Find user by username, phone, or password
         if (username.matches(RegexHelper.EMAIL_REGEX)) {
-            return accountRepository.findUserEntityByEmail(username);
+            return accountRepository.findUserEntityByEmail(username.toLowerCase());
         } else if (username.matches("\\d+")) {
             return accountRepository.findUserEntityByPhone(username);
         } else {
@@ -71,7 +71,7 @@ public class AccountService {
         Timestamp now = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
         AccountEntity accountEntity = AccountEntity.builder()
                 .userId(uuid)
-                .email(email)
+                .email(email.toLowerCase())
                 .fullName(fullName)
                 .phone(phone)
                 .password(passwordEncoder.encode(password))
@@ -107,7 +107,7 @@ public class AccountService {
             RoleEntity roleEntity = roleService.getRoleByRoleName(RoleProperties.ROLE_OWNER);
             AccountEntity accountEntity = AccountEntity.builder()
                     .userId(uuid)
-                    .email(email)
+                    .email(email.toLowerCase())
                     .fullName(fullName)
                     .phone(phone)
                     .password(passwordEncoder.encode(password))
