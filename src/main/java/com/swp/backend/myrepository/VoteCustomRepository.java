@@ -127,7 +127,7 @@ public class VoteCustomRepository {
             query.setMaxResults(offSet);
             query.setFirstResult((page - 1) * offSet);
             List<?> results = query.getResultList();
-            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss a");
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy kk:mm:ss");
             return results.stream().map(result -> {
                 Object[] vote = (Object[]) result;
                 VoteModel voteModel = VoteModel.builder().build();
