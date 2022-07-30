@@ -11,6 +11,8 @@ import javax.persistence.Query;
 import java.math.BigInteger;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -55,22 +57,25 @@ public class VoteCustomRepository {
 
     public List<VoteModel> getAllNonVoteByUserId(String userId, int offSet, int page) {
         try {
+            Timestamp now = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("kk:mm");
             String nativeQuery = "SELECT yards.name, sub_yards.name as sub_yard_name, type_yards.type_name, yards.address, booking.date, slots.start_time, slots.end_time, booking.id as book_id FROM booking" +
                     " INNER JOIN slots ON slots.id = booking.slot_id" +
                     " INNER JOIN sub_yards ON slots.ref_yard = sub_yards.id" +
                     " INNER JOIN yards ON sub_yards.parent_yard = yards.id" +
                     " LEFT JOIN votes ON votes.booking_id = booking.id" +
                     " INNER JOIN type_yards ON type_yards.id = sub_yards.type_yard" +
-                    " WHERE (booking.account_id = ?1) AND (booking.status = ?2) AND (booking.date <= ?3) AND (votes.id IS NULL )";
+                    " WHERE (booking.account_id = ?1) AND (booking.status = ?2) AND (booking.date <= ?3) AND (votes.id IS NULL ) AND (slots.start_time < ?4)";
             Query query = entityManager.createNativeQuery(nativeQuery);
             query.setParameter(1, userId);
             query.setParameter(2, BookingStatus.SUCCESS);
-            query.setParameter(3, DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE));
+            query.setParameter(3, now);
+            query.setParameter(4, LocalTime.parse(simpleDateFormat.format(now)));
             query.setFirstResult((page - 1) * offSet);
             query.setMaxResults(offSet);
             List<?> results = query.getResultList();
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("d/M/y");
-            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm");
+            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("kk:mm");
             return results.stream().map(result -> {
                 Object[] vote = (Object[]) result;
                 VoteModel voteModel = VoteModel.builder().build();

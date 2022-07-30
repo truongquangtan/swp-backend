@@ -1,23 +1,6 @@
 package com.swp.backend.constance;
 
 public class ApiEndpointProperties {
-    public static String[] nonFilterEndpoint = {
-            "^/api/v1/login{1}",
-            "^/api/v1/register{1}",
-            "^/v3/api-docs{1}.*",
-            "^/swagger-ui{1}.*",
-            "^/api/v1/districts{1}.*",
-            "^/api/v1/provinces{1}.*",
-            "^/api/v1/forgot/send-mail{1}",
-            "^/api/v1/forgot/confirm-otp{1}",
-            "^/api/v1/yards/search{1}",
-            "^/api/v1/yards{1}",
-            "^/api/v1/yards/{1}[^/]*",
-            "^/api/v1/slots/get-by-date{1}",
-            "^/api/v1/sub-yards{1}.*",
-            "^/api/v1/admin/filter-account{1}",
-            "^/api/v1/vote/yards{1}"
-    };
     public static String[] publicEndpoint = {
             "/api/v1/admin/filter-account",
             "/api/v1/login",
