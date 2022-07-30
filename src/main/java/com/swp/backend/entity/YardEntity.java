@@ -45,5 +45,5 @@ public class YardEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int reference;
     @Column(name = "number_of_bookings", insertable = false)
-    private int numberOfBookings;
+    private Integer numberOfBookings;
 }
