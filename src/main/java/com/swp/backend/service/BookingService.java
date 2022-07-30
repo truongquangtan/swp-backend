@@ -134,7 +134,7 @@ public class BookingService {
     }
 
     private void addInformationToBookingHistory(BookingEntity bookingEntity) {
-        bookingHistoryService.saveBookingHistory(bookingEntity, "", bookingEntity.getAccountId());
+        bookingHistoryService.saveBookingHistory(bookingEntity, bookingEntity.getNote(), bookingEntity.getAccountId());
     }
 
     public List<BookingEntity> getIncomingMatchesOfUser(String userId, int itemsPerPage, int page) {
