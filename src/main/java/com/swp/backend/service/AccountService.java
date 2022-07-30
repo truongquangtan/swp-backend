@@ -144,6 +144,7 @@ public class AccountService {
                 "<td style=\"text-align: center;\">" + password + "</td>" +
                 "</tr>" +
                 "</table>" +
+                "<br/>" +
                 "<p style=\"font-family:open Sans Helvetica, Arial, sans-serif;font-size:18px; margin: 0; padding: 2px; text-align: center;\"> Please navigate to this link to use our website: <a href=\""+ FrontEndDeployedLink.LOGIN_LINK +
         "\">Basketball Playground</a></p>" +
                 "<p style=\"text-align: center;\">--------------</p>";
