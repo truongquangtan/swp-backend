@@ -72,16 +72,10 @@ public class VoucherService {
 
         if (endDate.before(today)) {
             status = EXPIRED;
-        } else {
-            status = ACTIVE;
         }
 
         if (voucherEntity.getUsages() >= voucher.getMaxQuantity() && !voucher.getStatus().equalsIgnoreCase(EXPIRED)) {
             status = FULL;
-        }
-
-        if (voucher.getStatus().equalsIgnoreCase(DELETED)) {
-            status = DELETED;
         }
 
         voucherEntity.setStartDate(startDate);
