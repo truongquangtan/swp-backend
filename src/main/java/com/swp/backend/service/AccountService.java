@@ -145,8 +145,7 @@ public class AccountService {
                 "</tr>" +
                 "</table>" +
                 "<br/>" +
-                "<p style=\"font-family:open Sans Helvetica, Arial, sans-serif;font-size:18px; margin: 0; padding: 2px; text-align: center;\"> Please navigate to this link to use our website: <a href=\"" + FrontEndDeployedLink.LOGIN_LINK +
-                "\">Basketball Playground</a></p>" +
+                "<p style=\"font-family:open Sans Helvetica, Arial, sans-serif;font-size:18px; margin: 0; padding: 2px; text-align: center;\"> Please navigate to this link to use our website: "+ FrontEndDeployedLink.LOGIN_LINK +"</p>" +
                 "<p style=\"text-align: center;\">--------------</p>";
         emailService.sendHtmlTemplateMessage(email, emailSubject, htmlBody);
     }
