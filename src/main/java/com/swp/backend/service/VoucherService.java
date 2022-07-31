@@ -60,6 +60,7 @@ public class VoucherService {
     }
 
     public void updateVoucher(VoucherModel voucher) throws DataAccessException {
+        VoucherEntity voucherEntity = voucherRepository.getVoucherEntityById(voucher.getId());
         String status = voucher.getStatus();
         boolean isActive = voucher.getIsActive();
         Timestamp startDate = DateHelper.parseTimestampNonTimeAtZone(voucher.getStartDate());
@@ -68,7 +69,6 @@ public class VoucherService {
         Timestamp today = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
         today = DateHelper.plusMinutes(today, 1439);
 
-        VoucherEntity voucherEntity = voucherRepository.getVoucherEntityById(voucher.getId());
 
         if(endDate.before(today)){
             status = EXPIRED;
@@ -78,6 +78,10 @@ public class VoucherService {
 
         if(voucherEntity.getUsages() >= voucher.getMaxQuantity() && !voucher.getStatus().equalsIgnoreCase(EXPIRED)){
             status = FULL;
+        }
+
+        if(voucher.getStatus().equalsIgnoreCase(DELETED)){
+            status = DELETED;
         }
 
         voucherEntity.setStartDate(startDate);
