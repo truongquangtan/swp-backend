@@ -82,7 +82,7 @@ public class BookingApi {
             }
             if (isAllError) {
                 response = new BookingResponse("All of your booking slot is error", isError, bookingEntities);
-                return ResponseEntity.internalServerError().body(gson.toJson(response));
+                return ResponseEntity.status(409).body(gson.toJson(response));
             } else {
                 if (isApplyVoucher) {
                     voucher.setUsages(voucher.getUsages() + 1);
@@ -90,7 +90,7 @@ public class BookingApi {
                 }
             }
             response = new BookingResponse(isError ? "There were some booking slot error." : "Booking all slot successfully", isError, bookingEntities);
-            return isError ? ResponseEntity.internalServerError().body(gson.toJson(response)) : ResponseEntity.ok().body(gson.toJson(response));
+            return isError ? ResponseEntity.status(409).body(gson.toJson(response)) : ResponseEntity.ok().body(gson.toJson(response));
         } catch (Exception ex) {
             ex.printStackTrace();
             return ResponseEntity.internalServerError().body("Error when save in database: " + ex.getMessage());
