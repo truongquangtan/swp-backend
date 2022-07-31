@@ -218,7 +218,7 @@ public class YardService {
 
     public GetYardResponse findAllYardByOwnerId(String ownerId, SearchModel searchModel) {
         List<YardEntity> yards = yardRepository.findAllByOwnerIdAndDeleted(ownerId, false);
-
+        yards.sort((first, second) -> Integer.compare(first.getReference(), second.getReference()));
         int maxResult;
         int pageValue = 1;
         int offSetValue = 10;
