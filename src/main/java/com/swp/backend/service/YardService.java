@@ -159,6 +159,7 @@ public class YardService {
             listPicture.forEach(picture -> images.add(picture.getImage()));
             yardModel.setImages(images);
         });
+        yardModels.sort((first, second) -> Integer.compare(second.getScore(), first.getScore()));
         return YardResponse.builder().yards(yardModels).maxResult(maxResult).page(pageValue).build();
     }
 
