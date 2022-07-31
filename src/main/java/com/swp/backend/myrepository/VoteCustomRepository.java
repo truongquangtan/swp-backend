@@ -97,17 +97,20 @@ public class VoteCustomRepository {
 
     public int countAllNonVoteByUserId(String userId) {
         try {
+            Timestamp now = DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE);
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("kk:mm");
             String nativeQuery = "SELECT COUNT(*) FROM booking" +
                     " INNER JOIN slots ON slots.id = booking.slot_id" +
                     " INNER JOIN sub_yards ON slots.ref_yard = sub_yards.id" +
                     " INNER JOIN yards ON sub_yards.parent_yard = yards.id" +
                     " LEFT JOIN votes ON votes.booking_id = booking.id" +
                     " INNER JOIN type_yards ON type_yards.id = sub_yards.type_yard" +
-                    " WHERE (booking.account_id = ?1) AND (booking.status = ?2) AND (booking.date <= ?3) AND (votes.id IS NULL )";
+                    " WHERE (booking.account_id = ?1) AND (booking.status = ?2) AND (booking.date <= ?3) AND (votes.id IS NULL ) AND (slots.start_time < ?4)";
             Query query = entityManager.createNativeQuery(nativeQuery);
             query.setParameter(1, userId);
             query.setParameter(2, BookingStatus.SUCCESS);
             query.setParameter(3, DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE));
+            query.setParameter(4, LocalTime.parse(simpleDateFormat.format(now)));
             Object results = query.getSingleResult();
             return (results instanceof BigInteger) ? ((BigInteger) results).intValue() : 0;
         } catch (Exception exception) {
