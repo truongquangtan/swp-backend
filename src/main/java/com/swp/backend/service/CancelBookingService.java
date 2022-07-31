@@ -286,11 +286,10 @@ public class CancelBookingService {
         cancelBookingProcessCreatedByOwner(booking, request.getReason(), ownerId);
         sendMailCancelToUser(booking, request.getReason());
     }
-    private void bookingIsInOwnerYardFilter(BookingEntity booking, String ownerId)
-    {
+
+    private void bookingIsInOwnerYardFilter(BookingEntity booking, String ownerId) {
         YardEntity yard = yardRepository.findYardEntitiesById(booking.getBigYardId());
-        if(yard == null || !yard.getOwnerId().equals(ownerId))
-        {
+        if (yard == null || !yard.getOwnerId().equals(ownerId)) {
             throw new CancelBookingProcessException("The booking is not in owner yard.");
         }
     }

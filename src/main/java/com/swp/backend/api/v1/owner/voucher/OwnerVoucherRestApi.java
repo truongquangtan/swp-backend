@@ -40,7 +40,7 @@ public class OwnerVoucherRestApi {
     }
 
     @PutMapping("vouchers/update")
-    public ResponseEntity<String> updateVoucher(@RequestBody(required = false) VoucherModel voucher){
+    public ResponseEntity<String> updateVoucher(@RequestBody(required = false) VoucherModel voucher) {
         try {
             if (voucher == null) {
                 ErrorResponse response = ErrorResponse.builder().message("Missing body!").build();
@@ -49,7 +49,7 @@ public class OwnerVoucherRestApi {
             voucherService.updateVoucher(voucher);
             MessageResponse messageResponse = MessageResponse.builder().message("Save change success!").build();
             return ResponseEntity.ok(gson.toJson(messageResponse));
-        }catch (Exception exception){
+        } catch (Exception exception) {
             exception.printStackTrace();
             ErrorResponse errorResponse = ErrorResponse.builder().stack(exception.getMessage()).message("Server busy temp can't search voucher.").build();
             return ResponseEntity.internalServerError().body(gson.toJson(errorResponse));

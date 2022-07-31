@@ -45,6 +45,7 @@ public class CancelBookingApi {
             return ResponseEntity.internalServerError().body(gson.toJson(response));
         }
     }
+
     @DeleteMapping(value = "owners/me/bookings/{bookingId}")
     public ResponseEntity<String> cancelBookingFromOwner(@RequestBody(required = false) CancelBookingRequest request, @PathVariable String bookingId) {
         CancelBookingResponse response;

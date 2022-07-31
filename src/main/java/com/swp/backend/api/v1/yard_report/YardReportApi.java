@@ -50,8 +50,7 @@ public class YardReportApi {
             itemsPerPage = request.getItemsPerPage() > 0 ? request.getItemsPerPage() : itemsPerPage;
         }
 
-        try
-        {
+        try {
             List<YardReportModel> reportsResponse = new ArrayList<>();
 
             List<YardReportModel> allYardReportModels = yardReportService.getAllReports(request);
@@ -60,18 +59,14 @@ public class YardReportApi {
             PaginationHelper paginationHelper = new PaginationHelper(itemsPerPage, maxResult);
             int startIndex = paginationHelper.getStartIndex(page);
             int endIndex = paginationHelper.getEndIndex(page);
-            if(startIndex <= endIndex)
-            {
+            if (startIndex <= endIndex) {
                 reportsResponse = allYardReportModels.subList(paginationHelper.getStartIndex(page), paginationHelper.getEndIndex(page) + 1);
             }
             GetYardReportForAdminResponse response = new GetYardReportForAdminResponse("Get reports success fully", page, maxResult, reportsResponse);
             return ResponseEntity.ok().body(gson.toJson(response));
-        } catch (RuntimeException runtimeException)
-        {
+        } catch (RuntimeException runtimeException) {
             return ResponseEntity.badRequest().body(runtimeException.getMessage());
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             ex.printStackTrace();
             return ResponseEntity.internalServerError().body("Server error");
         }

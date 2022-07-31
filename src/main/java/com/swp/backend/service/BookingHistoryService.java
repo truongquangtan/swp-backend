@@ -48,11 +48,11 @@ public class BookingHistoryService {
         }
 
         int maxResult = bookingHistoryModelList.size();
-        if(searchModel != null && searchModel.getItemsPerPage() != null){
+        if (searchModel != null && searchModel.getItemsPerPage() != null) {
             offSetValue = searchModel.getItemsPerPage();
         }
 
-        if(searchModel != null && searchModel.getPage() != null){
+        if (searchModel != null && searchModel.getPage() != null) {
             pageValue = searchModel.getPage();
         }
 
@@ -86,7 +86,7 @@ public class BookingHistoryService {
             String createBy = accountService.findAccountByUsername(booking.getCreatedBy()).getFullName();
             return getBookingHistoryModelFromBookingHistoryEntityAndCreatedBy(booking, createBy);
         }).collect(Collectors.toList());
-        if(searchModel != null){
+        if (searchModel != null) {
             bookingHistoryModels = searchBookingHistories(searchModel.getKeyword(), bookingHistoryModels);
             bookingHistoryModels = filterBookingHistories(searchModel.getFilter(), bookingHistoryModels);
             bookingHistoryModels = sortBookingHistories(searchModel.getSort(), bookingHistoryModels);

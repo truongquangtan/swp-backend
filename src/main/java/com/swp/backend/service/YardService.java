@@ -222,7 +222,7 @@ public class YardService {
         int maxResult;
         int pageValue = 1;
         int offSetValue = 10;
-        if(searchModel != null){
+        if (searchModel != null) {
             pageValue = searchModel.getPage();
             offSetValue = searchModel.getItemsPerPage();
             yards = searchYardsByKeyword(searchModel.getKeyword(), yards);
@@ -265,7 +265,7 @@ public class YardService {
         if (filter.getField().equalsIgnoreCase("isActive")) {
             if (Boolean.parseBoolean(filter.getValue())) {
                 return yards.stream().filter(YardEntity::isActive).collect(Collectors.toList());
-            }else {
+            } else {
                 return yards.stream().filter(yard -> !yard.isActive()).collect(Collectors.toList());
             }
         }
@@ -283,10 +283,9 @@ public class YardService {
         } else {
             sort = '+';
         }
-        yards.sort((fistYard, secondYard) -> Integer.compare(secondYard.getReference(), fistYard.getReference()));
 
-        if (sortColumn.equals("reference") && sort == '+') {
-                yards.sort(Comparator.comparingInt(YardEntity::getReference));
+        if (sortColumn.equals("reference") && sort == '-') {
+            yards.sort((fistYard, secondYard) -> Integer.compare(secondYard.getReference(), fistYard.getReference()));
         }
 
         if (sortColumn.equals("name")) {
@@ -423,20 +422,18 @@ public class YardService {
     public List<YardEntity> getAllYardEntityOfOwner(String ownerId) {
         return yardRepository.findYardEntitiesByOwnerIdOrderByReferenceAsc(ownerId);
     }
-    public List<GetYardInBookingResponse> getSimpleYardDetailsFromOwner(String ownerId)
-    {
+
+    public List<GetYardInBookingResponse> getSimpleYardDetailsFromOwner(String ownerId) {
         List<GetYardInBookingResponse> getYardsInBookingResponse = new ArrayList<>();
         List<YardEntity> yards = yardRepository.findYardEntitiesByOwnerIdAndDeleted(ownerId, false);
-        for(YardEntity yard : yards)
-        {
+        for (YardEntity yard : yards) {
             GetYardInBookingResponse getYardInBookingResponse = new GetYardInBookingResponse();
             getYardsInBookingResponse.add(getYardInBookingResponse);
             getYardInBookingResponse.setYardId(yard.getId());
             getYardInBookingResponse.setYardName(yard.getName());
             List<SubYardEntity> subYards = subYardRepository.findSubYardEntitiesByParentYardAndParentActiveAndDeleted(yard.getId(), true, false);
             List<SubYardSimpleModel> subYardsDetail = new ArrayList<>();
-            for(SubYardEntity subYard : subYards)
-            {
+            for (SubYardEntity subYard : subYards) {
                 String typeYard = typeYardRepository.getTypeYardById(subYard.getTypeYard()).getTypeName();
                 subYardsDetail.add(new SubYardSimpleModel(subYard.getId(), subYard.getName(), typeYard));
             }

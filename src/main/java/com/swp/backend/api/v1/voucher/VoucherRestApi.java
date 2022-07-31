@@ -23,7 +23,7 @@ public class VoucherRestApi {
     private Gson gson;
 
     @PostMapping("owners/{ownerId}/vouchers")
-    public ResponseEntity<String> getAllVoucherAvailable(@RequestBody(required = false)SearchModel searchModel, @PathVariable String ownerId) {
+    public ResponseEntity<String> getAllVoucherAvailable(@RequestBody(required = false) SearchModel searchModel, @PathVariable String ownerId) {
         try {
             VoucherResponse response;
             if (searchModel == null) {

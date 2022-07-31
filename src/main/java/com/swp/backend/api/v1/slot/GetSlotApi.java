@@ -140,13 +140,10 @@ public class GetSlotApi {
 
             //Successful query
             BookedSlotModel bookedSlotModel = slotService.getBookedSlotModel(slotId, getSlotRequest.getDate());
-            if(bookedSlotModel == null)
-            {
+            if (bookedSlotModel == null) {
                 response = new BookedSlotDetailResponse("There is no booking in this slot on " + getSlotRequest.getDate(), null);
                 return ResponseEntity.ok().body(gson.toJson(response));
-            }
-            else
-            {
+            } else {
                 response = new BookedSlotDetailResponse("Get detail successfully", bookedSlotModel);
             }
             return ResponseEntity.ok().body(gson.toJson(bookedSlotModel));

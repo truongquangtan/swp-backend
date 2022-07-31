@@ -37,6 +37,7 @@ public class YardReportService {
                 .build();
         yardReportRepository.save(yardReportEntity);
     }
+
     public void maskAsResolvedReport(String reportId) {
         YardReportEntity yardReportEntity = yardReportRepository.findYardReportEntityById(reportId);
         yardReportEntity.setStatus(YardReportStatus.REPORT_HANDLED);
@@ -50,61 +51,49 @@ public class YardReportService {
         yardReportEntity.setUpdatedAt(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE));
         yardReportRepository.save(yardReportEntity);
     }
-    public List<YardReportModel> getAllReports(SearchModel searchModel)
-    {
+
+    public List<YardReportModel> getAllReports(SearchModel searchModel) {
         validateSearchModel(searchModel);
         List<YardReportModel> yardReports = yardReportCustomRepository.getAllYardReportModels();
 
-        if(searchModel != null && searchModel.getFilter() != null)
-        {
+        if (searchModel != null && searchModel.getFilter() != null) {
             yardReports = applyFilter(yardReports, searchModel.getFilter());
         }
-        if(searchModel != null && searchModel.getKeyword() != null)
-        {
+        if (searchModel != null && searchModel.getKeyword() != null) {
             yardReports = applySearch(yardReports, searchModel.getKeyword());
         }
-        if(searchModel != null && searchModel.getSort() != null)
-        {
+        if (searchModel != null && searchModel.getSort() != null) {
             applySort(yardReports, searchModel.getSort());
         }
 
         return yardReports;
     }
-    private void validateSearchModel(SearchModel searchModel)
-    {
-        if(searchModel.getFilter() != null && !isValidFilterRequest(searchModel.getFilter()))
-        {
+
+    private void validateSearchModel(SearchModel searchModel) {
+        if (searchModel.getFilter() != null && !isValidFilterRequest(searchModel.getFilter())) {
             throw new RuntimeException("Filter request is not valid");
         }
-        if(searchModel.getSort() != null && !isValidSortRequest(searchModel.getSort()))
-        {
+        if (searchModel.getSort() != null && !isValidSortRequest(searchModel.getSort())) {
             throw new RuntimeException("Sort request is not valid");
         }
     }
-    private boolean isValidSortRequest(String sortRequest)
-    {
-        for(String sortKeyword : SORT_KEYWORDS)
-        {
-            if((sortRequest.charAt(0) + sortRequest.substring(1).toUpperCase()).equals("+" + sortKeyword) || sortRequest.toUpperCase().equals("-" + sortKeyword))
-            {
+
+    private boolean isValidSortRequest(String sortRequest) {
+        for (String sortKeyword : SORT_KEYWORDS) {
+            if ((sortRequest.charAt(0) + sortRequest.substring(1).toUpperCase()).equals("+" + sortKeyword) || sortRequest.toUpperCase().equals("-" + sortKeyword)) {
                 return true;
             }
         }
         return false;
     }
-    private boolean isValidFilterRequest(FilterModel filterRequest)
-    {
-        for(String filterKeyword : FILTER_FIELDS)
-        {
-            if(filterRequest.getField().toUpperCase().equals(filterKeyword))
-            {
-                switch (filterKeyword)
-                {
+
+    private boolean isValidFilterRequest(FilterModel filterRequest) {
+        for (String filterKeyword : FILTER_FIELDS) {
+            if (filterRequest.getField().toUpperCase().equals(filterKeyword)) {
+                switch (filterKeyword) {
                     case "STATUS":
-                        for(String status : YardReportStatus.getAllStatus())
-                        {
-                            if(filterRequest.getValue().toUpperCase().equals(status))
-                            {
+                        for (String status : YardReportStatus.getAllStatus()) {
+                            if (filterRequest.getValue().toUpperCase().equals(status)) {
                                 return true;
                             }
                         }
@@ -114,18 +103,17 @@ public class YardReportService {
         }
         return false;
     }
-    private List<YardReportModel> applySearch(List<YardReportModel> originalData, String keyword)
-    {
+
+    private List<YardReportModel> applySearch(List<YardReportModel> originalData, String keyword) {
         List<YardReportModel> result = new ArrayList<>();
-        for(YardReportModel yardReport : originalData)
-        {
-            if(yardReport.getReference().toString().contains(keyword) || yardReport.getYardName().toUpperCase().contains(keyword.toUpperCase()) || yardReport.getUserName().toUpperCase().contains(keyword.toUpperCase()))
-            {
+        for (YardReportModel yardReport : originalData) {
+            if (yardReport.getReference().toString().contains(keyword) || yardReport.getYardName().toUpperCase().contains(keyword.toUpperCase()) || yardReport.getUserName().toUpperCase().contains(keyword.toUpperCase())) {
                 result.add(yardReport);
             }
         }
         return result;
     }
+
     private List<YardReportModel> applyFilter(List<YardReportModel> originalData, FilterModel filterModel) {
         List<YardReportModel> result = new ArrayList<>();
         switch (filterModel.getField().toUpperCase()) {
@@ -135,27 +123,24 @@ public class YardReportService {
                 throw new RuntimeException("Field not supported");
         }
     }
-    private List<YardReportModel> filterByStatus(List<YardReportModel> originalData, String keyword)
-    {
+
+    private List<YardReportModel> filterByStatus(List<YardReportModel> originalData, String keyword) {
         List<YardReportModel> result = new ArrayList<>();
-        for(YardReportModel yardReport : originalData)
-        {
-            if(yardReport.getStatus().toUpperCase().equals(keyword))
-            {
+        for (YardReportModel yardReport : originalData) {
+            if (yardReport.getStatus().toUpperCase().equals(keyword)) {
                 result.add(yardReport);
             }
         }
         return result;
     }
-    private void applySort(List<YardReportModel> originalData, String sortKeyword)
-    {
-        switch (sortKeyword.toUpperCase())
-        {
+
+    private void applySort(List<YardReportModel> originalData, String sortKeyword) {
+        switch (sortKeyword.toUpperCase()) {
             case "+REFERENCE":
                 Collections.sort(originalData, new Comparator<YardReportModel>() {
                     @Override
                     public int compare(YardReportModel y1, YardReportModel y2) {
-                        return y1.getReference()-y2.getReference();
+                        return y1.getReference() - y2.getReference();
                     }
                 });
                 break;
@@ -163,7 +148,7 @@ public class YardReportService {
                 Collections.sort(originalData, new Comparator<YardReportModel>() {
                     @Override
                     public int compare(YardReportModel y1, YardReportModel y2) {
-                        return y2.getReference()-y1.getReference();
+                        return y2.getReference() - y1.getReference();
                     }
                 });
                 break;

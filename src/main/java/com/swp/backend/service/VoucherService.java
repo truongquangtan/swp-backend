@@ -70,17 +70,17 @@ public class VoucherService {
         today = DateHelper.plusMinutes(today, 1439);
 
 
-        if(endDate.before(today)){
+        if (endDate.before(today)) {
             status = EXPIRED;
-        }else {
+        } else {
             status = ACTIVE;
         }
 
-        if(voucherEntity.getUsages() >= voucher.getMaxQuantity() && !voucher.getStatus().equalsIgnoreCase(EXPIRED)){
+        if (voucherEntity.getUsages() >= voucher.getMaxQuantity() && !voucher.getStatus().equalsIgnoreCase(EXPIRED)) {
             status = FULL;
         }
 
-        if(voucher.getStatus().equalsIgnoreCase(DELETED)){
+        if (voucher.getStatus().equalsIgnoreCase(DELETED)) {
             status = DELETED;
         }
 
@@ -101,14 +101,14 @@ public class VoucherService {
         voucherResults = voucherResults.stream().filter(voucher -> !voucher.getStatus().equals(DELETED)).collect(Collectors.toList());
         int pageValue = 1;
         int offSetValue = 10;
-        if(searchModel != null){
+        if (searchModel != null) {
             voucherResults = handleSearchByKeyword(searchModel.getKeyword(), voucherResults);
             voucherResults = handleFilterVoucher(searchModel.getFilter(), voucherResults);
             voucherResults = handleSortByColumn(searchModel.getSort(), voucherResults);
-            if(searchModel.getPage() != null){
+            if (searchModel.getPage() != null) {
                 pageValue = searchModel.getPage();
             }
-            if(searchModel.getItemsPerPage() != null){
+            if (searchModel.getItemsPerPage() != null) {
                 offSetValue = searchModel.getItemsPerPage();
             }
         }
@@ -223,18 +223,18 @@ public class VoucherService {
 
     private List<VoucherEntity> findAllVoucherByOwnerId(String ownerId) {
         List<VoucherEntity> vouchers;
-            vouchers = voucherRepository.findVoucherEntitiesByCreatedByAccountId(ownerId);
+        vouchers = voucherRepository.findVoucherEntitiesByCreatedByAccountId(ownerId);
         return vouchers.stream().peek(voucher -> {
             boolean isChangeStatus = false;
-            if(voucher.getUsages() >= voucher.getMaxQuantity() ){
+            if (voucher.getUsages() >= voucher.getMaxQuantity()) {
                 voucher.setStatus(FULL);
                 isChangeStatus = true;
             }
-            if ( voucher.getEndDate().compareTo(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE)) < 0) {
+            if (voucher.getEndDate().compareTo(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE)) < 0) {
                 voucher.setStatus(EXPIRED);
                 isChangeStatus = true;
             }
-            if(isChangeStatus){
+            if (isChangeStatus) {
                 voucherRepository.save(voucher);
             }
         }).collect(Collectors.toList());
@@ -252,15 +252,15 @@ public class VoucherService {
         List<VoucherEntity> voucherResults = voucherRepository.findVoucherEntitiesByCreatedByAccountIdAndEndDateAfterAndActive(ownerId, now, true, pageable);
         voucherResults = voucherResults.stream().peek(voucher -> {
             boolean isChangeStatus = false;
-            if(voucher.getUsages() >= voucher.getMaxQuantity() ){
+            if (voucher.getUsages() >= voucher.getMaxQuantity()) {
                 voucher.setStatus(FULL);
                 isChangeStatus = true;
             }
-            if ( voucher.getEndDate().compareTo(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE)) < 0) {
+            if (voucher.getEndDate().compareTo(DateHelper.getTimestampAtZone(DateHelper.VIETNAM_ZONE)) < 0) {
                 voucher.setStatus(EXPIRED);
                 isChangeStatus = true;
             }
-            if(isChangeStatus){
+            if (isChangeStatus) {
                 voucherRepository.save(voucher);
             }
         }).collect(Collectors.toList());

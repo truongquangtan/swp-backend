@@ -142,20 +142,17 @@ public class YardRestApi {
             return ResponseEntity.internalServerError().body(ex.getMessage());
         }
     }
+
     @GetMapping(value = "all-yards")
-    public ResponseEntity<String> getAllYardInBookingManagement()
-    {
+    public ResponseEntity<String> getAllYardInBookingManagement() {
         List<GetYardInBookingResponse> response;
-        try
-        {
+        try {
             String ownerId = securityContextService.extractUsernameFromContext(SecurityContextHolder.getContext());
             response = yardService.getSimpleYardDetailsFromOwner(ownerId);
             return ResponseEntity.ok(gson.toJson(response));
-        }
-        catch(Exception ex)
-        {
+        } catch (Exception ex) {
             ex.printStackTrace();
-            return  ResponseEntity.internalServerError().body("Server error " + ex.getMessage());
+            return ResponseEntity.internalServerError().body("Server error " + ex.getMessage());
         }
     }
 }

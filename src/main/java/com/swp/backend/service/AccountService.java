@@ -145,8 +145,8 @@ public class AccountService {
                 "</tr>" +
                 "</table>" +
                 "<br/>" +
-                "<p style=\"font-family:open Sans Helvetica, Arial, sans-serif;font-size:18px; margin: 0; padding: 2px; text-align: center;\"> Please navigate to this link to use our website: <a href=\""+ FrontEndDeployedLink.LOGIN_LINK +
-        "\">Basketball Playground</a></p>" +
+                "<p style=\"font-family:open Sans Helvetica, Arial, sans-serif;font-size:18px; margin: 0; padding: 2px; text-align: center;\"> Please navigate to this link to use our website: <a href=\"" + FrontEndDeployedLink.LOGIN_LINK +
+                "\">Basketball Playground</a></p>" +
                 "<p style=\"text-align: center;\">--------------</p>";
         emailService.sendHtmlTemplateMessage(email, emailSubject, htmlBody);
     }
@@ -271,7 +271,7 @@ public class AccountService {
         List<Integer> roleIds = roles.stream().map(RoleEntity::getId).collect(Collectors.toList());
         List<AccountModel> accounts = transformAccountEntityToAccountModel(accountRepository.findAccountEntitiesByRoleIdIn(roleIds), roles);
 
-        if(searchModel != null){
+        if (searchModel != null) {
             accounts = searchAccounts(searchModel.getKeyword(), accounts);
             accounts = filterAccounts(searchModel.getFilter(), accounts);
             accounts = sortAccounts(searchModel.getSort(), accounts);
@@ -279,7 +279,7 @@ public class AccountService {
             offSetValue = searchModel.getItemsPerPage() != null ? searchModel.getItemsPerPage() : 10;
         }
 
-        if (accounts == null || accounts.size() == 0 ) {
+        if (accounts == null || accounts.size() == 0) {
             return GetAllAccountResponse.builder().accounts(Collections.emptyList()).maxResult(0).page(0).build();
         }
         int maxResult = accounts.size();
@@ -358,7 +358,7 @@ public class AccountService {
         if (columnFilter.equals("isActive")) {
             if (Boolean.parseBoolean(filter.getValue())) {
                 return accounts.stream().filter(AccountModel::isActive).collect(Collectors.toList());
-            }else  {
+            } else {
                 return accounts.stream().filter(account -> !account.isActive()).collect(Collectors.toList());
             }
         }
