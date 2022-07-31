@@ -59,29 +59,29 @@ public class BookingService {
         //SubYard filter
         String subYardId = bookingModel.getRefSubYard();
         if (subYardId == null) {
-            errorNote = "Cannot find sub yard from slot id " + slotId;
+            errorNote = "Yard is unavailable";
             return processBooking(userId, yardId, bookingModel, errorNote, BookingStatus.FAILED);
         }
         if (!subYardService.isActiveSubYard(subYardId)) {
-            errorNote = "SubYard of slot id " + bookingModel.getSlotId() + " is not active";
+            errorNote = "Yard is unavailable";
             return processBooking(userId, yardId, bookingModel, errorNote, BookingStatus.FAILED);
         }
 
         //Slot Not Available Filter
         Timestamp timestamp = DateHelper.parseFromStringToTimestamp(bookingModel.getDate());
         if (!slotService.isSlotActive(slotId)) {
-            errorNote = "Slot of slot id " + slotId + " is not active.";
+            errorNote = "Slot is unavailable";
             return processBooking(userId, yardId, bookingModel, errorNote, BookingStatus.FAILED);
         }
         if (!slotService.isSlotAvailableFromBooking(slotId, timestamp)) {
-            errorNote = "Slot of slot id " + slotId + " is booked.";
+            errorNote = "Slot is busy.";
             return processBooking(userId, yardId, bookingModel, errorNote, BookingStatus.FAILED);
         }
 
         //Local Time not exceed Start Time
         Timestamp dateRequest = DateHelper.parseFromStringToTimestamp(bookingModel.getDate());
         if (DateHelper.isToday(dateRequest) && !slotService.isSlotExceedTimeToday(slotId)) {
-            errorNote = "Slot of slot id " + slotId + " is started";
+            errorNote = "Slot is started";
             return processBooking(userId, yardId, bookingModel, errorNote, BookingStatus.FAILED);
         }
 
