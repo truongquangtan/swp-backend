@@ -218,6 +218,7 @@ public class YardService {
 
     public GetYardResponse findAllYardByOwnerId(String ownerId, SearchModel searchModel) {
         List<YardEntity> yards = yardRepository.findAllByOwnerIdAndDeleted(ownerId, false);
+
         int maxResult;
         int pageValue = 1;
         int offSetValue = 10;
@@ -282,13 +283,10 @@ public class YardService {
         } else {
             sort = '+';
         }
+        yards.sort((fistYard, secondYard) -> Integer.compare(secondYard.getReference(), fistYard.getReference()));
 
-        if (sortColumn.equals("reference")) {
-            if (sort == '+') {
-                yards.sort((fistYard, secondYard) -> Integer.compare(secondYard.getReference(), fistYard.getReference()));
-            } else {
+        if (sortColumn.equals("reference") && sort == '-') {
                 yards.sort(Comparator.comparingInt(YardEntity::getReference));
-            }
         }
 
         if (sortColumn.equals("name")) {
