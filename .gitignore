@@ -2,3 +2,5 @@ HELP.md
 .idea/
 target/
 *.iml
+
+src/main/resources/
