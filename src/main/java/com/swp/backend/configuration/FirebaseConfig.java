@@ -26,7 +26,7 @@ public class FirebaseConfig {
             //Set option include firebase authentication
             FirebaseOptions options = FirebaseOptions.builder()
                     .setCredentials(googleCredentials)
-                    .setStorageBucket("fu-swp391.appspot.com")
+                    .setStorageBucket("estoreapp-tanandtuyen.appspot.com")
                     .build();
             FirebaseApp.initializeApp(options);
         }
